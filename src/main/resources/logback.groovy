@@ -46,7 +46,7 @@ if (!level) {
             pattern = logPattern
         }
     }
-    logger("org.springframework", Level.WARN)
+    //logger("org.springframework", Level.WARN)
     root(Level.toLevel(level, Level.INFO), ['CONSOLE', 'FILE'])
 } else {
     root(Level.toLevel(level, Level.INFO), ['CONSOLE'])

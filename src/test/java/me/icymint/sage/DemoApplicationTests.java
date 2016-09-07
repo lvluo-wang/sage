@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
-import org.springframework.test.annotation.Timed;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.sql.DataSource;
@@ -47,7 +46,6 @@ public class DemoApplicationTests {
 
     @Test
     @Repeat(10)
-    @Timed(millis = 500L)
     public void test() {
         String hmac = HMacs.encodeToHex("key", "The quick brown fox jumps over the lazy dog");
         String hmac_64 = HMacs.encodeToBase64("key", "The quick brown fox jumps over the lazy dog");

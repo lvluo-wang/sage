@@ -8,6 +8,7 @@ buildscript {
         thymeleafDialectVersion = '2.0.1'
         mybatisStarterVersion = '1.1.1'
         mybatisPaginatorVersion = '1.2.17'
+        guavaVersion = '19.0'
     }
     repositories {
         maven {
@@ -72,19 +73,24 @@ bootRun {
 
 configurations {
     compile.exclude module: "spring-boot-starter-tomcat"
+    compile.exclude module: "tomcat-jdbc"
+    compile.exclude module: "tomcat-juli"
 }
 
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-aop'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     compile 'org.springframework.boot:spring-boot-starter-web'
-    compile 'org.springframework.boot:spring-boot-starter-undertow'
+    compile('org.springframework.boot:spring-boot-starter-undertow') {
+        exclude group: 'io.undertow', module: 'undertow-websockets-jsr'
+    }
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile "org.thymeleaf:thymeleaf:${thymeleafVersion}"
     compile "org.thymeleaf:thymeleaf-spring4:${thymeleafVersion}"
     compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:${thymeleafDialectVersion}"
     compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile 'org.springframework.boot:spring-boot-devtools'
+    compile "com.google.guava:guava:${guavaVersion}"
     compile "io.springfox:springfox-swagger2:${swaggerVersion}"
     compile "io.springfox:springfox-swagger-ui:${swaggerVersion}"
     compile "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisStarterVersion}"
