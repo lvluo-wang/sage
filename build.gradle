@@ -1,0 +1,100 @@
+buildscript {
+    ext {
+        springBootVersion = '1.4.0.RELEASE'
+        postgresVersion = '9.4.1209'
+        swaggerVersion = '2.5.0'
+        hikariVersion = '2.3.10'
+        thymeleafVersion = '3.0.0.RELEASE'
+        thymeleafDialectVersion = '2.0.1'
+        mybatisStarterVersion = '1.1.1'
+        mybatisPaginatorVersion = '1.2.17'
+    }
+    repositories {
+        maven {
+            credentials {
+                username "albus"
+                password "YouCantHitMe"
+            }
+            url "http://139.196.34.70:8081/content/groups/public/"
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.postgresql:postgresql:${postgresVersion}")
+    }
+}
+
+plugins {
+    id "org.flywaydb.flyway" version "4.0.3"
+}
+
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/sage'
+    user = 'sage'
+    password = 'sage'
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+jar {
+    baseName = 'sage'
+    version = '0.0.1-SNAPSHOT'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    maven {
+        credentials {
+            username "albus"
+            password "YouCantHitMe"
+        }
+        url "http://139.196.34.70:8081/content/groups/public/"
+    }
+    mavenCentral()
+}
+
+test {
+    systemProperty 'spring.profiles.active', 'test'
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+bootRun {
+    systemProperty 'logback_level', 'INFO'
+    addResources = true
+}
+
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter-aop'
+    compile 'org.springframework.boot:spring-boot-starter-jdbc'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-undertow'
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    compile "org.thymeleaf:thymeleaf:${thymeleafVersion}"
+    compile "org.thymeleaf:thymeleaf-spring4:${thymeleafVersion}"
+    compile "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:${thymeleafDialectVersion}"
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+    compile 'org.springframework.boot:spring-boot-devtools'
+    compile "io.springfox:springfox-swagger2:${swaggerVersion}"
+    compile "io.springfox:springfox-swagger-ui:${swaggerVersion}"
+    compile "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisStarterVersion}"
+    compile "com.github.miemiedev:mybatis-paginator:${mybatisPaginatorVersion}"
+    compile "com.zaxxer:HikariCP:${hikariVersion}"
+    compile "org.postgresql:postgresql:${postgresVersion}"
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.flywaydb:flyway-core'
+    testCompile 'org.hsqldb:hsqldb'
+    testCompile 'junit:junit'
+}

@@ -1,0 +1,25 @@
+# ignore Mac meta files
+.DS_Store
+
+# ignore gradle folder
+.gradle/
+
+# ignore intellij folder
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# ignore eclipse files
+.classpath
+.project
+.settings
+
+# ignore emacs temp file
+*~
+build/
+
+classes/
+
+*.gradletasknamecache
+*.log
