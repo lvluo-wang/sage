@@ -14,3 +14,4 @@ This README would normally document whatever steps are necessary to get your app
 * run `gradle test` for test in db
 * run `gradle bootRun` to run the project
 * run `gradle bootRun --debug-jvm` to run and debug the project
+* please use Intellij Idea IDE
