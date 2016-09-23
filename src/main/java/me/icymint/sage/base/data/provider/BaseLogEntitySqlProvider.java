@@ -5,7 +5,7 @@ import me.icymint.sage.base.spec.entity.BaseLogEntity;
 /**
  * Created by daniel on 16/9/5.
  */
-public abstract class BaseLogSqlProvider<T extends BaseLogEntity> {
+public abstract class BaseLogEntitySqlProvider<T extends BaseLogEntity> {
 
     protected abstract String getEntityTable();
 

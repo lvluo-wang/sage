@@ -1,8 +1,8 @@
 CREATE SEQUENCE SEQ_SESSION_ID INCREMENT BY 1 MINVALUE 1 NO MAXVALUE START WITH 1;
 
 CREATE TABLE T_SESSION (
-  ID          INTEGER                                                       NOT NULL,
-  OWNER_ID    INTEGER                                                       NOT NULL,
+  ID          BIGINT                                                        NOT NULL,
+  OWNER_ID    BIGINT                                                        NOT NULL,
   CREATE_TIME TIMESTAMP DEFAULT CURRENT_TIMESTAMP                           NOT NULL,
   UPDATE_TIME TIMESTAMP                                                     NULL,
   IS_DELETED  CHAR(1) DEFAULT 'N'                                           NOT NULL,

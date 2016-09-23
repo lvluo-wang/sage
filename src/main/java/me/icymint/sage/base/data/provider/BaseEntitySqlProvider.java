@@ -6,8 +6,7 @@ import me.icymint.sage.base.spec.entity.BaseEntity;
 /**
  * Created by daniel on 16/9/5.
  */
-public abstract class BaseSqlProvider<T extends BaseEntity> extends BaseLogSqlProvider<T> {
-
+public abstract class BaseEntitySqlProvider<T extends BaseEntity> extends BaseLogEntitySqlProvider<T> {
 
     protected final SQL onSave(T t, SQL sql) {
         onSave2(t, sql.VALUES_IF("UPDATE_TIME", "#{updateTime}", t.getUpdateTime() != null)
@@ -35,7 +34,6 @@ public abstract class BaseSqlProvider<T extends BaseEntity> extends BaseLogSqlPr
     public final String update(T t) {
         return onUpdate(t, new SQL()
                 .UPDATE(getEntityTable())
-                .SET_IF("IS_DELETED=#{isDeleted}", t.getIsDeleted() != null)
                 .SET_IF("UPDATE_TIME=#{updateTime}",
                         t.getUpdateTime() != null,
                         "UPDATE_TIME=CURRENT_TIMESTAMP"))

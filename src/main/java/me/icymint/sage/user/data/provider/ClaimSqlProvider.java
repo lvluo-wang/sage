@@ -1,6 +1,6 @@
 package me.icymint.sage.user.data.provider;
 
-import me.icymint.sage.base.data.provider.BaseSqlProvider;
+import me.icymint.sage.base.data.provider.BaseEntitySqlProvider;
 import me.icymint.sage.base.data.provider.SQL;
 import me.icymint.sage.user.spec.def.ClaimType;
 import me.icymint.sage.user.spec.def.RoleType;
@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * Created by daniel on 16/9/5.
  */
-public class ClaimSqlProvider extends BaseSqlProvider<Claim> {
+public class ClaimSqlProvider extends BaseEntitySqlProvider<Claim> {
     @Override
     protected String getEntityTable() {
         return "T_CLAIM";

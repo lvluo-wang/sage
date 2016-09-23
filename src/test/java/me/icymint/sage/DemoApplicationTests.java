@@ -2,7 +2,12 @@ package me.icymint.sage;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.core.util.HMacs;
+import me.icymint.sage.base.spec.api.EventService;
+import me.icymint.sage.user.data.mapper.EventMapper;
 import me.icymint.sage.user.data.mapper.IdentityMapper;
+import me.icymint.sage.user.spec.api.IdentityService;
+import me.icymint.sage.user.spec.api.TokenService;
+import me.icymint.sage.user.spec.def.EventStatus;
 import me.icymint.sage.user.spec.def.IdentityType;
 import me.icymint.sage.user.spec.entity.Identity;
 import org.junit.Test;
@@ -12,9 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
+import org.springframework.test.annotation.Timed;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.sql.DataSource;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -27,6 +34,14 @@ public class DemoApplicationTests {
     DataSource dataSource;
     @Autowired
     IdentityMapper identityMapper;
+    @Autowired
+    EventService eventService;
+    @Autowired
+    EventMapper eventMapper;
+    @Autowired
+    IdentityService identityService;
+    @Autowired
+    TokenService tokenService;
 
     @Test
     public void contextLoads() {
@@ -53,4 +68,21 @@ public class DemoApplicationTests {
         assertEquals("97yD9DBThCSxMpjmqm+xQ+9NWaFJRhdZl0edvC0aPNg=", hmac_64);
     }
 
+
+    @Test
+    @Timed(millis = 120 * 1000L)
+    public void testEvent() {
+        TestEvent event = new TestEvent().setMessage("Hello");
+        eventService.post(event);
+
+        identityService.register(1000L, "hello", "123", "679");
+
+        while (eventMapper.findByEventId(event.getEventId()).getStatus() == EventStatus.CREATED) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
 }

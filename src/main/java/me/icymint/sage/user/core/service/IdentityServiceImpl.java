@@ -1,6 +1,7 @@
 package me.icymint.sage.user.core.service;
 
 import me.icymint.sage.base.spec.api.Clock;
+import me.icymint.sage.base.spec.api.EventService;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.user.data.mapper.IdentityMapper;
@@ -12,6 +13,7 @@ import me.icymint.sage.user.spec.def.UserExceptionCode;
 import me.icymint.sage.user.spec.entity.Claim;
 import me.icymint.sage.user.spec.entity.Identity;
 import me.icymint.sage.user.spec.exception.UserServiceException;
+import me.icymint.sage.user.spec.internal.entity.RegisterEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,8 @@ public class IdentityServiceImpl implements IdentityService {
     ApplicationContext context;
     @Autowired
     Clock clock;
+    @Autowired
+    EventService eventService;
 
     @Override
     public Identity findOne(Long identityId) {
@@ -78,6 +82,9 @@ public class IdentityServiceImpl implements IdentityService {
                 : username;
         claimService.createClaim(identity.getId(), ClaimType.USERNAME, username, true);
         claimService.createClaim(identity.getId(), ClaimType.ROLE, RoleType.USER.name(), true);
+
+        eventService.post(new RegisterEvent().setIdentityId(identity.getId()));
+
         return identity;
     }
 
