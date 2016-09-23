@@ -1,8 +1,8 @@
 CREATE SEQUENCE SEQ_CLAIM_ID INCREMENT BY 1 MINVALUE 1 NO MAXVALUE START WITH 10000;
 
 CREATE TABLE T_CLAIM (
-  ID          INTEGER                                                       NOT NULL,
-  OWNER_ID    INTEGER                                                       NOT NULL,
+  ID          BIGINT                                                        NOT NULL,
+  OWNER_ID    BIGINT                                                        NOT NULL,
   CREATE_TIME TIMESTAMP DEFAULT CURRENT_TIMESTAMP                           NOT NULL,
   UPDATE_TIME TIMESTAMP                                                     NULL,
   IS_DELETED  CHAR(1) DEFAULT 'N'                                           NOT NULL,

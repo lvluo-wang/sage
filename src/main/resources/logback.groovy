@@ -21,7 +21,7 @@ logPattern = "%date $localhost[%thread] %.-5level %logger{32} - [%mdc{sage.corre
 
 appender('CONSOLE', ConsoleAppender) {
     filter(ThresholdFilter) {
-        level = Level.toLevel(level, Level.WARN)
+        level = Level.toLevel(level, Level.INFO)
     }
     encoder(PatternLayoutEncoder) {
         charset = StandardCharsets.UTF_8

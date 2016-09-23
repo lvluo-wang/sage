@@ -2,6 +2,7 @@ package me.icymint.sage.user.core.service;
 
 import me.icymint.sage.base.core.util.HMacs;
 import me.icymint.sage.base.spec.api.Clock;
+import me.icymint.sage.base.spec.api.EventService;
 import me.icymint.sage.base.spec.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.BaseExceptionCode;
 import me.icymint.sage.base.spec.def.Bool;
@@ -15,6 +16,7 @@ import me.icymint.sage.user.spec.def.IdentityType;
 import me.icymint.sage.user.spec.def.UserExceptionCode;
 import me.icymint.sage.user.spec.entity.Identity;
 import me.icymint.sage.user.spec.entity.Token;
+import me.icymint.sage.user.spec.internal.entity.LoginEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -38,6 +40,7 @@ public class TokenServiceImpl implements TokenService {
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     TokenMapper tokenMapper;
+    @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     IdentityService identityService;
     @Autowired
@@ -48,6 +51,8 @@ public class TokenServiceImpl implements TokenService {
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     RuntimeContext runtimeContext;
+    @Autowired
+    EventService eventService;
 
     @Override
     @Transactional
@@ -112,6 +117,8 @@ public class TokenServiceImpl implements TokenService {
                 .setSessionId(runtimeContext.getSessionId());
         tokenMapper.save(token);
         getCache().put(cacheKey, "true");
+
+        eventService.post(new LoginEvent().setTokenId(token.getId()));
         return tokenMapper.findOne(token.getId());
     }
 

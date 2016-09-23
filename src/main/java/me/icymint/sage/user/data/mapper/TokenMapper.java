@@ -15,7 +15,6 @@ import org.apache.ibatis.annotations.SelectProvider;
 @Mapper
 public interface TokenMapper {
 
-
     @InsertProvider(type = TokenSqlProvider.class, method = "save")
     @SelectKey(statement = "SELECT NEXTVAL('SEQ_TOKEN_ID')", keyProperty = "id", before = true, resultType = Long.class)
     int save(Token token);
