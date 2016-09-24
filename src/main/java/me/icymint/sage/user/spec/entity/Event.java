@@ -1,70 +1,38 @@
 package me.icymint.sage.user.spec.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import me.icymint.sage.base.spec.entity.BaseEvent;
 import me.icymint.sage.user.spec.def.EventStatus;
-
-import java.time.Instant;
+import me.icymint.sage.base.spec.entity.BaseJobEntity;
 
 /**
  * Created by daniel on 2016/9/23.
  */
-public class Event extends BaseEvent {
-    @JsonIgnore
-    private Instant createTime;
-    @JsonIgnore
-    private Instant nextScanTime;
-    @JsonIgnore
-    private Instant updateTime;
-    @JsonIgnore
-    private EventStatus status;
-    @JsonIgnore
+public class Event extends BaseJobEntity<Event> {
+    private String eventId;
+    private String parentEventId;
     private String body;
-    @JsonIgnore
     private String asyncEventType;
+    private EventStatus status;
 
-    public Instant getNextScanTime() {
-        return nextScanTime;
+    public String getEventId() {
+        return eventId;
     }
 
-    public Event setNextScanTime(Instant nextScanTime) {
-        this.nextScanTime = nextScanTime;
+    public Event setEventId(String eventId) {
+        this.eventId = eventId;
         return this;
     }
 
-    public String getAsyncEventType() {
-        return asyncEventType;
+    public String getParentEventId() {
+        return parentEventId;
     }
 
-    public Event setAsyncEventType(String asyncEventType) {
-        this.asyncEventType = asyncEventType;
+    public Event setParentEventId(String parentEventId) {
+        this.parentEventId = parentEventId;
         return this;
     }
 
-    public Instant getCreateTime() {
-        return createTime;
-    }
-
-    public Event setCreateTime(Instant createTime) {
-        this.createTime = createTime;
-        return this;
-    }
-
-    public Instant getUpdateTime() {
-        return updateTime;
-    }
-
-    public Event setUpdateTime(Instant updateTime) {
-        this.updateTime = updateTime;
-        return this;
-    }
-
-    public EventStatus getStatus() {
-        return status;
-    }
-
-    public Event setStatus(EventStatus status) {
-        this.status = status;
+    @Override
+    protected Event getSelf() {
         return this;
     }
 
@@ -77,15 +45,32 @@ public class Event extends BaseEvent {
         return this;
     }
 
+    public String getAsyncEventType() {
+        return asyncEventType;
+    }
+
+    public Event setAsyncEventType(String asyncEventType) {
+        this.asyncEventType = asyncEventType;
+        return this;
+    }
+
+    public EventStatus getStatus() {
+        return status;
+    }
+
+    public Event setStatus(EventStatus status) {
+        this.status = status;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
-                "createTime=" + createTime +
-                ", nextScanTime=" + nextScanTime +
-                ", updateTime=" + updateTime +
-                ", status=" + status +
+                "eventId='" + eventId + '\'' +
+                ", parentEventId='" + parentEventId + '\'' +
                 ", body='" + body + '\'' +
                 ", asyncEventType='" + asyncEventType + '\'' +
+                ", status=" + status +
                 "} " + super.toString();
     }
 }

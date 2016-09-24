@@ -24,9 +24,6 @@ public interface EventMapper {
     @SelectProvider(type = EventSqlProvider.class, method = "findAllWithNewCreated")
     List<Event> findAllWithNewCreated(RowBounds rowBounds);
 
-    @SelectProvider(type = EventSqlProvider.class, method = "findAll")
-    List<Event> findAll(RowBounds rowBounds);
-
     @UpdateProvider(type = EventSqlProvider.class, method = "update")
     int update(Event event);
 

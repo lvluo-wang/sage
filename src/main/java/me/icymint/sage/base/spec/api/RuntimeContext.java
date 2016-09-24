@@ -29,6 +29,8 @@ public interface RuntimeContext {
 
     String TIME_ZONE = "timeZone";
 
+    boolean needShutdown();
+
     String getSessionId();
 
     default String getClientId() {

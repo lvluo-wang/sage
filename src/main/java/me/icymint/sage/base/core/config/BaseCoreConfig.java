@@ -39,6 +39,7 @@ public class BaseCoreConfig {
         return new DefaultEventRepository();
     }
 
+
     @Bean
     @Scope("prototype")
     public RestTemplate restTemplate(ClientHttpRequestInterceptor[] clientHttpRequestInterceptors) {
