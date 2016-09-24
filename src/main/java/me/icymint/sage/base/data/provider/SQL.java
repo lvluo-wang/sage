@@ -1,12 +1,17 @@
 package me.icymint.sage.base.data.provider;
 
 import org.apache.ibatis.jdbc.AbstractSQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
  * Created by daniel on 16/9/5.
  */
 public class SQL extends AbstractSQL<SQL> {
+    private final Logger logger = LoggerFactory.getLogger(SQL.class);
+
+
     @Override
     public SQL getSelf() {
         return this;
@@ -49,4 +54,8 @@ public class SQL extends AbstractSQL<SQL> {
         return SET_IF(sets, ifExists, null);
     }
 
+    public SQL log() {
+        logger.info("SQL - " + this.toString());
+        return this;
+    }
 }

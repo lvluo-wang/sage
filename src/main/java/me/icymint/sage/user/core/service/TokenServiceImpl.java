@@ -118,7 +118,9 @@ public class TokenServiceImpl implements TokenService {
         tokenMapper.save(token);
         getCache().put(cacheKey, "true");
 
-        eventService.post(new LoginEvent().setTokenId(token.getId()));
+        eventService.post(new LoginEvent()
+                .setOwnerId(token.getOwnerId())
+                .setTokenId(token.getId()));
         return tokenMapper.findOne(token.getId());
     }
 

@@ -5,7 +5,7 @@ import me.icymint.sage.base.spec.entity.BaseEvent;
 /**
  * Created by daniel on 2016/9/23.
  */
-public class RegisterEvent extends BaseEvent {
+public class RegisterEvent extends BaseEvent<RegisterEvent> {
     private Long identityId;
 
     public Long getIdentityId() {
@@ -14,6 +14,11 @@ public class RegisterEvent extends BaseEvent {
 
     public RegisterEvent setIdentityId(Long identityId) {
         this.identityId = identityId;
+        return this;
+    }
+
+    @Override
+    protected RegisterEvent getSelf() {
         return this;
     }
 

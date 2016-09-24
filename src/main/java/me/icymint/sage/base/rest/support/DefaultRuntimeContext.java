@@ -5,17 +5,30 @@ import me.icymint.sage.base.spec.api.SessionService;
 import me.icymint.sage.base.spec.def.MagicConstants;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
 
 /**
  * Created by daniel on 16/9/3.
  */
 @Component
-public class DefaultRuntimeContext implements RuntimeContext {
+public class DefaultRuntimeContext implements RuntimeContext, ApplicationListener<ContextClosedEvent> {
 
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     SessionService sessionService;
+    private volatile boolean shutdown = false;
+
+    @Override
+    public boolean needShutdown() {
+        return shutdown;
+    }
+
+    @Override
+    public void onApplicationEvent(ContextClosedEvent event) {
+        shutdown = true;
+    }
 
     @Override
     public String getSessionId() {

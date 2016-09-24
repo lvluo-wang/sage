@@ -83,7 +83,9 @@ public class IdentityServiceImpl implements IdentityService {
         claimService.createClaim(identity.getId(), ClaimType.USERNAME, username, true);
         claimService.createClaim(identity.getId(), ClaimType.ROLE, RoleType.USER.name(), true);
 
-        eventService.post(new RegisterEvent().setIdentityId(identity.getId()));
+        eventService.post(new RegisterEvent()
+                .setOwnerId(identity.getId())
+                .setIdentityId(identity.getId()));
 
         return identity;
     }

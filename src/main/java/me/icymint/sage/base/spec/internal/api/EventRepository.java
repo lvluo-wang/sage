@@ -16,16 +16,11 @@ public interface EventRepository {
     default void save(Event event) {
     }
 
-    default Event findByEventId(String eventId) {
-        return null;
-    }
-
     default List<Event> findAllWithNewCreated(PageBounds pageBounds) {
         return Lists.newArrayList();
     }
 
-    default int update(Event event) {
-        return 0;
+    default void update(Event event) {
     }
 
     default Event findOneForUpdate(Long id) {

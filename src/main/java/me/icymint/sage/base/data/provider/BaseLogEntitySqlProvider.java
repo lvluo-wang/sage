@@ -21,35 +21,30 @@ public abstract class BaseLogEntitySqlProvider<T extends BaseLogEntity> {
 
     protected abstract SQL onSave(T t, SQL sql);
 
-    protected SQL onFind(SQL sql) {
-        return sql;
+    protected abstract SQL onFind(SQL sql);
+
+    protected final SQL selectFrom() {
+        return onFind(new SQL()
+                .SELECT("*")
+                .FROM(getEntityTable()));
     }
 
     public final String findOne() {
-        SQL sql = new SQL()
-                .SELECT("*")
-                .FROM(getEntityTable())
-                .WHERE("ID=#{id}");
-        onFind(sql);
-        return sql.toString();
+        return selectFrom()
+                .WHERE("ID=#{id}")
+                .toString();
+
     }
 
     public final String findByOwnerId() {
-        SQL sql = new SQL()
-                .SELECT("*")
-                .FROM(getEntityTable())
-                .WHERE("OWNER_ID=#{ownerId}");
-        onFind(sql);
-        return sql.toString();
+        return selectFrom()
+                .WHERE("OWNER_ID=#{ownerId}")
+                .toString();
     }
 
 
     public final String findAll() {
-        SQL sql = new SQL()
-                .SELECT("*")
-                .FROM(getEntityTable());
-        onFind(sql);
-        return sql.toString();
+        return selectFrom().toString();
     }
 
 

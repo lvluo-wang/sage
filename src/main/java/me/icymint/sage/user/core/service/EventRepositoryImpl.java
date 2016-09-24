@@ -45,18 +45,17 @@ public class EventRepositoryImpl implements EventRepository {
     }
 
     @Override
-    public Event findByEventId(String eventId) {
-        return eventMapper.findByEventId(eventId);
-    }
-
-    @Override
+    @Transactional
     public List<Event> findAllWithNewCreated(PageBounds pageBounds) {
         return eventMapper.findAllWithNewCreated(pageBounds);
     }
 
     @Override
-    public int update(Event event) {
-        return eventMapper.update(event);
+    @Transactional
+    public void update(Event event) {
+        if (eventMapper.update(event) != 1) {
+            throw new UserServiceException(context, UserExceptionCode.EVENT__UPDATE_FAILED, event.getEventId());
+        }
     }
 
     @Override

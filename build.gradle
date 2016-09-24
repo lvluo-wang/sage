@@ -96,7 +96,6 @@ dependencies {
     compile "org.postgresql:postgresql:${postgresVersion}"
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'org.quartz-scheduler:quartz:2.2.3'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.flywaydb:flyway-core'

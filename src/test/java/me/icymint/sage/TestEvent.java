@@ -5,7 +5,7 @@ import me.icymint.sage.base.spec.entity.BaseEvent;
 /**
  * Created by daniel on 2016/9/23.
  */
-public class TestEvent extends BaseEvent {
+public class TestEvent extends BaseEvent<TestEvent> {
     private String message;
 
     public String getMessage() {
@@ -14,6 +14,11 @@ public class TestEvent extends BaseEvent {
 
     public TestEvent setMessage(String message) {
         this.message = message;
+        return this;
+    }
+
+    @Override
+    protected TestEvent getSelf() {
         return this;
     }
 

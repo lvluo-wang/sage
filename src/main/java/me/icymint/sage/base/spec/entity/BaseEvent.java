@@ -5,39 +5,52 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * Created by daniel on 2016/9/23.
  */
-public abstract class BaseEvent {
+public abstract class BaseEvent<T extends BaseEvent<T>> {
     @JsonIgnore
     private Long id;
+    @JsonIgnore
+    private Long ownerId;
     @JsonIgnore
     private String parentEventId;
     @JsonIgnore
     private String eventId;
 
+    public Long getOwnerId() {
+        return ownerId;
+    }
+
+    public T setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
+        return getSelf();
+    }
+
+    protected abstract T getSelf();
+
     public Long getId() {
         return id;
     }
 
-    public BaseEvent setId(Long id) {
+    public T setId(Long id) {
         this.id = id;
-        return this;
+        return getSelf();
     }
 
     public String getParentEventId() {
         return parentEventId;
     }
 
-    public BaseEvent setParentEventId(String parentEventId) {
+    public T setParentEventId(String parentEventId) {
         this.parentEventId = parentEventId;
-        return this;
+        return getSelf();
     }
 
     public String getEventId() {
         return eventId;
     }
 
-    public BaseEvent setEventId(String eventId) {
+    public T setEventId(String eventId) {
         this.eventId = eventId;
-        return this;
+        return getSelf();
     }
 
     @Override
