@@ -109,7 +109,7 @@ public class JacksonI18nEnumSerializerModifier extends BeanSerializerModifier {
             private boolean disableToLabel() {
                 ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
                 String value = attributes.getRequest().getHeader(MagicConstants.HEADER_X_DISABLE_TO_LABEL);
-                return value == null || !"false".equals(value);
+                return value == null || !"false" .equals(value);
             }
         };
     }

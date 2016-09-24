@@ -31,19 +31,13 @@ import java.util.stream.Collectors;
  */
 @ControllerAdvice
 public class PaginatorBoundArgumentResolver implements HandlerMethodArgumentResolver, Formatter<PaginatorBound> {
-    private Logger logger = LoggerFactory.getLogger(PaginatorBoundArgumentResolver.class);
-
     private static final String PAGE = "page";
-
     private static final String SIZE = "size";
-
     private static final String TOTAL = "total";
-
     private static final String ORDERS = "orders";
-
     private static final int MAX_LIMIT = 100;
-
     private static final int DEFAULT_LIMIT = 10;
+    private Logger logger = LoggerFactory.getLogger(PaginatorBoundArgumentResolver.class);
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

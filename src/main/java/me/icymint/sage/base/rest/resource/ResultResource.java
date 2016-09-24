@@ -9,12 +9,12 @@ import me.icymint.sage.base.spec.exception.ServiceException;
  */
 public class ResultResource {
 
-    @JsonProperty("_embedded")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private ResultResource embedded;
     private final String id;
     private final String code;
     private final String message;
+    @JsonProperty("_embedded")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private ResultResource embedded;
 
     public ResultResource(Throwable se) {
         ServiceException sex = se instanceof ServiceException ? (ServiceException) se : null;

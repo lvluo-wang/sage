@@ -1,7 +1,7 @@
 package me.icymint.sage.user.spec.entity;
 
-import me.icymint.sage.user.spec.def.EventStatus;
 import me.icymint.sage.base.spec.entity.BaseJobEntity;
+import me.icymint.sage.user.spec.def.EventStatus;
 
 /**
  * Created by daniel on 2016/9/23.

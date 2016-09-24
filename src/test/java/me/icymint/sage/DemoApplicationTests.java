@@ -3,11 +3,11 @@ package me.icymint.sage;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.core.util.HMacs;
 import me.icymint.sage.base.spec.api.EventService;
-import me.icymint.sage.user.spec.def.EventStatus;
 import me.icymint.sage.user.data.mapper.EventMapper;
 import me.icymint.sage.user.data.mapper.IdentityMapper;
 import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.api.TokenService;
+import me.icymint.sage.user.spec.def.EventStatus;
 import me.icymint.sage.user.spec.def.IdentityType;
 import me.icymint.sage.user.spec.entity.Identity;
 import org.junit.Test;
@@ -28,8 +28,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DemoApplicationTests {
-    private Logger logger = LoggerFactory.getLogger(DemoApplicationTests.class);
-
     @Autowired
     DataSource dataSource;
     @Autowired
@@ -42,6 +40,7 @@ public class DemoApplicationTests {
     IdentityService identityService;
     @Autowired
     TokenService tokenService;
+    private Logger logger = LoggerFactory.getLogger(DemoApplicationTests.class);
 
     @Test
     public void contextLoads() {

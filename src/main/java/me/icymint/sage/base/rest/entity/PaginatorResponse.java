@@ -30,6 +30,40 @@ public class PaginatorResponse<E> {
     @JsonProperty("isLastPage")
     private Boolean isLastPage;
 
+    public static <E> PaginatorResponse<E> of(List<E> list) {
+        return of(list, Function.identity());
+    }
+
+    public static <T, R> PaginatorResponse<R> of(List<T> list, Function<T, R> apply) {
+        if (list == null) {
+            return null;
+        }
+        Paginator paginator;
+        if (list instanceof PageList) {
+            paginator = ((PageList) list).getPaginator();
+        } else {
+            int size = list.size();
+            paginator = new Paginator(1, size, size);
+        }
+        PaginatorResponse<R> entity = new PaginatorResponse<>();
+        entity.setTotalCount(paginator.getTotalCount());
+        entity.setTotalPages(paginator.getTotalPages());
+        entity.setPage(paginator.getPage());
+        entity.setLimit(paginator.getLimit());
+        entity.setItems(list.stream().map(apply).collect(Collectors.toList()));
+        entity.setStartRow(paginator.getStartRow());
+        entity.setEndRow(paginator.getEndRow());
+        entity.setOffset(paginator.getOffset());
+        entity.setSlider(paginator.getSlider());
+        entity.setPrePage(paginator.getPrePage());
+        entity.setNextPage(paginator.getNextPage());
+        entity.setFirstPage(paginator.isFirstPage());
+        entity.setHasNextPage(paginator.isHasNextPage());
+        entity.setHasPrePage(paginator.isHasPrePage());
+        entity.setLastPage(paginator.isLastPage());
+        return entity;
+    }
+
     public Integer getTotalCount() {
         return totalCount;
     }
@@ -155,40 +189,5 @@ public class PaginatorResponse<E> {
     public PaginatorResponse setLastPage(Boolean lastPage) {
         isLastPage = lastPage;
         return this;
-    }
-
-
-    public static <E> PaginatorResponse<E> of(List<E> list) {
-        return of(list, Function.identity());
-    }
-
-    public static <T, R> PaginatorResponse<R> of(List<T> list, Function<T, R> apply) {
-        if (list == null) {
-            return null;
-        }
-        Paginator paginator;
-        if (list instanceof PageList) {
-            paginator = ((PageList) list).getPaginator();
-        } else {
-            int size = list.size();
-            paginator = new Paginator(1, size, size);
-        }
-        PaginatorResponse<R> entity = new PaginatorResponse<>();
-        entity.setTotalCount(paginator.getTotalCount());
-        entity.setTotalPages(paginator.getTotalPages());
-        entity.setPage(paginator.getPage());
-        entity.setLimit(paginator.getLimit());
-        entity.setItems(list.stream().map(apply).collect(Collectors.toList()));
-        entity.setStartRow(paginator.getStartRow());
-        entity.setEndRow(paginator.getEndRow());
-        entity.setOffset(paginator.getOffset());
-        entity.setSlider(paginator.getSlider());
-        entity.setPrePage(paginator.getPrePage());
-        entity.setNextPage(paginator.getNextPage());
-        entity.setFirstPage(paginator.isFirstPage());
-        entity.setHasNextPage(paginator.isHasNextPage());
-        entity.setHasPrePage(paginator.isHasPrePage());
-        entity.setLastPage(paginator.isLastPage());
-        return entity;
     }
 }
