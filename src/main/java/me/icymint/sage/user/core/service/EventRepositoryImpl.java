@@ -30,7 +30,6 @@ public class EventRepositoryImpl implements EventRepository {
     @Autowired
     Clock clock;
 
-
     @Override
     public boolean allowAsync() {
         return true;

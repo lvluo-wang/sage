@@ -1,4 +1,4 @@
-package me.icymint.sage.user.data.mapper;
+package me.icymint.sage.user.data.provider;
 
 import me.icymint.sage.base.data.provider.BaseJobEntitySqlProvider;
 import me.icymint.sage.base.data.provider.SQL;
@@ -29,10 +29,6 @@ public class EventSqlProvider extends BaseJobEntitySqlProvider<Event> {
         return selectFrom()
                 .WHERE("EVENT_ID=#{eventId}")
                 .toString();
-    }
-
-    public String findOneForUpdate() {
-        return findOne() + " FOR UPDATE";
     }
 
     @Override

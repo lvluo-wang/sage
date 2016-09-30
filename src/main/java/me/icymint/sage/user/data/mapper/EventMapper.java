@@ -1,5 +1,6 @@
 package me.icymint.sage.user.data.mapper;
 
+import me.icymint.sage.user.data.provider.EventSqlProvider;
 import me.icymint.sage.user.spec.entity.Event;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;

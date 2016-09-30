@@ -14,6 +14,61 @@ public abstract class BaseEvent<T extends BaseEvent<T>> {
     private String parentEventId;
     @JsonIgnore
     private String eventId;
+    @JsonIgnore
+    private Boolean async;
+    private String ipAddress;
+    private String correlationId;
+    private String clientId;
+    private String sessionId;
+
+    public <E extends BaseEvent<E>> Class<E> parentEventClass() {
+        return null;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public T setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+        return getSelf();
+    }
+
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public T setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+        return getSelf();
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public T setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+        return getSelf();
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public T setClientId(String clientId) {
+        this.clientId = clientId;
+        return getSelf();
+    }
+
+    public Boolean getAsync() {
+        return async;
+    }
+
+    public T setAsync(Boolean async) {
+        this.async = async;
+        return getSelf();
+    }
 
     public Long getOwnerId() {
         return ownerId;

@@ -1,8 +1,9 @@
 package me.icymint.sage.user.core.service;
 
 import me.icymint.sage.base.core.util.HMacs;
+import me.icymint.sage.base.spec.annotation.NotifyEvent;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.api.EventService;
+import me.icymint.sage.base.spec.api.EventProducer;
 import me.icymint.sage.base.spec.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.BaseExceptionCode;
 import me.icymint.sage.base.spec.def.Bool;
@@ -51,11 +52,10 @@ public class TokenServiceImpl implements TokenService {
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     RuntimeContext runtimeContext;
-    @Autowired
-    EventService eventService;
 
     @Override
     @Transactional
+    @NotifyEvent(eventProducerClass = LoginEventProducer.class)
     public Token login(Long identityId, Long clientId, String nonce, Long timestamp, String hash) {
         if (identityId == null) {
             throw new InvalidArgumentException(context, BaseExceptionCode.PARAM__ILLEGAL, "uid");
@@ -117,10 +117,6 @@ public class TokenServiceImpl implements TokenService {
                 .setSessionId(runtimeContext.getSessionId());
         tokenMapper.save(token);
         getCache().put(cacheKey, "true");
-
-        eventService.post(new LoginEvent()
-                .setOwnerId(token.getOwnerId())
-                .setTokenId(token.getId()));
         return tokenMapper.findOne(token.getId());
     }
 
@@ -173,5 +169,21 @@ public class TokenServiceImpl implements TokenService {
     @Transactional
     public void expireBySessionId(String sessionId) {
         tokenMapper.deleteBySessionId(sessionId);
+    }
+
+    public static class LoginEventProducer implements EventProducer<Token, LoginEvent> {
+        @Override
+        public Class<Token> resultClass() {
+            return Token.class;
+        }
+
+        @Override
+        public LoginEvent apply(Token token) {
+            return new LoginEvent()
+                    .setOwnerId(token.getOwnerId())
+                    .setTokenId(token.getId())
+                    .setClientId(String.valueOf(token.getClientId()))
+                    .setSessionId(token.getSessionId());
+        }
     }
 }

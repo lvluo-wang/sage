@@ -1,7 +1,8 @@
 package me.icymint.sage.user.core.service;
 
+import me.icymint.sage.base.spec.annotation.NotifyInTransactionEvent;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.api.EventService;
+import me.icymint.sage.base.spec.api.EventProducer;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.user.data.mapper.IdentityMapper;
@@ -39,8 +40,6 @@ public class IdentityServiceImpl implements IdentityService {
     ApplicationContext context;
     @Autowired
     Clock clock;
-    @Autowired
-    EventService eventService;
 
     @Override
     public Identity findOne(Long identityId) {
@@ -49,6 +48,7 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Override
     @Transactional
+    @NotifyInTransactionEvent(eventProducerClass = RegisterEventProducer.class)
     public Identity register(Long clientId, String username, String salt, String password) {
         if (StringUtils.isEmpty(username)) {
             username = null;
@@ -82,11 +82,6 @@ public class IdentityServiceImpl implements IdentityService {
                 : username;
         claimService.createClaim(identity.getId(), ClaimType.USERNAME, username, true);
         claimService.createClaim(identity.getId(), ClaimType.ROLE, RoleType.USER.name(), true);
-
-        eventService.post(new RegisterEvent()
-                .setOwnerId(identity.getId())
-                .setIdentityId(identity.getId()));
-
         return identity;
     }
 
@@ -100,4 +95,15 @@ public class IdentityServiceImpl implements IdentityService {
     }
 
 
+    public static class RegisterEventProducer implements EventProducer<Identity, RegisterEvent> {
+        @Override
+        public Class<Identity> resultClass() {
+            return Identity.class;
+        }
+
+        @Override
+        public RegisterEvent apply(Identity identity) {
+            return new RegisterEvent().setOwnerId(identity.getOwnerId()).setIdentityId(identity.getId());
+        }
+    }
 }

@@ -1,8 +1,8 @@
 package me.icymint.sage;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.core.util.HMacs;
-import me.icymint.sage.base.spec.api.EventService;
 import me.icymint.sage.user.data.mapper.EventMapper;
 import me.icymint.sage.user.data.mapper.IdentityMapper;
 import me.icymint.sage.user.spec.api.IdentityService;
@@ -33,9 +33,9 @@ public class DemoApplicationTests {
     @Autowired
     IdentityMapper identityMapper;
     @Autowired
-    EventService eventService;
-    @Autowired
     EventMapper eventMapper;
+    @Autowired
+    EventServiceImpl eventService;
     @Autowired
     IdentityService identityService;
     @Autowired
@@ -78,7 +78,7 @@ public class DemoApplicationTests {
 
         while (eventMapper.findByEventId(event.getEventId()).getStatus() == EventStatus.CREATED) {
             try {
-                TimeUnit.MILLISECONDS.sleep(10);
+                TimeUnit.MILLISECONDS.sleep(1000L);
             } catch (InterruptedException e) {
                 break;
             }
