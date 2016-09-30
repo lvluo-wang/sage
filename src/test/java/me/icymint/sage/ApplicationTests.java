@@ -29,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(properties = {
+        "sage.always.save.log=false",
         "sage.event.cron.express=0/1 * * * * *"
 })
 public class ApplicationTests {

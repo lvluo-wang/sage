@@ -8,6 +8,7 @@ import me.icymint.sage.base.spec.api.EventProducer;
 import me.icymint.sage.base.spec.api.EventTransferHandler;
 import me.icymint.sage.base.spec.api.RuntimeContext;
 import me.icymint.sage.base.spec.entity.BaseEvent;
+import me.icymint.sage.base.spec.entity.BaseLogEvent;
 import me.icymint.sage.base.spec.exception.Exceptions;
 import me.icymint.sage.base.spec.internal.api.BatchJob;
 import me.icymint.sage.base.spec.internal.api.EventRepository;
@@ -99,12 +100,21 @@ public class EventServiceImpl implements BatchJob<Event> {
             return;
         }
         event.setEventId(UUID.randomUUID().toString());
-        if (event.getAsync() != null && !event.getAsync()) {
+        boolean isLog = event instanceof BaseLogEvent;
+        if (!isLog && event.getAsync() != null && !event.getAsync()) {
             executeEventHandlers(event);
-        } else {
-            logger.info("Saving async event {}", event);
-            eventRepository.save(toDbEvent(event));
+            return;
         }
+        Event dbEvent = toDbEvent(event);
+        if (isLog) {
+            dbEvent.setStatus(EventStatus.PROCESSED);
+            if (!environment.getProperty("sage.always.save.log", Boolean.class, false)) {
+                logger.info("LogEvent - {}", dbEvent);
+                return;
+            }
+        }
+        logger.info("Saving async event {}", event);
+        eventRepository.save(dbEvent);
     }
 
     private void executeEventHandlers(BaseEvent event) {
@@ -193,7 +203,7 @@ public class EventServiceImpl implements BatchJob<Event> {
 
 
     private <O, E extends BaseEvent<E>> boolean doSendEventByAop(EventProducer<O, E> producer, Object result, boolean isInTransaction) {
-        if (producer.resultClass().isInstance(result)) {
+        if (result == null || producer.resultClass().isInstance(result)) {
             try {
                 E event = producer.apply(producer.resultClass().cast(result));
                 if (event != null) {
