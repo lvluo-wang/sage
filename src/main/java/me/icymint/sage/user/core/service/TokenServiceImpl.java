@@ -88,13 +88,7 @@ public class TokenServiceImpl implements TokenService {
 
         //Step 3
         Identity identity = checkAndGetIdentity(identityId, IdentityType.USER);
-        String data = Stream.of(identityId,
-                clientId,
-                nonce,
-                timestamp)
-                .map(String::valueOf)
-                .collect(Collectors.joining("|"));
-        String calculatedHash = HMacs.encodeToBase64(identity.getPassword(), data);
+        String calculatedHash = calculateHash(identityId, clientId, nonce, timestamp, identity.getPassword());
         if (!Objects.equals(hash, calculatedHash)) {
             throw new UnauthorizedException(context, UserExceptionCode.ACCESS_TOKEN_ILLEGAL);
         }
@@ -118,6 +112,16 @@ public class TokenServiceImpl implements TokenService {
         tokenMapper.save(token);
         getCache().put(cacheKey, "true");
         return tokenMapper.findOne(token.getId());
+    }
+
+    public String calculateHash(Long identityId, Long clientId, String nonce, Long timestamp, String password) {
+        String data = Stream.of(identityId,
+                clientId,
+                nonce,
+                timestamp)
+                .map(String::valueOf)
+                .collect(Collectors.joining("|"));
+        return HMacs.encodeToBase64(password, data);
     }
 
     private Identity checkAndGetIdentity(Long identityId, IdentityType... types) {

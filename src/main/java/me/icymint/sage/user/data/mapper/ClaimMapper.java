@@ -32,5 +32,5 @@ public interface ClaimMapper {
     List<Claim> findAllByTypeAndValue(@Param("type") ClaimType type, @Param("value") String value);
 
     @SelectProvider(type = ClaimSqlProvider.class, method = "existRoles")
-    boolean existRoles(@Param("ownerId") Long ownerId, @Param("roleTypes") RoleType[] roleTypes);
+    int existRoles(@Param("ownerId") Long ownerId, @Param("roleTypes") RoleType[] roleTypes);
 }

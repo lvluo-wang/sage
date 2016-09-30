@@ -214,16 +214,16 @@ public class EventServiceImpl implements BatchJob<Event> {
                             (isInTransaction || TransactionSynchronizationManager.isActualTransactionActive())) {
                         logger.warn("Post sync event {} in transaction is not recommended", event);
                     }
-                    if (event.getClientId() != null) {
+                    if (event.getClientId() == null) {
                         event.setClientId(runtimeContext.getClientId());
                     }
-                    if (event.getCorrelationId() != null) {
+                    if (event.getCorrelationId() == null) {
                         event.setCorrelationId(runtimeContext.getCorrelationId());
                     }
-                    if (event.getIpAddress() != null) {
+                    if (event.getIpAddress() == null) {
                         event.setIpAddress(runtimeContext.getUserAddress());
                     }
-                    if (event.getSessionId() != null) {
+                    if (event.getSessionId() == null) {
                         event.setSessionId(runtimeContext.getSessionId());
                     }
                     eventService.post(event);

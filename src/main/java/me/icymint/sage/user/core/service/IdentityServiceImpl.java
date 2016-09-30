@@ -4,6 +4,7 @@ import me.icymint.sage.base.spec.annotation.LogMethodInvoke;
 import me.icymint.sage.base.spec.annotation.NotifyInTransactionEvent;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.api.EventProducer;
+import me.icymint.sage.base.spec.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.user.data.mapper.IdentityMapper;
@@ -40,6 +41,8 @@ public class IdentityServiceImpl implements IdentityService {
     @Autowired
     ApplicationContext context;
     @Autowired
+    RuntimeContext runtimeContext;
+    @Autowired
     Clock clock;
 
     @Override
@@ -67,6 +70,7 @@ public class IdentityServiceImpl implements IdentityService {
         if (client == null || client.getType() != IdentityType.CLIENT) {
             throw new UserServiceException(context, UserExceptionCode.CLIENT_ID__ILLEGAL, clientId);
         }
+        runtimeContext.setClientId(String.valueOf(clientId));
         Identity identity = new Identity()
                 .setOwnerId(clientId)
                 .setCreateBy(clientId)
@@ -105,7 +109,9 @@ public class IdentityServiceImpl implements IdentityService {
 
         @Override
         public RegisterEvent apply(Identity identity) {
-            return new RegisterEvent().setOwnerId(identity.getOwnerId()).setIdentityId(identity.getId());
+            return new RegisterEvent()
+                    .setOwnerId(identity.getId())
+                    .setIdentityId(identity.getId());
         }
     }
 }

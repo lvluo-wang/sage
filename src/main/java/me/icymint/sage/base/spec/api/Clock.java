@@ -29,4 +29,8 @@ public interface Clock {
     default LocalTime localTime() {
         return now().atZone(ZoneId.systemDefault()).toLocalTime();
     }
+
+    default Long timestamp() {
+        return now().getEpochSecond();
+    }
 }

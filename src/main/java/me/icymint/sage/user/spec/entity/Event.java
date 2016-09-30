@@ -13,6 +13,11 @@ public class Event extends BaseJobEntity<Event> {
     private String asyncEventType;
     private EventStatus status;
 
+    private String ipAddress;
+    private String correlationId;
+    private String clientId;
+    private String sessionId;
+
     public String getEventId() {
         return eventId;
     }
@@ -63,6 +68,42 @@ public class Event extends BaseJobEntity<Event> {
         return this;
     }
 
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public Event setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+        return this;
+    }
+
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public Event setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+        return this;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public Event setClientId(String clientId) {
+        this.clientId = clientId;
+        return this;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public Event setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Event{" +
@@ -71,6 +112,10 @@ public class Event extends BaseJobEntity<Event> {
                 ", body='" + body + '\'' +
                 ", asyncEventType='" + asyncEventType + '\'' +
                 ", status=" + status +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", correlationId='" + correlationId + '\'' +
+                ", clientId='" + clientId + '\'' +
+                ", sessionId='" + sessionId + '\'' +
                 "} " + super.toString();
     }
 }

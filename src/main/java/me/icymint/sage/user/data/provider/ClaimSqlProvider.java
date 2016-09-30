@@ -54,7 +54,7 @@ public class ClaimSqlProvider extends BaseEntitySqlProvider<Claim> {
                 .map(type -> "'" + type + "'")
                 .collect(joining(","));
         return "SELECT COUNT(1) FROM "
-                + getEntityTable() + " WHERE TYPE='"
+                + getEntityTable() + " WHERE OWNER_ID=#{ownerId} AND TYPE='"
                 + ClaimType.ROLE + "' AND VALUE IN (" + values + ")";
     }
 }

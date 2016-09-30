@@ -16,9 +16,13 @@ public abstract class BaseEvent<T extends BaseEvent<T>> {
     private String eventId;
     @JsonIgnore
     private Boolean async;
+    @JsonIgnore
     private String ipAddress;
+    @JsonIgnore
     private String correlationId;
+    @JsonIgnore
     private String clientId;
+    @JsonIgnore
     private String sessionId;
 
     public <E extends BaseEvent<E>> Class<E> parentEventClass() {

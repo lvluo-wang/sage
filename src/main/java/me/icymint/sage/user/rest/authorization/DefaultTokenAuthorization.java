@@ -92,13 +92,11 @@ public class DefaultTokenAuthorization {
         if (token.getExpireTime() == null || token.getExpireTime().isBefore(ts)) {
             throw new UnauthorizedException(context, UserExceptionCode.ACCESS_TOKEN_ILLEGAL);
         }
-        String data = Stream.of(tokenContext.getClientId(),
+        String calculatedHash = calculateHash(tokenContext.getClientId(),
                 tokenContext.getNonce(),
                 tokenContext.getTimestamp(),
-                tokenContext.getTokenId())
-                .map(String::valueOf)
-                .collect(Collectors.joining("|"));
-        String calculatedHash = HMacs.encodeToBase64(token.getAccessSecret(), data);
+                tokenContext.getTokenId(),
+                token.getAccessSecret());
         if (!Objects.equals(hash, calculatedHash)) {
             logger.warn("auth sign not valid");
             throw new UnauthorizedException(context, UserExceptionCode.ACCESS_TOKEN_ILLEGAL);
@@ -106,13 +104,23 @@ public class DefaultTokenAuthorization {
         //Step 5
         if (!claimService.hasRoles(token.getOwnerId(), roleTypes)) {
             logger.warn("user {} has no roles {}", token.getOwnerId(), Arrays.toString(roleTypes));
-            throw new UnauthorizedException(context, UserExceptionCode.ACCESS_TOKEN_ILLEGAL);
+            throw new UnauthorizedException(context, UserExceptionCode.ACCESS_PERMISSION_DENIED);
         }
 
         tokenContext.setOwnerId(token.getOwnerId());
         runtimeContext.setUserId(String.valueOf(token.getOwnerId()));
 
         getCache().put(cacheKey, "true");
+    }
+
+    public String calculateHash(Long clientId, String nonce, Long timestamp, Long tokenId, String secret) {
+        String data = Stream.of(clientId,
+                nonce,
+                timestamp,
+                tokenId)
+                .map(String::valueOf)
+                .collect(Collectors.joining("|"));
+        return HMacs.encodeToBase64(secret, data);
     }
 
     @Before(value = "@annotation(checkToken)", argNames = "joinPoint,checkToken")

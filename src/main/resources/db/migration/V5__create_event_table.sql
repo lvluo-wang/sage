@@ -8,6 +8,12 @@ CREATE TABLE T_EVENT (
   IS_DELETED       CHAR(1) DEFAULT 'N'                          NOT NULL,
   NEXT_SCAN_TIME   TIMESTAMP DEFAULT CURRENT_TIMESTAMP          NOT NULL,
 
+  CLIENT_ID        VARCHAR(64)                                  NULL,
+  IP_ADDRESS       VARCHAR(200)                                 NULL,
+  CORRELATION_ID   CHAR(36)                                     NULL,
+  SESSION_ID       VARCHAR(100)                                 NULL,
+
+
   EVENT_ID         CHAR(36) UNIQUE                              NOT NULL,
   PARENT_EVENT_ID  CHAR(36)                                     NULL,
   STATUS           VARCHAR(64) DEFAULT 'CREATED'                NOT NULL,

@@ -80,6 +80,6 @@ public class ClaimServiceImpl implements ClaimService {
         if (roleTypes == null || roleTypes.length == 0) {
             return true;
         }
-        return claimMapper.existRoles(ownerId, roleTypes);
+        return claimMapper.existRoles(ownerId, roleTypes) > 0;
     }
 }
