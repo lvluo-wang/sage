@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.annotation.Timed;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.sql.DataSource;
@@ -27,8 +28,11 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DemoApplicationTests {
-    private final Logger logger = LoggerFactory.getLogger(DemoApplicationTests.class);
+@TestPropertySource(properties = {
+        "sage.event.cron.express=0/1 * * * * *"
+})
+public class ApplicationTests {
+    private final Logger logger = LoggerFactory.getLogger(ApplicationTests.class);
     @Autowired
     DataSource dataSource;
     @Autowired

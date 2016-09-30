@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by daniel on 2016/9/30.
@@ -30,6 +31,7 @@ public class TestService {
     @NotifyEvent(eventProducerClass = TestEventProducer.class)
     @NotifyInTransactionEvent(eventProducerClass = TestEventInTransactionProducer.class)
     public String sentMessage(String hello) {
+        assertTrue(TransactionSynchronizationManager.isActualTransactionActive());
         return hello;
     }
 }
