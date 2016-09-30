@@ -16,6 +16,10 @@ public abstract class BaseEntitySqlProvider<T extends BaseEntity> extends BaseLo
 
     protected abstract SQL onSave2(T t, SQL sql);
 
+    public final String findOneForUpdate() {
+        return findOne() + " FOR UPDATE";
+    }
+
     @Override
     protected final SQL onFind(SQL sql) {
         onFind2(sql.WHERE("IS_DELETED='" + Bool.N + "'"));
