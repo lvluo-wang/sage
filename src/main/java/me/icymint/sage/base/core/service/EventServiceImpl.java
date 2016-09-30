@@ -2,8 +2,6 @@ package me.icymint.sage.base.core.service;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.google.common.collect.Lists;
-import me.icymint.sage.base.spec.annotation.NotifyEvent;
-import me.icymint.sage.base.spec.annotation.NotifyInTransactionEvent;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.api.EventHandler;
 import me.icymint.sage.base.spec.api.EventProducer;
@@ -16,15 +14,11 @@ import me.icymint.sage.base.spec.internal.api.EventRepository;
 import me.icymint.sage.user.spec.def.EventStatus;
 import me.icymint.sage.user.spec.entity.Event;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +36,8 @@ import static me.icymint.sage.base.core.util.Jsons.toJson;
 /**
  * Created by daniel on 2016/9/23.
  */
-@Aspect
 @Service
+@SuppressWarnings("unchecked")
 public class EventServiceImpl implements BatchJob<Event> {
     private final Logger logger = LoggerFactory.getLogger(EventServiceImpl.class);
     private final List<HandlerContainer> eventHandlerList = Lists.newArrayList();
@@ -185,20 +179,7 @@ public class EventServiceImpl implements BatchJob<Event> {
         eventService.post(result);
     }
 
-    @Order(Ordered.LOWEST_PRECEDENCE - 10)
-    @AfterReturning(pointcut = "@annotation(notifyEvent)", returning = "result")
-    public void async(JoinPoint joinPoint, NotifyEvent notifyEvent, Object result) {
-        sendEventByAop(notifyEvent.eventProducerClass(), joinPoint, result, false);
-    }
-
-    @Order(Ordered.LOWEST_PRECEDENCE)
-    @AfterReturning(pointcut = "@annotation(notifyInTransactionEvent)", returning = "result")
-    public void sync(JoinPoint joinPoint, NotifyInTransactionEvent notifyInTransactionEvent, Object result) {
-        sendEventByAop(notifyInTransactionEvent.eventProducerClass(), joinPoint, result, true);
-    }
-
-
-    private void sendEventByAop(Class<? extends EventProducer<?, ? extends BaseEvent<?>>> clazz, JoinPoint joinPoint, Object result, boolean isIntransaction) {
+    public void sendEventByAop(Class<? extends EventProducer<?, ? extends BaseEvent<?>>> clazz, JoinPoint joinPoint, Object result, boolean isIntransaction) {
         try {
             EventProducer<?, ? extends BaseEvent<?>> producer = clazz.newInstance();
             if (!doSendEventByAop(producer, result, isIntransaction)) {

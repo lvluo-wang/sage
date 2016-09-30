@@ -28,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DemoApplicationTests {
+    private final Logger logger = LoggerFactory.getLogger(DemoApplicationTests.class);
     @Autowired
     DataSource dataSource;
     @Autowired
@@ -40,7 +41,8 @@ public class DemoApplicationTests {
     IdentityService identityService;
     @Autowired
     TokenService tokenService;
-    private Logger logger = LoggerFactory.getLogger(DemoApplicationTests.class);
+    @Autowired
+    TestService testService;
 
     @Test
     public void contextLoads() {
@@ -83,5 +85,10 @@ public class DemoApplicationTests {
                 break;
             }
         }
+    }
+
+    @Test
+    public void testEventAnnotation() {
+        testService.sendMessageHolder("Hello , --------> world");
     }
 }
