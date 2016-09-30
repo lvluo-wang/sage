@@ -32,7 +32,7 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
     RuntimeContext runtimeContext;
     @Autowired
     Clock clock;
-    @Value("${" + MagicConstants.PROP_PREFIX + "baseUrl}")
+    @Value("${" + MagicConstants.PROP_BASE_URL + "}")
     String baseUrl;
     @Value("${spring.jackson.time-zone:UTC}")
     String timezone;

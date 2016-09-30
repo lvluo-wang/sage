@@ -9,5 +9,6 @@ import me.icymint.sage.base.spec.annotation.I18nEnum;
 public enum BaseExceptionCode {
     __,
     PARAM__ILLEGAL,
-    AUTHORIZATION_REQUIRED, DUPLICATE_KEY;
+    AUTHORIZATION_REQUIRED,
+    DUPLICATE_KEY;
 }

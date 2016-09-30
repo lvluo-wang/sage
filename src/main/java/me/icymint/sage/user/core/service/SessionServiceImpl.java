@@ -25,7 +25,7 @@ import java.util.Optional;
 /**
  * Created by daniel on 16/9/6.
  */
-@ConditionalOnProperty(prefix = MagicConstants.PROP_PREFIX, name = "session.enable.storage", havingValue = "true")
+@ConditionalOnProperty(name = MagicConstants.PROP_ENABLE_SESSION_STORAGE, havingValue = "true")
 @Service
 public class SessionServiceImpl implements SessionService {
     @Autowired

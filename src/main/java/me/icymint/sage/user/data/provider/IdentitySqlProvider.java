@@ -29,7 +29,7 @@ public class IdentitySqlProvider extends BaseEntitySqlProvider<Identity> {
     }
 
     @Override
-    protected SQL onUpdate(Identity identity, SQL sql) {
+    protected SQL onUpdate2(Identity identity, SQL sql) {
         return sql.SET_IF("IS_BLOCKED=#{isBlocked}", identity.getIsBlocked() != null)
                 .SET_IF("VALID_SECONDS=#{validSeconds}", identity.getValidSeconds() != null)
                 .SET_IF("SALT=#{password}", identity.getValidSeconds() != null)

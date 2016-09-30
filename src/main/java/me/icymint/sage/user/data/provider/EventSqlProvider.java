@@ -46,7 +46,7 @@ public class EventSqlProvider extends BaseJobEntitySqlProvider<Event> {
     }
 
     @Override
-    protected final SQL onUpdate2(Event event, SQL sql) {
+    protected final SQL onUpdate3(Event event, SQL sql) {
         return sql
                 .SET_IF("STATUS=#{status}", event.getStatus() != null);
     }

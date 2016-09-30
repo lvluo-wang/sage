@@ -19,10 +19,10 @@ public abstract class BaseJobEntitySqlProvider<T extends BaseJobEntity<T>> exten
     protected abstract SQL onSave3(T t, SQL sql);
 
     @Override
-    protected final SQL onUpdate(T t, SQL sql) {
-        return onUpdate2(t, sql
+    protected final SQL onUpdate2(T t, SQL sql) {
+        return onUpdate3(t, sql
                 .SET_IF("NEXT_SCAN_TIME=#{nextScanTime}", t.getNextScanTime() != null));
     }
 
-    protected abstract SQL onUpdate2(T t, SQL sql);
+    protected abstract SQL onUpdate3(T t, SQL sql);
 }

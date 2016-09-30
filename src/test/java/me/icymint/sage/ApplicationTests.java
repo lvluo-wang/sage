@@ -3,6 +3,7 @@ package me.icymint.sage;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.core.util.HMacs;
+import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.user.data.mapper.EventMapper;
 import me.icymint.sage.user.data.mapper.IdentityMapper;
 import me.icymint.sage.user.spec.api.IdentityService;
@@ -29,8 +30,8 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(properties = {
-        "sage.always.save.log=false",
-        "sage.event.cron.express=0/1 * * * * *"
+        MagicConstants.PROP_ALWAYS_SAVE_LOG + "=false",
+        MagicConstants.PROP_JOB_EVENT_CRON + "=0/1 * * * * *"
 })
 public class ApplicationTests {
     private final Logger logger = LoggerFactory.getLogger(ApplicationTests.class);
