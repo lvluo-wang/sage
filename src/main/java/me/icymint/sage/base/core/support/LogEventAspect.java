@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Primitives;
 import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.spec.annotation.LogMethodInvoke;
+import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.base.spec.internal.api.ToString;
 import me.icymint.sage.base.spec.internal.entity.LogEvent;
 import org.aspectj.lang.JoinPoint;
@@ -23,7 +24,7 @@ import java.util.stream.Stream;
  */
 @Aspect
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@Order(MagicConstants.AOP_ORDER_EVENT_LOG)
 public class LogEventAspect {
     private final Map<Class<?>, ToString<?>> toStringMap = Maps.newHashMap();
     @Autowired

@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
  */
 @Component
 @Aspect
+@Order(MagicConstants.AOP_ORDER_TOKEN)
 public class DefaultTokenAuthorization {
     private final Logger logger = LoggerFactory.getLogger(DefaultTokenAuthorization.class);
 

@@ -34,7 +34,7 @@ public class ClaimSqlProvider extends BaseEntitySqlProvider<Claim> {
     }
 
     @Override
-    protected SQL onUpdate(Claim claim, SQL sql) {
+    protected SQL onUpdate2(Claim claim, SQL sql) {
         return sql
                 .SET_IF("IS_VERIFIED=#{isVerified}", claim.getIsVerified() != null);
     }

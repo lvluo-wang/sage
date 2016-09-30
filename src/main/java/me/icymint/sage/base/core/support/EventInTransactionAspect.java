@@ -2,6 +2,7 @@ package me.icymint.sage.base.core.support;
 
 import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.spec.annotation.NotifyInTransactionEvent;
+import me.icymint.sage.base.spec.def.MagicConstants;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-@Order(Ordered.LOWEST_PRECEDENCE)
+@Order(MagicConstants.AOP_ORDER_EVENT_IN_TRANSACTION)
 public class EventInTransactionAspect {
     @Autowired
     EventServiceImpl eventService;

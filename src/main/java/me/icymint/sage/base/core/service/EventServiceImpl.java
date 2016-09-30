@@ -7,6 +7,7 @@ import me.icymint.sage.base.spec.api.EventHandler;
 import me.icymint.sage.base.spec.api.EventProducer;
 import me.icymint.sage.base.spec.api.EventTransferHandler;
 import me.icymint.sage.base.spec.api.RuntimeContext;
+import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.base.spec.entity.BaseEvent;
 import me.icymint.sage.base.spec.entity.BaseLogEvent;
 import me.icymint.sage.base.spec.exception.Exceptions;
@@ -108,7 +109,7 @@ public class EventServiceImpl implements BatchJob<Event> {
         Event dbEvent = toDbEvent(event);
         if (isLog) {
             dbEvent.setStatus(EventStatus.PROCESSED);
-            if (!environment.getProperty("sage.always.save.log", Boolean.class, false)) {
+            if (!environment.getProperty(MagicConstants.PROP_ALWAYS_SAVE_LOG, Boolean.class, false)) {
                 logger.info("LogEvent - {}", dbEvent);
                 return;
             }

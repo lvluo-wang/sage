@@ -2,11 +2,11 @@ package me.icymint.sage.base.core.support;
 
 import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.spec.annotation.NotifyEvent;
+import me.icymint.sage.base.spec.def.MagicConstants;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-@Order(Ordered.LOWEST_PRECEDENCE - 2)
+@Order(MagicConstants.AOP_ORDER_EVENT)
 public class EventAspect {
     @Autowired
     EventServiceImpl eventService;

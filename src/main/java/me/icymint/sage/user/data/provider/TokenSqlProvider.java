@@ -26,7 +26,7 @@ public class TokenSqlProvider extends BaseEntitySqlProvider<Token> {
     }
 
     @Override
-    protected SQL onUpdate(Token token, SQL sql) {
+    protected SQL onUpdate2(Token token, SQL sql) {
         return sql.SET_IF("SESSION_ID=#{sessionId}", token.getSessionId() != null);
     }
 

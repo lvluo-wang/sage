@@ -15,7 +15,7 @@ import java.time.Instant;
  */
 @Profile("default")
 @Service
-@ConditionalOnProperty(prefix = MagicConstants.PROP_PREFIX, name = "enable.db.clock", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = MagicConstants.PROP_ENABLE_DB_CLOCK, havingValue = "true", matchIfMissing = true)
 public class ClockImpl implements Clock {
 
     @Autowired

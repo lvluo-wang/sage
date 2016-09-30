@@ -37,13 +37,16 @@ public abstract class BaseEntitySqlProvider<T extends BaseEntity> extends BaseLo
 
     public final String update(T t) {
         return onUpdate(t, new SQL()
-                .UPDATE(getEntityTable())
-                .SET_IF("UPDATE_TIME=#{updateTime}",
-                        t.getUpdateTime() != null,
-                        "UPDATE_TIME=CURRENT_TIMESTAMP"))
+                .UPDATE(getEntityTable()))
                 .WHERE("ID=#{id}")
                 .toString();
     }
 
-    protected abstract SQL onUpdate(T t, SQL sql);
+    protected final SQL onUpdate(T t, SQL sql) {
+        return onUpdate2(t, sql.SET_IF("UPDATE_TIME=#{updateTime}",
+                t.getUpdateTime() != null,
+                "UPDATE_TIME=CURRENT_TIMESTAMP"));
+    }
+
+    protected abstract SQL onUpdate2(T t, SQL sql);
 }

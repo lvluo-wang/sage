@@ -29,7 +29,7 @@ public class SessionSqlProvider extends BaseEntitySqlProvider<Session> {
     }
 
     @Override
-    protected SQL onUpdate(Session session, SQL sql) {
+    protected SQL onUpdate2(Session session, SQL sql) {
         return sql
                 .SET_IF("CLIENT_ID=#{clientId}", session.getClientId() != null)
                 .SET_IF("IP=#{ip}", session.getIp() != null)
