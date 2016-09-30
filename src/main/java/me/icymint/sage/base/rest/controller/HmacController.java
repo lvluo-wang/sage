@@ -24,7 +24,7 @@ public class HmacController {
 
     @GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
     public String salt() {
-        return environment.getRequiredProperty("random.value");
+        return environment.getRequiredProperty("random.value").substring(0, 16);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
