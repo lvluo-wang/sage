@@ -1,6 +1,6 @@
 package me.icymint.sage.user.rest.controller;
 
-import me.icymint.sage.base.spec.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.rest.context.TokenContext;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.api.ClaimService;

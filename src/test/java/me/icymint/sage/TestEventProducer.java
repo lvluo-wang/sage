@@ -1,6 +1,6 @@
 package me.icymint.sage;
 
-import me.icymint.sage.base.spec.api.EventProducer;
+import me.icymint.sage.base.spec.internal.api.EventProducer;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import static org.junit.Assert.assertFalse;

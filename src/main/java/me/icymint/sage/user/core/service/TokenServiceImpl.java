@@ -1,10 +1,10 @@
 package me.icymint.sage.user.core.service;
 
-import me.icymint.sage.base.core.util.HMacs;
+import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.base.spec.annotation.NotifyEvent;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.api.EventProducer;
-import me.icymint.sage.base.spec.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.EventProducer;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.BaseExceptionCode;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.def.MagicConstants;

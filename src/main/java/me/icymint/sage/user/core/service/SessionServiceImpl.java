@@ -1,7 +1,7 @@
 package me.icymint.sage.user.core.service;
 
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.api.SessionService;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.def.MagicConstants;

@@ -1,4 +1,4 @@
-package me.icymint.sage.base.core.util;
+package me.icymint.sage.base.util;
 
 import com.google.common.io.BaseEncoding;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;

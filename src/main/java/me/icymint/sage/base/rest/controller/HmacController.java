@@ -1,6 +1,6 @@
 package me.icymint.sage.base.rest.controller;
 
-import me.icymint.sage.base.core.util.HMacs;
+import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.base.rest.request.HmacRequest;
 import me.icymint.sage.base.rest.request.LoginHashRequest;
 import me.icymint.sage.base.rest.request.LoginRequest;

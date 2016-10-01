@@ -2,7 +2,7 @@ package me.icymint.sage.user.rest.support;
 
 import me.icymint.sage.base.rest.util.QueryStrings;
 import me.icymint.sage.base.spec.def.MagicConstants;
-import me.icymint.sage.base.spec.exception.Exceptions;
+import me.icymint.sage.base.util.Exceptions;
 import me.icymint.sage.user.rest.context.TokenContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.format.Formatter;

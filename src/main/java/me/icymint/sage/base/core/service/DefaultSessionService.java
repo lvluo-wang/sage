@@ -1,6 +1,6 @@
 package me.icymint.sage.base.core.service;
 
-import me.icymint.sage.base.spec.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.api.SessionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package me.icymint.sage.base.spec.api;
+package me.icymint.sage.base.spec.internal.api;
 
 import org.springframework.util.StringUtils;
 

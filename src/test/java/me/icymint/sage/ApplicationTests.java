@@ -2,7 +2,7 @@ package me.icymint.sage;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.core.service.EventServiceImpl;
-import me.icymint.sage.base.core.util.HMacs;
+import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.user.data.mapper.EventMapper;
 import me.icymint.sage.user.data.mapper.IdentityMapper;

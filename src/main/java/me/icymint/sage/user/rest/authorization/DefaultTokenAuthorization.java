@@ -1,9 +1,9 @@
 package me.icymint.sage.user.rest.authorization;
 
-import me.icymint.sage.base.core.util.HMacs;
+import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.api.RuntimeContext;
-import me.icymint.sage.base.spec.api.SageValidator;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.SageValidator;
 import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.base.spec.exception.UnauthorizedException;
 import me.icymint.sage.user.rest.context.TokenContext;

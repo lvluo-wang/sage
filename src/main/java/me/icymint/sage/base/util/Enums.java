@@ -1,8 +1,9 @@
-package me.icymint.sage.base.spec.def;
+package me.icymint.sage.base.util;
 
 import com.google.common.base.Splitter;
 import me.icymint.sage.base.spec.annotation.I18nEnum;
 import me.icymint.sage.base.spec.annotation.I18nLabel;
+import me.icymint.sage.base.spec.def.MagicConstants;
 import org.springframework.context.MessageSource;
 import org.springframework.util.StringUtils;
 

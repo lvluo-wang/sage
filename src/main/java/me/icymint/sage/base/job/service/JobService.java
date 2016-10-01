@@ -2,17 +2,17 @@ package me.icymint.sage.base.job.service;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.base.spec.entity.BaseJobEntity;
-import me.icymint.sage.base.spec.exception.Exceptions;
+import me.icymint.sage.base.spec.internal.entity.Job;
+import me.icymint.sage.base.util.Exceptions;
 import me.icymint.sage.base.spec.internal.api.BatchJob;
-import me.icymint.sage.user.data.mapper.JobMapper;
-import me.icymint.sage.user.spec.entity.Job;
+import me.icymint.sage.base.spec.repository.JobRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Created by daniel on 2016/9/24.
  */
 @Component
-@ConditionalOnProperty(name = MagicConstants.PROP_ENABLE_JOB, havingValue = "true")
+@ConditionalOnBean(JobRepository.class)
 public class JobService {
     private final Logger logger = LoggerFactory.getLogger(JobService.class);
     private final String runnerId = UUID.randomUUID().toString();
@@ -38,7 +38,7 @@ public class JobService {
     @Autowired
     RuntimeContext runtimeContext;
     @Autowired
-    JobMapper jobMapper;
+    JobRepository jobRepository;
 
 
     @Transactional(propagation = Propagation.NEVER)
@@ -77,7 +77,7 @@ public class JobService {
 
     @Transactional
     public void lockJob(Long jobId) {
-        Job job = jobMapper.findOne(jobId);
+        Job job = jobRepository.findOne(jobId);
         if (job == null) {
             hasJobLock = false;
             return;
@@ -97,7 +97,7 @@ public class JobService {
             }
         }
         logger.info("Try take job lock...");
-        hasJobLock = jobMapper.lockJob(jobId, runnerId, now.plusMillis(MagicConstants.JOB_LOCK_EXPIRE_DURATION)) == 1;
+        hasJobLock = jobRepository.lockJob(jobId, runnerId, now.plusMillis(MagicConstants.JOB_LOCK_EXPIRE_DURATION));
         if (hasJobLock) {
             logger.info("Take job lock OK!");
         } else {

@@ -3,7 +3,7 @@ package me.icymint.sage.user.data.provider;
 import me.icymint.sage.base.data.provider.BaseEntitySqlProvider;
 import me.icymint.sage.base.data.provider.SQL;
 import me.icymint.sage.base.spec.def.Bool;
-import me.icymint.sage.user.spec.entity.Job;
+import me.icymint.sage.base.spec.internal.entity.Job;
 
 /**
  * Created by daniel on 2016/10/1.

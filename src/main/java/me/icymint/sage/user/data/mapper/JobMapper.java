@@ -1,7 +1,7 @@
 package me.icymint.sage.user.data.mapper;
 
 import me.icymint.sage.user.data.provider.JobSqlProvider;
-import me.icymint.sage.user.spec.entity.Job;
+import me.icymint.sage.base.spec.internal.entity.Job;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

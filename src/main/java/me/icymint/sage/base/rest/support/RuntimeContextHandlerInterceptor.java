@@ -1,9 +1,9 @@
 package me.icymint.sage.base.rest.support;
 
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.MagicConstants;
-import me.icymint.sage.base.spec.exception.Exceptions;
+import me.icymint.sage.base.util.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

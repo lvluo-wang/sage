@@ -7,8 +7,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import java.util.Locale;
 import java.util.UUID;
 
-import static me.icymint.sage.base.spec.def.Enums.getI18nKey;
-import static me.icymint.sage.base.spec.def.Enums.getI18nValue;
+import static me.icymint.sage.base.util.Enums.getI18nKey;
+import static me.icymint.sage.base.util.Enums.getI18nValue;
 
 /**
  * Created by daniel on 16/9/2.

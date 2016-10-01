@@ -1,5 +1,7 @@
-package me.icymint.sage.base.spec.exception;
+package me.icymint.sage.base.util;
 
+import me.icymint.sage.base.spec.exception.ServiceException;
+import me.icymint.sage.base.spec.exception.UnspecifiedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

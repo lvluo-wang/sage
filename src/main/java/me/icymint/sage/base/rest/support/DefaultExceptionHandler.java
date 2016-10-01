@@ -2,7 +2,7 @@ package me.icymint.sage.base.rest.support;
 
 import me.icymint.sage.base.rest.resource.ResultResource;
 import me.icymint.sage.base.spec.def.BaseExceptionCode;
-import me.icymint.sage.base.spec.exception.Exceptions;
+import me.icymint.sage.base.util.Exceptions;
 import me.icymint.sage.base.spec.exception.InternalServerErrorException;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.base.spec.exception.ServiceException;

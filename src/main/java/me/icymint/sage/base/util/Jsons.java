@@ -1,11 +1,10 @@
-package me.icymint.sage.base.core.util;
+package me.icymint.sage.base.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import me.icymint.sage.base.spec.exception.Exceptions;
 
 import java.io.IOException;
 

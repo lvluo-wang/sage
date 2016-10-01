@@ -2,7 +2,7 @@ package me.icymint.sage.user.core.repository;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.internal.api.EventRepository;
+import me.icymint.sage.base.spec.repository.EventRepository;
 import me.icymint.sage.user.data.mapper.EventMapper;
 import me.icymint.sage.user.spec.def.UserExceptionCode;
 import me.icymint.sage.user.spec.entity.Event;
@@ -29,11 +29,6 @@ public class EventRepositoryImpl implements EventRepository {
     ApplicationContext context;
     @Autowired
     Clock clock;
-
-    @Override
-    public boolean allowAsync() {
-        return true;
-    }
 
     @Override
     @Transactional

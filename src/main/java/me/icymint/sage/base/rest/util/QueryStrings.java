@@ -1,6 +1,6 @@
 package me.icymint.sage.base.rest.util;
 
-import me.icymint.sage.base.spec.exception.Exceptions;
+import me.icymint.sage.base.util.Exceptions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;

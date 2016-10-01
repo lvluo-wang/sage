@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static me.icymint.sage.base.spec.def.Enums.findLabelMethod;
-import static me.icymint.sage.base.spec.def.Enums.getI18nKeyPrefix;
+import static me.icymint.sage.base.util.Enums.findLabelMethod;
+import static me.icymint.sage.base.util.Enums.getI18nKeyPrefix;
 
 /**
  * Created by daniel on 16/9/3.

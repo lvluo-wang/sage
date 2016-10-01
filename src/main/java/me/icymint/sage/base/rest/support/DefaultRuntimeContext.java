@@ -1,6 +1,6 @@
 package me.icymint.sage.base.rest.support;
 
-import me.icymint.sage.base.spec.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.api.SessionService;
 import me.icymint.sage.base.spec.def.MagicConstants;
 import org.slf4j.MDC;

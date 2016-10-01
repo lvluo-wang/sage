@@ -1,6 +1,6 @@
 package me.icymint.sage.base.spec.annotation;
 
-import me.icymint.sage.base.spec.api.EventProducer;
+import me.icymint.sage.base.spec.internal.api.EventProducer;
 import me.icymint.sage.base.spec.entity.BaseEvent;
 
 import java.lang.annotation.ElementType;

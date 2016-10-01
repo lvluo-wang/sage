@@ -2,7 +2,7 @@ package me.icymint.sage.base.job.aspect;
 
 import me.icymint.sage.base.job.service.JobService;
 import me.icymint.sage.base.spec.def.MagicConstants;
-import me.icymint.sage.base.spec.exception.Exceptions;
+import me.icymint.sage.base.util.Exceptions;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

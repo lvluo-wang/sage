@@ -1,6 +1,6 @@
-package me.icymint.sage.base.core.aspect;
+package me.icymint.sage.base.core.support;
 
-import me.icymint.sage.base.spec.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.MagicConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

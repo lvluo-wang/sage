@@ -1,4 +1,4 @@
-package me.icymint.sage.user.spec.entity;
+package me.icymint.sage.base.spec.internal.entity;
 
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.entity.BaseEntity;
