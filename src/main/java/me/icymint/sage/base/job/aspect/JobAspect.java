@@ -28,8 +28,8 @@ public class JobAspect {
 
     @Around("@annotation(scheduled) && !execution(* me.icymint.sage.base.job.config.BaseJobConfig.lockJob(..))")
     public Object around(ProceedingJoinPoint proceedingJoinPoint, Scheduled scheduled) {
-        if (!jobService.hasJobLock()) {
-            logger.debug("Job lock not get, ignore execute");
+        if (jobService.needQuit()) {
+            logger.debug("Job ignore");
             return null;
         }
         logger.info("Start Job " + proceedingJoinPoint.getSignature().toShortString());

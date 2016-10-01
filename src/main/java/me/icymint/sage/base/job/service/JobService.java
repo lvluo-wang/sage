@@ -2,13 +2,13 @@ package me.icymint.sage.base.job.service;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.base.spec.entity.BaseJobEntity;
-import me.icymint.sage.base.spec.internal.entity.Job;
-import me.icymint.sage.base.util.Exceptions;
 import me.icymint.sage.base.spec.internal.api.BatchJob;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.entity.Job;
 import me.icymint.sage.base.spec.repository.JobRepository;
+import me.icymint.sage.base.util.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +43,7 @@ public class JobService {
 
     @Transactional(propagation = Propagation.NEVER)
     public <E extends BaseJobEntity<E>> void executeBatchJob(BatchJob<E> batchJob, int limit) {
-        while (hasJobLock
-                && !runtimeContext.needShutdown()
+        while (!needQuit()
                 && executeSingleBatchJob(new PageBounds(0, limit), batchJob)) {
             try {
                 TimeUnit.MILLISECONDS.sleep(10);
@@ -61,7 +60,7 @@ public class JobService {
             return false;
         }
         for (E record : records) {
-            if (!hasJobLock || runtimeContext.needShutdown()) {
+            if (needQuit()) {
                 return false;
             }
             logger.info("Handle record {}", record);
@@ -73,6 +72,10 @@ public class JobService {
             }
         }
         return true;
+    }
+
+    public boolean needQuit() {
+        return !hasJobLock || runtimeContext.needShutdown();
     }
 
     @Transactional
@@ -101,12 +104,8 @@ public class JobService {
         if (hasJobLock) {
             logger.info("Take job lock OK!");
         } else {
-            logger.info("Take job lock Failed...");
+            logger.debug("Take job lock Failed...");
         }
-    }
-
-    public boolean hasJobLock() {
-        return hasJobLock;
     }
 
 }
