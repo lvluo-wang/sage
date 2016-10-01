@@ -1,4 +1,4 @@
-package me.icymint.sage.base.core.support;
+package me.icymint.sage.base.core.aspect;
 
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Primitives;

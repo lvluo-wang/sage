@@ -1,4 +1,4 @@
-package me.icymint.sage.user.core.service;
+package me.icymint.sage.user.core.repository;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.api.Clock;

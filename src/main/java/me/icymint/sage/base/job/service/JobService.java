@@ -1,4 +1,4 @@
-package me.icymint.sage.base.job;
+package me.icymint.sage.base.job.service;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.api.Clock;
@@ -28,8 +28,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 @ConditionalOnProperty(name = MagicConstants.PROP_ENABLE_JOB, havingValue = "true")
-public class BaseJobSupporter {
-    private final Logger logger = LoggerFactory.getLogger(BaseJobSupporter.class);
+public class JobService {
+    private final Logger logger = LoggerFactory.getLogger(JobService.class);
     private final String runnerId = UUID.randomUUID().toString();
     private volatile boolean hasJobLock = false;
 
@@ -108,4 +108,5 @@ public class BaseJobSupporter {
     public boolean hasJobLock() {
         return hasJobLock;
     }
+
 }

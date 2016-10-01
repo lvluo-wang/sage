@@ -1,4 +1,4 @@
-package me.icymint.sage.base.core.support;
+package me.icymint.sage.base.core.aspect;
 
 import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.spec.annotation.NotifyInTransactionEvent;
