@@ -1,5 +1,6 @@
 package me.icymint.sage.user.core.service;
 
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.user.data.mapper.ClaimMapper;
@@ -81,5 +82,10 @@ public class ClaimServiceImpl implements ClaimService {
             return true;
         }
         return claimMapper.existRoles(ownerId, roleTypes) > 0;
+    }
+
+    @Override
+    public List<Claim> findByOwnerId(Long userId, PageBounds pageBounds) {
+        return claimMapper.findByOwnerId(userId,pageBounds);
     }
 }

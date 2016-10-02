@@ -58,4 +58,14 @@ public class Claim extends BaseEntity<Claim> {
     protected Claim getSelf() {
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Claim{" +
+                "type=" + type +
+                ", value='" + value + '\'' +
+                ", primaryKey='" + primaryKey + '\'' +
+                ", isVerified=" + isVerified +
+                "} " + super.toString();
+    }
 }

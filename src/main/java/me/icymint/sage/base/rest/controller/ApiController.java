@@ -40,4 +40,11 @@ public class ApiController {
     public String home() {
         return "index";
     }
+
+
+    @GetMapping(value = "/apiList", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public List<String> apiList() {
+        return lists();
+    }
 }

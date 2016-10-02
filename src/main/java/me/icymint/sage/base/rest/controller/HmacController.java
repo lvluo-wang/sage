@@ -1,13 +1,12 @@
 package me.icymint.sage.base.rest.controller;
 
-import me.icymint.sage.base.util.HMacs;
-import me.icymint.sage.base.rest.request.HmacRequest;
 import me.icymint.sage.base.rest.request.LoginHashRequest;
 import me.icymint.sage.base.rest.request.LoginRequest;
+import me.icymint.sage.base.rest.request.PasswordRequest;
 import me.icymint.sage.base.rest.resource.HmacResponse;
-import me.icymint.sage.base.rest.resource.LoginHashResource;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.user.core.service.TokenServiceImpl;
 import me.icymint.sage.user.rest.authorization.DefaultTokenAuthorization;
 import me.icymint.sage.user.spec.entity.Token;
@@ -48,7 +47,7 @@ public class HmacController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HmacResponse hash(@RequestBody HmacRequest request) {
+    public HmacResponse hash(@RequestBody PasswordRequest request) {
         String salt = salt();
         return new HmacResponse()
                 .setSalt(salt)
@@ -63,17 +62,15 @@ public class HmacController {
         return tokenService.login(request.getIdentityId(), request.getClientId(), nonce, timestamp, hash);
     }
 
-    @PostMapping(value = "/login-hash", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public LoginHashResource loginHash(@RequestBody LoginHashRequest request) {
+    @PostMapping(value = "/login-hash", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public String loginHash(@RequestBody LoginHashRequest request) {
         String nonce = salt();
         Long timestamp = clock.timestamp();
         String hash = defaultTokenAuthorization.calculateHash(request.getClientId(), nonce, timestamp, request.getId(), request.getAccessSecret());
-        return new LoginHashResource()
-                .setSign(Stream
-                        .of("clientId=" + request.getClientId(),
-                                "tokenId=" + request.getId(),
-                                "timestamp=" + timestamp,
-                                "nonce=" + nonce,
-                                "sign=" + hash).collect(joining("&")));
+        return MagicConstants.TOKEN_SIGN_HEAD + hash + Stream
+                .of(String.valueOf(request.getClientId()),
+                        String.valueOf(request.getId()),
+                        String.valueOf(timestamp),
+                        nonce).collect(joining("|"));
     }
 }

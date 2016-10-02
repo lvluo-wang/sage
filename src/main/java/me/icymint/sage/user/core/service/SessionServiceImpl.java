@@ -1,10 +1,10 @@
 package me.icymint.sage.user.core.service;
 
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.api.SessionService;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.data.mapper.SessionMapper;
 import me.icymint.sage.user.spec.entity.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -54,10 +53,10 @@ public class SessionServiceImpl implements SessionService {
 
     @Transactional
     public void update(ServletRequestAttributes attributes, RuntimeContext context) {
-        if (StringUtils.isEmpty(context.getUserId())) {
+        if (context.getUserId() == null) {
             return;
         }
-        Long userId = Long.valueOf(context.getUserId());
+        Long userId = context.getUserId();
         Session session = sessionMapper.findBySessionId(attributes.getSessionId());
         if (session == null) {
             HttpSession hs = attributes.getRequest().getSession(false);

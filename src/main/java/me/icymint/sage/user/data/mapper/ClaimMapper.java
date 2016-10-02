@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectKey;
 import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 
@@ -33,4 +34,7 @@ public interface ClaimMapper {
 
     @SelectProvider(type = ClaimSqlProvider.class, method = "existRoles")
     int existRoles(@Param("ownerId") Long ownerId, @Param("roleTypes") RoleType[] roleTypes);
+
+    @SelectProvider(type = ClaimSqlProvider.class, method = "findByOwnerId")
+    List<Claim> findByOwnerId(@Param("ownerId") Long userId, RowBounds rowBounds);
 }

@@ -8,7 +8,6 @@ import me.icymint.sage.base.spec.exception.ServiceException;
  * Created by daniel on 16/9/2.
  */
 public class ResultResource {
-
     private final String id;
     private final String code;
     private final String message;

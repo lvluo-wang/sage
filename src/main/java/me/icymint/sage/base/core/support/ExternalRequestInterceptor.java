@@ -29,8 +29,8 @@ public class ExternalRequestInterceptor implements ClientHttpRequestInterceptor 
         logger.info("External: {} {}", request.getMethod(), request.getURI());
         if (runtimeContext != null) {
             String correlationId = runtimeContext.getCorrelationId();
-            if (correlationId != null && !request.getHeaders().containsKey(MagicConstants.CORRELATION_ID_HEADER)) {
-                request.getHeaders().add(MagicConstants.CORRELATION_ID_HEADER, correlationId);
+            if (correlationId != null && !request.getHeaders().containsKey(MagicConstants.HEADER_CORRELATION_ID)) {
+                request.getHeaders().add(MagicConstants.HEADER_CORRELATION_ID, correlationId);
             }
         }
         ClientHttpResponse response = execution.execute(request, body);

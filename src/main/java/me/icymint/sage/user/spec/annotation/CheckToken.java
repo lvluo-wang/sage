@@ -14,4 +14,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckToken {
     RoleType[] allowRoles() default {RoleType.USER};
+
+    /**
+     * Allow no token sign header
+     *
+     * @return
+     */
+    boolean allowNone() default false;
 }
