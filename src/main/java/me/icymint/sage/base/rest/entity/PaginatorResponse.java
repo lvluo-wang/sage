@@ -16,7 +16,7 @@ public class PaginatorResponse<E> {
     private Integer totalPages;
     private Integer page;
     private Integer limit;
-    private List<E> items;
+    private E[] items;
     private Integer startRow;
     private Integer endRow;
     private Integer offset;
@@ -34,6 +34,7 @@ public class PaginatorResponse<E> {
         return of(list, Function.identity());
     }
 
+    @SuppressWarnings("unchecked")
     public static <T, R> PaginatorResponse<R> of(List<T> list, Function<T, R> apply) {
         if (list == null) {
             return null;
@@ -50,7 +51,11 @@ public class PaginatorResponse<E> {
         entity.setTotalPages(paginator.getTotalPages());
         entity.setPage(paginator.getPage());
         entity.setLimit(paginator.getLimit());
-        entity.setItems(list.stream().map(apply).collect(Collectors.toList()));
+        entity.setItems((R[]) list
+                .stream()
+                .map(apply)
+                .collect(Collectors.toList())
+                .toArray());
         entity.setStartRow(paginator.getStartRow());
         entity.setEndRow(paginator.getEndRow());
         entity.setOffset(paginator.getOffset());
@@ -100,11 +105,11 @@ public class PaginatorResponse<E> {
         return this;
     }
 
-    public List<E> getItems() {
+    public E[] getItems() {
         return items;
     }
 
-    public PaginatorResponse setItems(List<E> items) {
+    public PaginatorResponse setItems(E[] items) {
         this.items = items;
         return this;
     }

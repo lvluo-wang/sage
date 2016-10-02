@@ -3,6 +3,7 @@ package me.icymint.sage.base.rest.config;
 import com.fasterxml.classmate.TypeResolver;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Primitives;
 import me.icymint.sage.base.rest.entity.PaginatorResponse;
 import me.icymint.sage.base.rest.support.RestConverter;
 import me.icymint.sage.base.spec.def.MagicConstants;
@@ -77,9 +78,7 @@ public class SwaggerConfig {
 
         Docket docket = addConverters(new Docket(DocumentationType.SWAGGER_2)
                 .groupName(groupName)
-                .apiInfo(apiInfo(description)))
-                .forCodeGeneration(true);
-        docket.directModelSubstitute(Instant.class, Date.class);
+                .apiInfo(apiInfo(description)));
         if (handelr != null) {
             docket = handelr.apply(docket);
         }
@@ -97,13 +96,25 @@ public class SwaggerConfig {
                     && cell.getRowKey() != String.class) {
                 docket.directModelSubstitute(cell.getRowKey(), cell.getColumnKey());
                 //See https://github.com/springfox/springfox/commit/c8d4f251d446a2722c4bc5985296edcd53807fd1
-                docket.alternateTypeRules(AlternateTypeRules.newRule(
-                        typeResolver.resolve(List.class, cell.getRowKey()),
-                        typeResolver.resolve(PaginatorResponse.class, cell.getColumnKey())
-                ));
+                addContainerConverter(typeResolver, docket, cell.getRowKey(), cell.getColumnKey());
             }
         });
+        docket.directModelSubstitute(Instant.class, Date.class);
+        addContainerConverter(typeResolver, docket, String.class);
+        Primitives.allWrapperTypes()
+                .forEach(wc -> addContainerConverter(typeResolver, docket, wc));
         return docket;
+    }
+
+    private void addContainerConverter(TypeResolver typeResolver, Docket docket, Class<?> typeClass) {
+        addContainerConverter(typeResolver, docket, typeClass, typeClass);
+    }
+
+    private void addContainerConverter(TypeResolver typeResolver, Docket docket, Class<?> fromClass, Class<?> toClass) {
+        docket.alternateTypeRules(AlternateTypeRules.newRule(
+                typeResolver.resolve(List.class, fromClass),
+                typeResolver.resolve(PaginatorResponse.class, toClass)
+        ));
     }
 
 
