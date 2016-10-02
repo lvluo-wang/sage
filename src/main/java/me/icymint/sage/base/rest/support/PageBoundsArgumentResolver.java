@@ -1,63 +1,49 @@
 package me.icymint.sage.base.rest.support;
 
 import com.github.miemiedev.mybatis.paginator.domain.Order;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.google.common.base.Splitter;
-import me.icymint.sage.base.rest.entity.PaginatorBound;
 import me.icymint.sage.base.rest.util.QueryStrings;
 import me.icymint.sage.base.spec.def.MagicConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
-import org.springframework.expression.ParseException;
-import org.springframework.format.Formatter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.method.annotation.AbstractNamedValueMethodArgumentResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Created by daniel on 16/9/4.
  */
-@ControllerAdvice
-public class PaginatorBoundArgumentResolver implements HandlerMethodArgumentResolver, Formatter<PaginatorBound> {
+public class PageBoundsArgumentResolver extends AbstractNamedValueMethodArgumentResolver {
     private static final String PAGE = "page";
     private static final String SIZE = "size";
     private static final String TOTAL = "total";
     private static final String ORDERS = "orders";
-    private static final int MAX_LIMIT = 100;
-    private static final int DEFAULT_LIMIT = 10;
-    private Logger logger = LoggerFactory.getLogger(PaginatorBoundArgumentResolver.class);
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return PaginatorBound.class.isAssignableFrom(parameter.getParameterType());
+        return PageBounds.class.isAssignableFrom(parameter.getParameterType());
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        String text = webRequest.getHeader(MagicConstants.X_PAGING);
+    protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) {
+        return new NamedValueInfo("pageBounds", false, null);
+    }
+
+    @Override
+    protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception {
+        String text = request.getHeader(MagicConstants.HEADER_X_PAGING);
         if (!StringUtils.hasText(text)) {
-            text = webRequest.getNativeRequest(HttpServletRequest.class).getQueryString();
+            text = request.getNativeRequest(HttpServletRequest.class).getQueryString();
         }
-        return parse(text, null);
-    }
-
-    @Override
-    public PaginatorBound parse(String text, Locale locale) throws ParseException {
-        logger.debug("PageBounds resolve:{}", text);
         if (!StringUtils.hasText(text)) {
-            return new PaginatorBound(1, DEFAULT_LIMIT);
+            return new PageBounds(1, MagicConstants.PAGE_MAX_LIMIT);
         }
 
         MultiValueMap<String, String> map = QueryStrings.parse(text);
@@ -100,25 +86,13 @@ public class PaginatorBoundArgumentResolver implements HandlerMethodArgumentReso
             page = Integer.parseInt(pageStr);
         }
         page = Math.max(1, page);
-        int size = DEFAULT_LIMIT;
+        int size = MagicConstants.PAGE_DEFAULT_LIMIT;
         if (!StringUtils.isEmpty(sizeStr)) {
             size = Integer.parseInt(sizeStr);
         }
-        size = Math.min(size, MAX_LIMIT);
+        size = Math.min(size, MagicConstants.PAGE_MAX_LIMIT);
         size = Math.max(1, size);
 
-        return new PaginatorBound(page, size, orders, containsTotal);
-    }
-
-    @Override
-    public String print(PaginatorBound object, Locale locale) {
-        if (object == null) {
-            return null;
-        }
-        return "page=" + object.getPage() + "&size=" + object.getLimit() + "&total=" + object.isContainsTotalCount()
-                + object.getOrders()
-                .stream()
-                .map(o -> "&" + o.getProperty() + ":" + o.getDirection())
-                .collect(Collectors.joining());
+        return new PageBounds(page, size, orders, containsTotal);
     }
 }

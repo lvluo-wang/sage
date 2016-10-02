@@ -1,16 +1,18 @@
 package me.icymint.sage.user.core.service;
 
-import me.icymint.sage.base.util.HMacs;
+import com.google.common.base.Splitter;
 import me.icymint.sage.base.spec.annotation.NotifyEvent;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.internal.api.EventProducer;
-import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.BaseExceptionCode;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.base.spec.exception.UnauthorizedException;
+import me.icymint.sage.base.spec.internal.api.EventProducer;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
+import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.user.data.mapper.TokenMapper;
+import me.icymint.sage.user.rest.context.TokenContext;
 import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.api.TokenService;
 import me.icymint.sage.user.spec.def.IdentityType;
@@ -24,8 +26,10 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -52,6 +56,30 @@ public class TokenServiceImpl implements TokenService {
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     RuntimeContext runtimeContext;
+
+    public TokenContext parseTokenContext(String tokenString) {
+        TokenContext context = new TokenContext();
+        if (StringUtils.isEmpty(tokenString)
+                || !tokenString.startsWith(MagicConstants.TOKEN_SIGN_HEAD)
+                || tokenString.equals(MagicConstants.TOKEN_SIGN_HEAD)) {
+            return null;
+        }
+        tokenString = tokenString.substring(MagicConstants.TOKEN_SIGN_HEAD.length());
+        context.setSign(tokenString.substring(0, MagicConstants.TOKEN_SIGN_LENGTH));
+        List<String> parameterList = Splitter.on("|")
+                .omitEmptyStrings()
+                .trimResults()
+                .splitToList(tokenString.substring(MagicConstants.TOKEN_SIGN_LENGTH));
+        if (parameterList.size() != 4) {
+            return null;
+        }
+        context.setClientId(Long.valueOf(parameterList.get(0)));
+        context.setTokenId(Long.valueOf(parameterList.get(1)));
+        context.setTimestamp(Long.valueOf(parameterList.get(2)));
+        context.setNonce(parameterList.get(3));
+        return context;
+    }
+
 
     @Override
     @Transactional
@@ -101,7 +129,7 @@ public class TokenServiceImpl implements TokenService {
 
         //Step 5
         runtimeContext.setClientId(String.valueOf(clientId));
-        runtimeContext.setUserId(String.valueOf(identityId));
+        runtimeContext.setUserId(identityId);
         Token token = new Token()
                 .setExpireTime(now.plusSeconds(client.getValidSeconds()))
                 .setAccessSecret(UUID.randomUUID().toString())

@@ -1,4 +1,4 @@
-package me.icymint.sage.base.rest.support;
+package me.icymint.sage.base.rest.aspect;
 
 import me.icymint.sage.base.spec.internal.api.SageValidator;
 import me.icymint.sage.base.spec.def.MagicConstants;

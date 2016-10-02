@@ -1,5 +1,6 @@
 package me.icymint.sage.base.data.config;
 
+import com.github.miemiedev.mybatis.paginator.CleanupMybatisPaginatorListener;
 import com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor;
 import com.github.miemiedev.mybatis.paginator.dialect.PostgreSQLDialect;
 import org.slf4j.Logger;
@@ -20,5 +21,10 @@ public class MybatisInterceptorConfig {
         OffsetLimitInterceptor offsetLimitInterceptor = new OffsetLimitInterceptor();
         offsetLimitInterceptor.setDialectClass(PostgreSQLDialect.class.getName());
         return offsetLimitInterceptor;
+    }
+
+    @Bean
+    CleanupMybatisPaginatorListener cleanupMybatisPaginatorListener() {
+        return new CleanupMybatisPaginatorListener();
     }
 }

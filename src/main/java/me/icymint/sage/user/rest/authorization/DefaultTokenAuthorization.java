@@ -1,21 +1,23 @@
 package me.icymint.sage.user.rest.authorization;
 
-import me.icymint.sage.base.util.HMacs;
+import com.google.common.base.Strings;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.internal.api.RuntimeContext;
-import me.icymint.sage.base.spec.internal.api.SageValidator;
+import me.icymint.sage.base.spec.def.BaseExceptionCode;
 import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.base.spec.exception.UnauthorizedException;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.SageValidator;
+import me.icymint.sage.base.util.HMacs;
+import me.icymint.sage.user.core.service.TokenServiceImpl;
 import me.icymint.sage.user.rest.context.TokenContext;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.api.ClaimService;
-import me.icymint.sage.user.spec.api.TokenService;
 import me.icymint.sage.user.spec.def.RoleType;
 import me.icymint.sage.user.spec.def.UserExceptionCode;
 import me.icymint.sage.user.spec.entity.Token;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +44,11 @@ public class DefaultTokenAuthorization {
 
     @Autowired
     ApplicationContext context;
+    @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     RuntimeContext runtimeContext;
     @Autowired
-    TokenService tokenService;
+    TokenServiceImpl tokenService;
     @Autowired
     ClaimService claimService;
     @Autowired
@@ -57,7 +60,7 @@ public class DefaultTokenAuthorization {
     SageValidator sageValidator;
 
 
-    public void authorize(TokenContext tokenContext, RoleType[] roleTypes) {
+    public void authorize(TokenContext tokenContext, RoleType[] roleTypes, boolean expireTimeCheck) {
         logger.debug("authorize tokenContext passed in :{}", tokenContext);
 
         sageValidator.validate(tokenContext, "tokenContext");
@@ -91,8 +94,8 @@ public class DefaultTokenAuthorization {
         runtimeContext.setClientId(String.valueOf(tokenContext.getClientId()));
 
         //Step 4
-        if (token.getExpireTime() == null || token.getExpireTime().isBefore(ts)) {
-            throw new UnauthorizedException(context, UserExceptionCode.ACCESS_TOKEN_ILLEGAL);
+        if (expireTimeCheck && (token.getExpireTime() == null || token.getExpireTime().isBefore(ts))) {
+            throw new UnauthorizedException(context, UserExceptionCode.TOKEN__EXPIRED, token.getId());
         }
         String calculatedHash = calculateHash(tokenContext.getClientId(),
                 tokenContext.getNonce(),
@@ -110,7 +113,8 @@ public class DefaultTokenAuthorization {
         }
 
         tokenContext.setOwnerId(token.getOwnerId());
-        runtimeContext.setUserId(String.valueOf(token.getOwnerId()));
+        runtimeContext.setUserId(token.getOwnerId());
+        runtimeContext.setTokenId(token.getId());
 
         getCache().put(cacheKey, "true");
     }
@@ -125,16 +129,38 @@ public class DefaultTokenAuthorization {
         return HMacs.encodeToBase64(secret, data);
     }
 
-    @Before(value = "@annotation(checkToken)", argNames = "joinPoint,checkToken")
-    public void authorize(JoinPoint joinPoint, CheckToken checkToken) {
-        TokenContext tokenContext = (TokenContext) Stream
-                .of(joinPoint.getArgs())
-                .filter(a -> a != null
-                        && TokenContext.class.isAssignableFrom(a.getClass()))
-                .findFirst()
-                .orElse(null);
-        if (tokenContext != null) {
-            authorize(tokenContext, checkToken.allowRoles());
+    @Pointcut("execution(* me.icymint.sage.user.rest.controller.TokenController.isExpire())")
+    public void specialApi() {
+    }
+
+    @Before("@annotation(checkToken) && specialApi()")
+    public void authorizeInExpired(CheckToken checkToken) {
+        doAuthorize(checkToken, false);
+    }
+
+    @Before("@annotation(checkToken) && !specialApi()")
+    public void authorize(CheckToken checkToken) {
+        doAuthorize(checkToken, true);
+    }
+
+    private void doAuthorize(CheckToken checkToken, boolean expireTimeCheck) {
+        try {
+            String header = runtimeContext.getHeader(MagicConstants.HEADER_AUTHORIZATION);
+            if (checkToken.allowNone() && Strings.isNullOrEmpty(header)) {
+                return;
+            }
+            TokenContext context = tokenService.parseTokenContext(header);
+            if (context == null) {
+                throw new UnauthorizedException(this.context, BaseExceptionCode.AUTHORIZATION_REQUIRED);
+            }
+            authorize(context, checkToken.allowRoles(), expireTimeCheck);
+        } finally {
+            if (runtimeContext.getTokenId() == null) {
+                runtimeContext.setTokenId(null);
+            }
+            if (runtimeContext.getUserId() == null) {
+                runtimeContext.setUserId(null);
+            }
         }
     }
 

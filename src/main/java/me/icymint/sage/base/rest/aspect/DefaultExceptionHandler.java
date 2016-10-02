@@ -1,16 +1,18 @@
-package me.icymint.sage.base.rest.support;
+package me.icymint.sage.base.rest.aspect;
 
 import me.icymint.sage.base.rest.resource.ResultResource;
 import me.icymint.sage.base.spec.def.BaseExceptionCode;
-import me.icymint.sage.base.util.Exceptions;
+import me.icymint.sage.base.spec.def.MagicConstants;
 import me.icymint.sage.base.spec.exception.InternalServerErrorException;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.base.spec.exception.ServiceException;
+import me.icymint.sage.base.util.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
  * Created by daniel on 16/9/2.
  */
 @ControllerAdvice
+@Order(MagicConstants.AOP_ORDER_EXCEPTION)
 public class DefaultExceptionHandler extends AbstractHandlerMethodExceptionResolver {
 
     private final Logger logger = LoggerFactory.getLogger(DefaultExceptionHandler.class);

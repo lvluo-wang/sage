@@ -29,6 +29,7 @@ buildscript {
 
 plugins {
     id "org.flywaydb.flyway" version "4.0.3"
+    id 'net.ltgt.apt' version '0.8'
 }
 
 flyway {
@@ -68,6 +69,8 @@ test {
 }
 
 bootRun {
+    systemProperty 'spring.devtools.livereload.enabled', 'true'
+    systemProperty 'spring.devtools.restart.enabled', 'true'
     systemProperty 'logback_level', 'INFO'
     systemProperty 'sage.always.save.log', 'true'
     systemProperty 'sage.enable.hmac', 'true'
@@ -77,6 +80,8 @@ bootRun {
 configurations {
     compile.exclude module: "tomcat-jdbc"
     compile.exclude module: "tomcat-juli"
+
+    compile.exclude module: 'org.mapstruct:mapstruct'
 }
 
 dependencies {
@@ -98,6 +103,8 @@ dependencies {
     compile "org.postgresql:postgresql:${postgresVersion}"
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'org.mapstruct:mapstruct-jdk8:1.1.0.CR1'
+    apt 'org.mapstruct:mapstruct-processor:1.1.0.CR1'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.flywaydb:flyway-core'

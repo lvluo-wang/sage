@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 /**
  * Created by daniel on 16/9/6.
  */
-public class HmacRequest {
+public class PasswordRequest {
     @NotNull
     @Size(min = 8, max = 64)
     private String password;
@@ -15,7 +15,7 @@ public class HmacRequest {
         return password;
     }
 
-    public HmacRequest setPassword(String password) {
+    public PasswordRequest setPassword(String password) {
         this.password = password;
         return this;
     }

@@ -1,5 +1,6 @@
 package me.icymint.sage.base.spec.entity;
 
+import me.icymint.sage.base.spec.annotation.ToLabel;
 import me.icymint.sage.base.spec.def.Bool;
 
 import javax.validation.constraints.NotNull;
@@ -10,6 +11,7 @@ import java.time.Instant;
  */
 public abstract class BaseEntity<T extends BaseEntity> extends BaseLogEntity<T> {
     @NotNull
+    @ToLabel
     private Bool isDeleted;
     private Instant updateTime;
 
