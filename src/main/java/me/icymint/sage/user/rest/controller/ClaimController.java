@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by daniel on 16/9/5.
@@ -35,12 +34,7 @@ public class ClaimController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseView(ClaimResource.class)
     public Claim findOne(@PathVariable("id") Long id) {
-        Claim claim = claimService.findOne(id);
-        if (claim != null
-                && Objects.equals(claim.getOwnerId(), runtimeContext.getUserId())) {
-            return null;
-        }
-        return claim;
+        return claimService.findOne(id, runtimeContext.getUserId());
     }
 
     @CheckToken

@@ -16,6 +16,9 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -38,6 +41,9 @@ public class DefaultResourceHandler implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+        if (body == null) {
+            return null;
+        }
         ResponseView responseView = returnType.getMethodAnnotation(ResponseView.class);
         if (responseView == null) {
             return wrapBody(body, true);
@@ -46,27 +52,46 @@ public class DefaultResourceHandler implements ResponseBodyAdvice<Object> {
         boolean needConvert = responseView.convertList();
         Class<?> toClass = responseView.value();
         Class<?> fromClass = returnType.getMethod().getReturnType();
+        if (fromClass.isAssignableFrom(List.class)) {
+            needConvert = false;
+        }
         try {
-            if (body instanceof List) {
+            if (body instanceof Collection
+                    || body.getClass().isArray()) {
                 fromClass = TypeToken
                         .of(returnType.getMethod().getGenericReturnType())
                         .resolveType(fromClass.getTypeParameters()[0])
                         .getRawType();
                 Function<Object, Object> handler = getConverter(handlerClass, fromClass, toClass);
                 if (handler != null) {
-                    modifyBody((List) body, handler);
+                    if (body instanceof List) {
+                        modifyBody((List) body, handler);
+                    } else if (body instanceof Collection) {
+                        body = modifyCollectionBody((Collection) body, handler, toClass);
+                    } else {
+                        modifyArrayBody((Object[]) body, handler);
+                    }
                 }
-                return wrapBody(body, needConvert);
             } else {
                 Function<Object, Object> handler = getConverter(handlerClass, fromClass, toClass);
                 if (handler != null) {
-                    return wrapBody(handler.apply(body), needConvert);
+                    body = handler.apply(body);
                 }
             }
         } catch (Exception e) {
             Exceptions.catching(e);
         }
         return wrapBody(body, needConvert);
+    }
+
+
+    private <T> T[] modifyCollectionBody(Collection body, Function<Object, Object> handler, Class<T> toClass) {
+        T[] arr = (T[]) Array.newInstance(toClass, body.size());
+        Iterator it = body.iterator();
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = (T) handler.apply(it.next());
+        }
+        return arr;
     }
 
     private Function<Object, Object> getConverter(Class<? extends Function<?, ?>> handlerClass, Class<?> fromClass, Class<?> toClass) throws IllegalAccessException, InstantiationException {
@@ -92,6 +117,16 @@ public class DefaultResourceHandler implements ResponseBodyAdvice<Object> {
             if (v != null) {
                 v = handler.apply(v);
                 body.set(i, v);
+            }
+        }
+    }
+
+    private void modifyArrayBody(Object[] body, Function<Object, Object> handler) {
+        for (int i = 0; i < body.length; i++) {
+            Object v = body[i];
+            if (v != null) {
+                v = handler.apply(v);
+                body[i] = v;
             }
         }
     }

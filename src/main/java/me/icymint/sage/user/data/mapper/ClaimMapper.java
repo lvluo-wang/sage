@@ -26,6 +26,9 @@ public interface ClaimMapper {
     @SelectProvider(type = ClaimSqlProvider.class, method = "findOne")
     Claim findOne(@Param("id") Long id);
 
+    @SelectProvider(type = ClaimSqlProvider.class, method = "findOneByOwnerId")
+    Claim findOneByOwnerId(@Param("id") Long id, @Param("ownerId") Long ownerId);
+
     @SelectProvider(type = ClaimSqlProvider.class, method = "findByTypeAndValue")
     Claim findOneByTypeAndValue(@Param("type") ClaimType type, @Param("value") String value);
 

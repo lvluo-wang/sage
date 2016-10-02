@@ -1,5 +1,7 @@
 package me.icymint.sage.user.rest.request;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -11,10 +13,11 @@ public class TokenRequest {
     @NotNull
     private Long uid;
     @NotNull
+    @ApiModelProperty(example = "1000")
     private Long cid;
     @NotNull
-    @Size(min = 8, max = 32)
-    @Pattern(regexp = "[0-9a-zA-Z]{8,32}")
+    @Size(min = 16, max = 32)
+    @Pattern(regexp = "[0-9a-zA-Z]{16,32}")
     private String nonce;
     @NotNull
     private Long ts;

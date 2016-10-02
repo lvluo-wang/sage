@@ -23,9 +23,14 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.lang.reflect.Array;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import static me.icymint.sage.base.util.Classes.isValueClass;
@@ -94,12 +99,14 @@ public class SwaggerConfig {
                     && !isValueClass(cell.getRowKey())
                     && !cell.getRowKey().isPrimitive()
                     && cell.getRowKey() != String.class) {
-                docket.directModelSubstitute(cell.getRowKey(), cell.getColumnKey());
                 //See https://github.com/springfox/springfox/commit/c8d4f251d446a2722c4bc5985296edcd53807fd1
                 addContainerConverter(typeResolver, docket, cell.getRowKey(), cell.getColumnKey());
             }
         });
         docket.directModelSubstitute(Instant.class, Date.class);
+        docket.directModelSubstitute(LocalDate.class, Date.class);
+        docket.directModelSubstitute(LocalDateTime.class, Date.class);
+        docket.directModelSubstitute(LocalTime.class, Date.class);
         addContainerConverter(typeResolver, docket, String.class);
         Primitives.allWrapperTypes()
                 .forEach(wc -> addContainerConverter(typeResolver, docket, wc));
@@ -111,6 +118,17 @@ public class SwaggerConfig {
     }
 
     private void addContainerConverter(TypeResolver typeResolver, Docket docket, Class<?> fromClass, Class<?> toClass) {
+        if (fromClass != toClass) {
+            docket.alternateTypeRules(AlternateTypeRules.newRule(
+                    typeResolver.resolve(Set.class, fromClass),
+                    typeResolver.resolve(Set.class, toClass)
+            ));
+            docket.directModelSubstitute(fromClass, toClass);
+            docket.directModelSubstitute(
+                    Array.newInstance(fromClass, 0).getClass(),
+                    Array.newInstance(toClass, 0).getClass()
+            );
+        }
         docket.alternateTypeRules(AlternateTypeRules.newRule(
                 typeResolver.resolve(List.class, fromClass),
                 typeResolver.resolve(PaginatorResponse.class, toClass)

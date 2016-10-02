@@ -33,7 +33,13 @@ public abstract class BaseLogEntitySqlProvider<T extends BaseLogEntity> {
         return selectFrom()
                 .WHERE("ID=#{id}")
                 .toString();
+    }
 
+    public final String findOneByOwnerId() {
+        return selectFrom()
+                .WHERE("ID=#{id}")
+                .WHERE("OWNER_ID=#{ownerId}")
+                .toString();
     }
 
     public final String findByOwnerId() {

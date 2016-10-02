@@ -1,5 +1,7 @@
 package me.icymint.sage.base.rest.request;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -9,6 +11,7 @@ import javax.validation.constraints.Size;
 public class PasswordRequest {
     @NotNull
     @Size(min = 8, max = 64)
+    @ApiModelProperty(example = "12345678")
     private String password;
 
     public String getPassword() {

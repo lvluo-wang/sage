@@ -8,7 +8,7 @@ CREATE TABLE T_IDENTITY (
   UPDATE_TIME   TIMESTAMP                                                            NULL,
   IS_DELETED    CHAR(1) DEFAULT 'N'                                                  NOT NULL,
   --
-  SALT          VARCHAR(16) DEFAULT '-'                                              NOT NULL,
+  SALT          CHAR(16) DEFAULT '-'                                                 NOT NULL,
   PASSWORD      VARCHAR(64) DEFAULT '-'                                              NOT NULL,
   CREATE_BY     BIGINT                                                               NOT NULL,
   TYPE          VARCHAR(64) DEFAULT 'USER'                                           NOT NULL,

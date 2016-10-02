@@ -1,10 +1,13 @@
 package me.icymint.sage.base.rest.request;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by daniel on 2016/9/30.
  */
 public class LoginHashRequest {
     private Long id;
+    @ApiModelProperty(example = "1000")
     private Long clientId;
     private String accessSecret;
 

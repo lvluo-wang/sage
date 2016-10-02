@@ -49,8 +49,8 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    public Claim findOne(Long id) {
-        return claimMapper.findOne(id);
+    public Claim findOne(Long id, Long ownerId) {
+        return claimMapper.findOneByOwnerId(id, ownerId);
     }
 
     @Override
@@ -64,18 +64,6 @@ public class ClaimServiceImpl implements ClaimService {
         return claimMapper.findOneByTypeAndValue(type, value);
     }
 
-
-    @Override
-    public List<Claim> findAllByTypeAndValue(ClaimType type, String value) {
-        if (type == null) {
-            throw new UserServiceException(context, UserExceptionCode.CLAIM_TYPE_NULL);
-        }
-        if (type.isGlobalUnique()) {
-            throw new UserServiceException(context, UserExceptionCode.USE_MULTI_CLAIM_QUERY_API_INSTEAD);
-        }
-        return claimMapper.findAllByTypeAndValue(type, value);
-    }
-
     @Override
     public boolean hasRoles(Long ownerId, RoleType[] roleTypes) {
         if (roleTypes == null || roleTypes.length == 0) {
@@ -86,6 +74,6 @@ public class ClaimServiceImpl implements ClaimService {
 
     @Override
     public List<Claim> findByOwnerId(Long userId, PageBounds pageBounds) {
-        return claimMapper.findByOwnerId(userId,pageBounds);
+        return claimMapper.findByOwnerId(userId, pageBounds);
     }
 }

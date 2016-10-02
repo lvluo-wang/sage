@@ -4,7 +4,6 @@ import me.icymint.sage.base.spec.annotation.ToLabel;
 import me.icymint.sage.base.spec.def.Bool;
 
 import java.time.Instant;
-import java.util.List;
 
 /**
  * Created by daniel on 16/9/2.
@@ -16,14 +15,13 @@ public class HelloResource {
     @ToLabel(expend = false)
     private Bool isDescription;
     private Instant now;
-    private List<String> list;
+    private String[] list;
 
-
-    public List<String> getList() {
+    public String[] getList() {
         return list;
     }
 
-    public HelloResource setList(List<String> list) {
+    public HelloResource setList(String[] list) {
         this.list = list;
         return this;
     }

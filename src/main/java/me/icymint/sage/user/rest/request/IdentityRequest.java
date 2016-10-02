@@ -1,5 +1,7 @@
 package me.icymint.sage.user.rest.request;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -9,14 +11,15 @@ import javax.validation.constraints.Size;
  */
 public class IdentityRequest {
     @NotNull
+    @ApiModelProperty(example = "1000")
     private Long cid;
     @Pattern(regexp = "[0-9a-zA-Z][._0-9a-zA-Z]{3,31}")
     private String username;
     @NotNull
-    @Size(min = 8, max = 32)
+    @Size(min = 16, max = 16)
     private String salt;
     @NotNull
-    @Size(min = 16, max = 64)
+    @Size(min = 32, max = 64)
     private String password;
 
     public Long getCid() {

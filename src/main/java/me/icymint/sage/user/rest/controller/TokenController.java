@@ -33,13 +33,13 @@ public class TokenController {
     RuntimeContext runtimeContext;
 
     @CheckToken
-    @GetMapping(value = "/expired", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/expired", produces = MediaType.TEXT_PLAIN_VALUE)
     public boolean isExpire() {
         return tokenService.isExpire(runtimeContext.getTokenId());
     }
 
     @CheckToken
-    @DeleteMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping
     public void expire() {
         tokenService.expire(runtimeContext.getTokenId());
     }
