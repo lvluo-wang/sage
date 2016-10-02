@@ -20,7 +20,6 @@ public class MagicConstants {
     public static final String PROP_ENABLE_SESSION_STORAGE = PROP_PREFIX + "enable.session.storage";
     public static final String PROP_ALWAYS_SAVE_LOG = PROP_PREFIX + "always.save.log";
     public static final String PROP_JOB_EVENT_CRON = PROP_PREFIX + "job.event.cron";
-    public static final String PROP_ENABLE_RESPONSE_WRAP_LIST = PROP_PREFIX + "enable.response.wrap.list";
     public static final String PROP_ENABLE_RESPONSE_BASE_PACKAGE = PROP_PREFIX + "enable.response.base.package";
 
     // AOP Order From Highest to Lowest Order

@@ -1,11 +1,12 @@
 package me.icymint.sage.user.rest.controller;
 
+import me.icymint.sage.base.spec.annotation.ResponseView;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
-import me.icymint.sage.user.rest.converter.UserRestConverter;
 import me.icymint.sage.user.rest.request.TokenRequest;
 import me.icymint.sage.user.rest.resource.TokenResource;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.api.TokenService;
+import me.icymint.sage.user.spec.entity.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
@@ -30,8 +31,6 @@ public class TokenController {
     ApplicationContext context;
     @Autowired
     RuntimeContext runtimeContext;
-    @Autowired
-    UserRestConverter converter;
 
     @CheckToken
     @GetMapping(value = "/expired", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -47,12 +46,13 @@ public class TokenController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public TokenResource login(@Valid @RequestBody TokenRequest request) {
-        return converter.to(tokenService.login(request.getUid(),
+    @ResponseView(TokenResource.class)
+    public Token login(@Valid @RequestBody TokenRequest request) {
+        return tokenService.login(request.getUid(),
                 request.getCid(),
                 request.getNonce(),
                 request.getTs(),
-                request.getSign()));
+                request.getSign());
     }
 
 }

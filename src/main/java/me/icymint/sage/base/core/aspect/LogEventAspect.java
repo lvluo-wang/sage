@@ -1,7 +1,6 @@
 package me.icymint.sage.base.core.aspect;
 
 import com.google.common.collect.Maps;
-import com.google.common.primitives.Primitives;
 import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.spec.annotation.LogMethodInvoke;
 import me.icymint.sage.base.spec.def.MagicConstants;
@@ -11,13 +10,14 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import static me.icymint.sage.base.util.Classes.isValueClass;
 
 /**
  * Created by daniel on 2016/9/30.
@@ -57,9 +57,7 @@ public class LogEventAspect {
         if (arg == null) {
             return "null";
         }
-        if (arg.getClass().isPrimitive()
-                || Primitives.isWrapperType(arg.getClass())
-                || arg.getClass() == String.class) {
+        if (isValueClass(arg.getClass())) {
             return toPrefix(arg.getClass()) + String.valueOf(arg);
         }
         Class<?> argType = arg.getClass();

@@ -10,14 +10,18 @@ import me.icymint.sage.user.spec.entity.Token;
 import org.mapstruct.Mapper;
 
 /**
+ * This class define Entity converter
  * Created by daniel on 2016/10/1.
+ *
+ * @see ResponseConverter
+ * @see me.icymint.sage.base.rest.aspect.DefaultResourceHandler
  */
 @Mapper
 public interface UserRestConverter extends ResponseConverter {
 
-    IdentityResource to(Identity identity);
+    IdentityResource convert(Identity identity);
 
-    ClaimResource to(Claim claim);
+    ClaimResource convert(Claim claim);
 
-    TokenResource to(Token token);
+    TokenResource convert(Token token);
 }
