@@ -1,9 +1,7 @@
 package me.icymint.sage.user.rest.controller;
 
-import me.icymint.sage.base.spec.annotation.ResponseView;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.rest.request.TokenRequest;
-import me.icymint.sage.user.rest.resource.TokenResource;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.api.TokenService;
 import me.icymint.sage.user.spec.entity.Token;
@@ -46,7 +44,6 @@ public class TokenController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseView(TokenResource.class)
     public Token login(@Valid @RequestBody TokenRequest request) {
         return tokenService.login(request.getUid(),
                 request.getCid(),

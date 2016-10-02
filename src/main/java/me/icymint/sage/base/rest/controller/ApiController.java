@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import me.icymint.sage.base.rest.resource.ExampleResource;
 import me.icymint.sage.base.rest.resource.HelloResource;
+import me.icymint.sage.base.spec.annotation.PaginatorView;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.user.spec.def.ClaimType;
@@ -66,6 +67,7 @@ public class ApiController {
 
     @GetMapping(value = "/api/claim-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
+    @PaginatorView
     public List<Claim> claimList() {
         return claims();
     }
