@@ -27,6 +27,7 @@ import java.util.Optional;
 @ConditionalOnProperty(name = Magics.PROP_ENABLE_SESSION_STORAGE, havingValue = "true")
 @Service
 public class SessionServiceImpl implements SessionService {
+    @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     SessionMapper sessionMapper;
     @Autowired

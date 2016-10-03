@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -55,8 +55,8 @@ public class EventServiceImpl implements BatchJob<Event> {
     Clock clock;
     @Autowired
     RuntimeContext runtimeContext;
-    @Autowired
-    Environment environment;
+    @Value("${" + Magics.PROP_ALWAYS_SAVE_LOG + ":false}")
+    boolean alwaysSaveLog;
 
     @PostConstruct
     protected void init() {
@@ -107,7 +107,7 @@ public class EventServiceImpl implements BatchJob<Event> {
         Event dbEvent = toDbEvent(event);
         if (isLog) {
             dbEvent.setStatus(EventStatus.PROCESSED);
-            if (!environment.getProperty(Magics.PROP_ALWAYS_SAVE_LOG, Boolean.class, false)) {
+            if (!alwaysSaveLog) {
                 logger.info("LogEvent - {}", dbEvent);
                 return;
             }

@@ -2,7 +2,7 @@ package me.icymint.sage.base.core.aspect;
 
 import com.google.common.collect.Maps;
 import me.icymint.sage.base.core.service.EventServiceImpl;
-import me.icymint.sage.base.spec.annotation.LogMethodInvoke;
+import me.icymint.sage.base.spec.annotation.LogInvokeMethod;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.ToString;
 import me.icymint.sage.base.spec.internal.entity.LogEvent;
@@ -39,8 +39,8 @@ public class LogEventAspect {
         }
     }
 
-    @AfterReturning(pointcut = "@annotation(logMethodInvoke)", returning = "result")
-    public void async(JoinPoint joinPoint, LogMethodInvoke logMethodInvoke, Object result) {
+    @AfterReturning(pointcut = "@annotation(logInvokeMethod)", returning = "result")
+    public void async(JoinPoint joinPoint, LogInvokeMethod logInvokeMethod, Object result) {
         Map<String, Object> logMap = Maps.newTreeMap();
         logMap.put("return", toString(result));
         logMap.put("signature", joinPoint.getSignature().toShortString());

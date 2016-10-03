@@ -1,6 +1,6 @@
 package me.icymint.sage.user.core.service;
 
-import me.icymint.sage.base.spec.annotation.LogMethodInvoke;
+import me.icymint.sage.base.spec.annotation.LogInvokeMethod;
 import me.icymint.sage.base.spec.annotation.NotifyInTransactionEvent;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.Bool;
@@ -52,7 +52,7 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Override
     @Transactional
-    @LogMethodInvoke
+    @LogInvokeMethod
     @NotifyInTransactionEvent(eventProducerClass = RegisterEventProducer.class)
     public Identity register(Long clientId, String username, String salt, String password) {
         if (StringUtils.isEmpty(username)) {

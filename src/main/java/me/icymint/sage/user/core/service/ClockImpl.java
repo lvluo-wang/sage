@@ -18,6 +18,7 @@ import java.time.Instant;
 @ConditionalOnProperty(name = Magics.PROP_ENABLE_DB_CLOCK, havingValue = "true", matchIfMissing = true)
 public class ClockImpl implements Clock {
 
+    @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     ClockMapper clockMapper;
 
