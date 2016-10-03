@@ -11,12 +11,15 @@ import me.icymint.sage.user.spec.def.UserCode;
 import me.icymint.sage.user.spec.entity.Claim;
 import me.icymint.sage.user.spec.exception.UserServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Created by daniel on 16/9/6.
@@ -28,9 +31,11 @@ public class ClaimServiceImpl implements ClaimService {
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     ClaimMapper claimMapper;
-
+    @Autowired
+    ClaimServiceImpl claimService;
 
     @Transactional
+    @CacheEvict(value = Magics.CACHE_CLAIM, key = "'id'+#identityId", condition = "#type==T(me.icymint.sage.user.spec.def.ClaimType).ROLE")
     public Long createClaim(Long identityId, ClaimType type, String value, boolean isVerified) {
         if (type == null) {
             throw new UserServiceException(context, UserCode.CLAIM_TYPE_NULL);
@@ -50,7 +55,7 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
-    @Cacheable(value = Magics.CACHE_CLAIM, key = "#id")
+    @Cacheable(value = Magics.CACHE_CLAIM, key = "'claim-'+#id", unless = "#result.type==T(me.icymint.sage.user.spec.def.ClaimType).ROLE")
     public Claim findOne(Long id, Long ownerId) {
         return claimMapper.findOneByOwnerId(id, ownerId);
     }
@@ -68,10 +73,18 @@ public class ClaimServiceImpl implements ClaimService {
 
     @Override
     public boolean hasRoles(Long ownerId, RoleType[] roleTypes) {
-        if (roleTypes == null || roleTypes.length == 0) {
-            return true;
+        Set<RoleType> roleTypeSet = claimService.findRolesByOwnerId(ownerId);
+        if (roleTypes != null) {
+            return Stream.of(roleTypes).anyMatch(roleTypeSet::contains);
         }
-        return claimMapper.existRoles(ownerId, roleTypes) > 0;
+        return false;
+    }
+
+
+    @Override
+    @Cacheable(value = Magics.CACHE_CLAIM, key = "'id-'+#ownerId")
+    public Set<RoleType> findRolesByOwnerId(Long ownerId) {
+        return claimMapper.findRolesByOwnerId(ownerId);
     }
 
     @Override

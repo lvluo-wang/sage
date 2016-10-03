@@ -38,6 +38,7 @@ public class IdentityServiceImpl implements IdentityService {
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     IdentityMapper identityMapper;
+    @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     ClaimServiceImpl claimService;
     @Autowired
@@ -73,10 +74,14 @@ public class IdentityServiceImpl implements IdentityService {
         if (client == null || client.getType() != IdentityType.CLIENT) {
             throw new UserServiceException(context, UserCode.CLIENT_ID__ILLEGAL, clientId);
         }
-        runtimeContext.setClientId(String.valueOf(clientId));
+        runtimeContext.setClientId(clientId);
+        Long createId = runtimeContext.getUserId();
+        if (createId == null) {
+            createId = clientId;
+        }
         Identity identity = new Identity()
                 .setOwnerId(clientId)
-                .setCreateId(clientId)
+                .setCreateId(createId)
                 .setIsBlocked(Bool.N)
                 .setPassword(password)
                 .setSalt(salt)

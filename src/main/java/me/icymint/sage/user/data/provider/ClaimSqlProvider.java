@@ -3,13 +3,7 @@ package me.icymint.sage.user.data.provider;
 import me.icymint.sage.base.data.provider.BaseEntitySqlProvider;
 import me.icymint.sage.base.data.provider.SQL;
 import me.icymint.sage.user.spec.def.ClaimType;
-import me.icymint.sage.user.spec.def.RoleType;
 import me.icymint.sage.user.spec.entity.Claim;
-
-import java.util.Map;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.joining;
 
 /**
  * Created by daniel on 16/9/5.
@@ -46,13 +40,10 @@ public class ClaimSqlProvider extends BaseEntitySqlProvider<Claim> {
                 .toString();
     }
 
-    public String existRoles(Map<String, Object> params) {
-        RoleType[] types = (RoleType[]) params.get("roleTypes");
-        String values = Stream.of(types)
-                .map(type -> "'" + type + "'")
-                .collect(joining(","));
-        return "SELECT COUNT(1) FROM "
-                + getEntityTable() + " WHERE OWNER_ID=#{ownerId} AND TYPE='"
-                + ClaimType.ROLE + "' AND VALUE IN (" + values + ")";
+    public String findRolesByOwnerId() {
+        return selectFrom("VALUE")
+                .WHERE("OWNER_ID=#{ownerId}")
+                .WHERE("TYPE='" + ClaimType.ROLE + "'")
+                .toString();
     }
 }

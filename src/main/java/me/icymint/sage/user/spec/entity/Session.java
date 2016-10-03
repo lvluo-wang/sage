@@ -9,7 +9,7 @@ import java.time.Instant;
  */
 public class Session extends BaseEntity<Session> {
     private String sessionId;
-    private String clientId;
+    private Long clientId;
     private String ip;
     private String timeZone;
     private Instant expireTime;
@@ -37,11 +37,11 @@ public class Session extends BaseEntity<Session> {
         return this;
     }
 
-    public String getClientId() {
+    public Long getClientId() {
         return clientId;
     }
 
-    public Session setClientId(String clientId) {
+    public Session setClientId(Long clientId) {
         this.clientId = clientId;
         return this;
     }

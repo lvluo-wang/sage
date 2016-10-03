@@ -21,7 +21,7 @@ public abstract class BaseEvent<T extends BaseEvent<T>> {
     @JsonIgnore
     private String correlationId;
     @JsonIgnore
-    private String clientId;
+    private Long clientId;
     @JsonIgnore
     private String sessionId;
 
@@ -56,11 +56,11 @@ public abstract class BaseEvent<T extends BaseEvent<T>> {
         return getSelf();
     }
 
-    public String getClientId() {
+    public Long getClientId() {
         return clientId;
     }
 
-    public T setClientId(String clientId) {
+    public T setClientId(Long clientId) {
         this.clientId = clientId;
         return getSelf();
     }

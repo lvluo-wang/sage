@@ -79,7 +79,7 @@ public class SessionServiceImpl implements SessionService {
             sessionMapper.update(new Session()
                     .setId(session.getId())
                     .setIsDeleted(Bool.Y));
-            tokenService.expireBySessionId(session.getSessionId());
+            tokenService.expireBySessionId(session.getSessionId(), session.getClientId());
             update(attributes, context);
         }
     }

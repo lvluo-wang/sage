@@ -136,7 +136,7 @@ public class TokenServiceImpl implements TokenService {
         }
 
         //Step 5
-        runtimeContext.setClientId(String.valueOf(clientId));
+        runtimeContext.setClientId(clientId);
         runtimeContext.setUserId(identityId);
         Token token = new Token()
                 .setExpireTime(now.plusSeconds(client.getValidSeconds()))
@@ -212,9 +212,8 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Transactional
-    @CacheEvict(value = Magics.CACHE_TOKEN, allEntries = true)
-    public void expireBySessionId(String sessionId) {
-        tokenMapper.findBySessionId(sessionId).forEach(tokenService::expire);
+    public void expireBySessionId(String sessionId, Long clientId) {
+        tokenMapper.findBySessionIdAndClientId(sessionId, clientId).forEach(tokenService::expire);
     }
 
     public void authorize(CheckToken checkToken, boolean expireTimeCheck) {
@@ -292,7 +291,7 @@ public class TokenServiceImpl implements TokenService {
         if (!Objects.equals(token.getClientId(), tokenContext.getClientId())) {
             throw new UnauthorizedException(context, UserCode.CLIENT_ID__ILLEGAL, tokenContext.getClientId());
         }
-        runtimeContext.setClientId(String.valueOf(tokenContext.getClientId()));
+        runtimeContext.setClientId(tokenContext.getClientId());
 
         //Step 4
         if (expireTimeCheck && (token.getExpireTime() == null || token.getExpireTime().isBefore(ts))) {
@@ -341,7 +340,7 @@ public class TokenServiceImpl implements TokenService {
             return new LoginEvent()
                     .setOwnerId(token.getOwnerId())
                     .setTokenId(token.getId())
-                    .setClientId(String.valueOf(token.getClientId()))
+                    .setClientId(token.getClientId())
                     .setSessionId(token.getSessionId());
         }
     }

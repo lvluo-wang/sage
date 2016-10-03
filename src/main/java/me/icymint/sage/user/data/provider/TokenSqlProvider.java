@@ -31,9 +31,10 @@ public class TokenSqlProvider extends BaseEntitySqlProvider<Token> {
         return sql.SET_IF("SESSION_ID=#{sessionId}", token.getSessionId() != null);
     }
 
-    public String findBySessionId() {
+    public String findBySessionIdAndClientId() {
         return selectFrom("ID")
                 .WHERE("SESSION_ID=#{sessionId}")
+                .WHERE("CLIENT_ID=#{clientId}")
                 .toString();
     }
 }

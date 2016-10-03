@@ -45,12 +45,17 @@ public interface RuntimeContext {
         return attributes.getRequest().getHeader(header);
     }
 
-    default String getClientId() {
-        return get(CLIENT_ID);
+    default Long getClientId() {
+        String cid = get(CLIENT_ID);
+        return StringUtils.isEmpty(cid) ? null : Long.valueOf(cid);
     }
 
-    default void setClientId(String id) {
-        set(CLIENT_ID, id);
+    default void setClientId(Long id) {
+        if (id == null) {
+            remove(CLIENT_ID);
+        } else {
+            set(CLIENT_ID, String.valueOf(id));
+        }
     }
 
     Long getUserId();
