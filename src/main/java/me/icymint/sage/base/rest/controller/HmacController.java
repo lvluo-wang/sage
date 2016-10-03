@@ -29,7 +29,7 @@ import static java.util.stream.Collectors.joining;
  */
 @RestController
 @RequestMapping("/hmacs")
-@ConditionalOnProperty(name = Magics.PROP_ENABLE_HMAC, havingValue = "true")
+@ConditionalOnProperty(name = Magics.PROP_DEV_MODE, havingValue = "true")
 public class HmacController {
 
     @Autowired

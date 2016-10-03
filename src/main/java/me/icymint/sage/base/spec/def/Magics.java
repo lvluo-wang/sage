@@ -16,7 +16,6 @@ public class Magics {
     public static final String PROP_PREFIX = "sage.";  //自定义配置属性键值前缀
     public static final String PROP_DEV_MODE = PROP_PREFIX + "dev.mode";
     public static final String PROP_BASE_URL = PROP_PREFIX + "baseUrl";
-    public static final String PROP_ENABLE_HMAC = PROP_PREFIX + "enable.hmac";
     public static final String PROP_ENABLE_DB_CLOCK = PROP_PREFIX + "enable.db.clock";
     public static final String PROP_ENABLE_JOB = PROP_PREFIX + "enable.job";
     public static final String PROP_ENABLE_SESSION_STORAGE = PROP_PREFIX + "enable.session.storage";

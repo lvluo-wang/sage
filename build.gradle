@@ -74,7 +74,6 @@ bootRun {
     systemProperty 'logback_level', 'INFO'
     systemProperty 'sage.always.save.log', 'true'
     systemProperty 'sage.dev.mode', 'true'
-    systemProperty 'sage.enable.hmac', 'true'
     addResources = true
 }
 
