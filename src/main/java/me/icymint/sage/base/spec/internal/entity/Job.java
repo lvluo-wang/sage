@@ -1,25 +1,25 @@
 package me.icymint.sage.base.spec.internal.entity;
 
 import me.icymint.sage.base.spec.def.Bool;
-import me.icymint.sage.base.spec.entity.BaseEntity;
+import me.icymint.sage.base.spec.entity.BaseJobEntity;
 
 import java.time.Instant;
 
 /**
  * Created by daniel on 2016/10/1.
  */
-public class Job extends BaseEntity<Job> {
+public class Job extends BaseJobEntity<Job> {
 
-    private String runnerId;
+    private String instanceId;
     private Bool isActive;
     private Instant expireTime;
 
-    public String getRunnerId() {
-        return runnerId;
+    public String getInstanceId() {
+        return instanceId;
     }
 
-    public Job setRunnerId(String runnerId) {
-        this.runnerId = runnerId;
+    public Job setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
         return this;
     }
 
@@ -49,7 +49,7 @@ public class Job extends BaseEntity<Job> {
     @Override
     public String toString() {
         return "Job{" +
-                "runnerId='" + runnerId + '\'' +
+                "instanceId='" + instanceId + '\'' +
                 ", isActive=" + isActive +
                 ", expireTime=" + expireTime +
                 "} " + super.toString();

@@ -19,20 +19,20 @@ public class EventSqlProvider extends BaseJobEntitySqlProvider<Event> {
     }
 
     public String findAllWithNewCreated() {
-        return selectFrom()
+        return selectAllFrom()
                 .WHERE("STATUS='" + EventStatus.CREATED + "'")
                 .WHERE("NEXT_SCAN_TIME<=CURRENT_TIMESTAMP")
                 .toString();
     }
 
     public String findByEventId() {
-        return selectFrom()
+        return selectAllFrom()
                 .WHERE("EVENT_ID=#{eventId}")
                 .toString();
     }
 
     @Override
-    protected final SQL onSave3(Event event, SQL sql) {
+    protected final SQL onCreate3(Event event, SQL sql) {
         return sql
                 .VALUES_IF("STATUS", "#{status}", event.getStatus() != null)
                 .VALUES("EVENT_ID", "#{eventId}")
@@ -46,7 +46,7 @@ public class EventSqlProvider extends BaseJobEntitySqlProvider<Event> {
     }
 
     @Override
-    protected final SQL onUpdate3(Event event, SQL sql) {
+    protected final SQL onUpdate2(Event event, SQL sql) {
         return sql
                 .SET_IF("STATUS=#{status}", event.getStatus() != null);
     }

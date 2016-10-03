@@ -17,9 +17,9 @@ import java.time.Instant;
 @Mapper
 public interface JobMapper {
 
-    @InsertProvider(type = JobSqlProvider.class, method = "save")
+    @InsertProvider(type = JobSqlProvider.class, method = "create")
     @SelectKey(statement = "SELECT NEXTVAL('SEQ_JOB_ID')", keyProperty = "id", before = true, resultType = Long.class)
-    int save(Job job);
+    int create(Job job);
 
     @UpdateProvider(type = JobSqlProvider.class, method = "update")
     int update(Job event);
@@ -31,5 +31,5 @@ public interface JobMapper {
     Job findOne(Long id);
 
     @UpdateProvider(type = JobSqlProvider.class, method = "lockJob")
-    int lockJob(@Param("id") Long jobId, @Param("runnerId") String runnerId, @Param("expireTime") Instant instant);
+    int lockJob(@Param("id") Long jobId, @Param("instanceId") String instanceId, @Param("expireTime") Instant instant);
 }

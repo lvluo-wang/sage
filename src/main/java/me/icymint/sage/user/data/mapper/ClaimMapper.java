@@ -19,9 +19,9 @@ import java.util.List;
 @Mapper
 public interface ClaimMapper {
 
-    @InsertProvider(type = ClaimSqlProvider.class, method = "save")
+    @InsertProvider(type = ClaimSqlProvider.class, method = "create")
     @SelectKey(statement = "SELECT NEXTVAL('SEQ_CLAIM_ID')", keyProperty = "id", before = true, resultType = Long.class)
-    int save(Claim claim);
+    int create(Claim claim);
 
     @SelectProvider(type = ClaimSqlProvider.class, method = "findOne")
     Claim findOne(@Param("id") Long id);

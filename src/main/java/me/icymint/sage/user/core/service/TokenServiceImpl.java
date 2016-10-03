@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +78,8 @@ public class TokenServiceImpl implements TokenService {
     ClaimService claimService;
     @Autowired
     SageValidator sageValidator;
+    @Autowired
+    TokenServiceImpl tokenService;
 
     @PostConstruct
     protected void init() {
@@ -141,7 +145,7 @@ public class TokenServiceImpl implements TokenService {
                 .setCreateTime(now)
                 .setOwnerId(identityId)
                 .setSessionId(runtimeContext.getSessionId());
-        tokenMapper.save(token);
+        tokenMapper.create(token);
         getCache().put(cacheKey, "true");
         return tokenMapper.findOne(token.getId());
     }
@@ -178,6 +182,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+    @Cacheable(value = Magics.CACHE_TOKEN, key = "#tokenId")
     public Token findOne(Long tokenId) {
         return tokenMapper.findOne(tokenId);
     }
@@ -188,26 +193,28 @@ public class TokenServiceImpl implements TokenService {
         if (tokenId == null) {
             return true;
         }
-        Token token = findOne(tokenId);
+        Token token = tokenService.findOne(tokenId);
         if (token != null) {
             Instant now = clock.now();
             if (token.getExpireTime().isAfter(now)) {
                 return false;
             }
-            expire(tokenId);
+            tokenService.expire(tokenId);
         }
         return true;
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = Magics.CACHE_TOKEN, key = "#tokenId")
     public void expire(Long tokenId) {
         tokenMapper.delete(tokenId);
     }
 
     @Transactional
+    @CacheEvict(value = Magics.CACHE_TOKEN, allEntries = true)
     public void expireBySessionId(String sessionId) {
-        tokenMapper.deleteBySessionId(sessionId);
+        tokenMapper.findBySessionId(sessionId).forEach(tokenService::expire);
     }
 
     public void authorize(CheckToken checkToken, boolean expireTimeCheck) {

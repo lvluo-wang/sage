@@ -8,45 +8,49 @@ import me.icymint.sage.base.spec.entity.BaseEntity;
  */
 public abstract class BaseEntitySqlProvider<T extends BaseEntity> extends BaseLogEntitySqlProvider<T> {
 
-    protected final SQL onSave(T t, SQL sql) {
-        onSave2(t, sql.VALUES_IF("UPDATE_TIME", "#{updateTime}", t.getUpdateTime() != null)
-                .VALUES_IF("IS_DELETED", "#{isDeleted}", t.getIsDeleted() != null));
+    protected final SQL onCreate(T t, SQL sql) {
+        sql = sql
+                .VALUES_IF("UPDATE_TIME", "#{updateTime}", t.getUpdateTime() != null)
+                .VALUES_IF("IS_DELETED", "#{isDeleted}", t.getIsDeleted() != null);
+        onCreate2(t, sql);
         return sql;
     }
 
-    protected abstract SQL onSave2(T t, SQL sql);
-
-    public final String findOneForUpdate() {
-        return findOne() + " FOR UPDATE";
-    }
+    protected abstract SQL onCreate2(T t, SQL sql);
 
     @Override
     protected final SQL onFind(SQL sql) {
-        onFind2(sql.WHERE("IS_DELETED='" + Bool.N + "'"));
+        sql = sql.WHERE("IS_DELETED='" + Bool.N + "'");
+        onFind2(sql);
         return sql;
     }
 
     protected abstract SQL onFind2(SQL sql);
 
-    protected final SQL deleteBy() {
+    protected final SQL deleteOne() {
         return new SQL()
                 .UPDATE(getEntityTable())
                 .SET("IS_DELETED='" + Bool.Y + "'")
-                .SET("UPDATE_TIME=CURRENT_TIMESTAMP");
+                .SET("UPDATE_TIME=CURRENT_TIMESTAMP")
+                .WHERE("IS_DELETED='" + Bool.N + "'");
     }
 
     public final String update(T t) {
-        return onUpdate(t, new SQL()
-                .UPDATE(getEntityTable()))
+        return updateFrom(t)
                 .WHERE("ID=#{id}")
                 .toString();
     }
 
-    protected final SQL onUpdate(T t, SQL sql) {
-        return onUpdate2(t, sql.SET_IF("UPDATE_TIME=#{updateTime}",
-                t.getUpdateTime() != null,
-                "UPDATE_TIME=CURRENT_TIMESTAMP"));
+    protected final SQL updateFrom(T t) {
+        SQL sql = new SQL()
+                .UPDATE(getEntityTable())
+                .SET_IF("UPDATE_TIME=#{updateTime}",
+                        t.getUpdateTime() != null,
+                        "UPDATE_TIME=CURRENT_TIMESTAMP");
+        onUpdate(t, sql);
+        sql.WHERE("IS_DELETED='" + Bool.N + "'");
+        return sql;
     }
 
-    protected abstract SQL onUpdate2(T t, SQL sql);
+    protected abstract SQL onUpdate(T t, SQL sql);
 }

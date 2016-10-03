@@ -57,7 +57,7 @@ public class ApplicationTests {
         Identity id = new Identity()
                 .setOwnerId(0L)
                 .setType(IdentityType.USER);
-        assertEquals(1, identityMapper.save(id));
+        assertEquals(1, identityMapper.create(id));
         id = identityMapper.findOne(id.getId());
         System.out.println(id);
         System.out.println(identityMapper.findAll(new PageBounds(1, 10)));

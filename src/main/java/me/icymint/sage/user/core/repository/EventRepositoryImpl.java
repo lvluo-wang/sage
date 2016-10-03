@@ -32,8 +32,8 @@ public class EventRepositoryImpl implements EventRepository {
 
     @Override
     @Transactional
-    public void save(Event event) {
-        if (eventMapper.save(event) != 1) {
+    public void create(Event event) {
+        if (eventMapper.create(event) != 1) {
             throw new UserServiceException(context, UserCode.EVENT__SAVE_FAILED, event.getEventId());
         }
     }

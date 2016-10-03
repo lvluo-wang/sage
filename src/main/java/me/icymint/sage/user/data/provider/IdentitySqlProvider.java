@@ -14,9 +14,9 @@ public class IdentitySqlProvider extends BaseEntitySqlProvider<Identity> {
     }
 
     @Override
-    protected SQL onSave2(Identity identity, SQL sql) {
+    protected SQL onCreate2(Identity identity, SQL sql) {
         return sql.VALUES_IF("SALT", "#{salt}", identity.getSalt() != null)
-                .VALUES_IF("PASSWORD", "#{password}", identity.getSalt() != null)
+                .VALUES_IF("PASSWORD", "#{password}", identity.getPassword() != null)
                 .VALUES_IF("CREATE_ID", "#{createId}", identity.getCreateId() != null, "#{ownerId}")
                 .VALUES_IF("TYPE", "#{type}", identity.getType() != null, "'" + IdentityType.USER + "'")
                 .VALUES_IF("VALID_SECONDS", "#{validSeconds}", identity.getValidSeconds() != null)
@@ -29,17 +29,15 @@ public class IdentitySqlProvider extends BaseEntitySqlProvider<Identity> {
     }
 
     @Override
-    protected SQL onUpdate2(Identity identity, SQL sql) {
+    protected SQL onUpdate(Identity identity, SQL sql) {
         return sql.SET_IF("IS_BLOCKED=#{isBlocked}", identity.getIsBlocked() != null)
                 .SET_IF("VALID_SECONDS=#{validSeconds}", identity.getValidSeconds() != null)
-                .SET_IF("SALT=#{password}", identity.getValidSeconds() != null)
-                .SET_IF("PASSWORD=#{password}", identity.getValidSeconds() != null);
+                .SET_IF("SALT=#{salt}", identity.getSalt() != null)
+                .SET_IF("PASSWORD=#{password}", identity.getPassword() != null);
     }
 
     public String findByUsernameForUpdate() {
-        return new SQL()
-                .SELECT("*")
-                .FROM(getEntityTable())
+        return selectAllFrom()
                 .WHERE("USERNAME=#{username}")
                 .toString() + " FOR UPDATE";
     }

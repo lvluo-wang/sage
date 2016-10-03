@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnBean(JobRepository.class)
 public class JobService {
     private final Logger logger = LoggerFactory.getLogger(JobService.class);
-    private final String runnerId = UUID.randomUUID().toString();
+    private final String instanceId = UUID.randomUUID().toString();
     private volatile boolean hasJobLock = false;
 
     @Autowired
@@ -87,20 +87,20 @@ public class JobService {
         }
         Instant now = clock.now();
 
-        if (Objects.equals(runnerId, job.getRunnerId())) {
+        if (Objects.equals(instanceId, job.getInstanceId())) {
             if (job.getExpireTime()
                     .isAfter(now.plusMillis(Magics.JOB_LOCK_REFRESH_DURATION))) {
                 hasJobLock = true;
                 return;
             }
         } else {
-            if (job.getRunnerId() != null && job.getExpireTime().isAfter(now)) {
+            if (job.getInstanceId() != null && job.getExpireTime().isAfter(now)) {
                 hasJobLock = false;
                 return;
             }
         }
         logger.info("Try take job lock...");
-        hasJobLock = jobRepository.lockJob(jobId, runnerId, now.plusMillis(Magics.JOB_LOCK_EXPIRE_DURATION));
+        hasJobLock = jobRepository.lockJob(jobId, instanceId, now.plusMillis(Magics.JOB_LOCK_EXPIRE_DURATION));
         if (hasJobLock) {
             logger.info("Take job lock OK!");
         } else {

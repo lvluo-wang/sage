@@ -28,7 +28,7 @@ public class JobRepositoryImpl implements JobRepository {
 
     @Override
     @Transactional
-    public boolean lockJob(Long jobId, String runnerId, Instant expireTime) {
-        return jobMapper.lockJob(jobId, runnerId, expireTime) == 1;
+    public boolean lockJob(Long jobId, String instanceId, Instant expireTime) {
+        return jobMapper.lockJob(jobId, instanceId, expireTime) == 1;
     }
 }

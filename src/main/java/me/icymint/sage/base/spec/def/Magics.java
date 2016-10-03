@@ -10,7 +10,13 @@ import java.time.Duration;
 public class Magics {
     // Basic Constants
     public static final String CLAIM_GLOBAL_UNIQUE = "-";
+
+    // Cache name
+    public static final String CACHE_IDENTITY = "identity";
     public static final String CACHE_SIGNATURE = "signature";
+    public static final String CACHE_CLAIM = "claim";
+    public static final String CACHE_TOKEN = "token";
+    public static final String CACHE_SESSION = "session";
 
     // Props
     public static final String PROP_PREFIX = "sage.";  //自定义配置属性键值前缀

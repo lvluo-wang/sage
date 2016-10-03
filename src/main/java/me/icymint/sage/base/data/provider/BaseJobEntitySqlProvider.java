@@ -8,21 +8,23 @@ import me.icymint.sage.base.spec.entity.BaseJobEntity;
 public abstract class BaseJobEntitySqlProvider<T extends BaseJobEntity<T>> extends BaseEntitySqlProvider<T> {
 
     @Override
-    protected final SQL onSave2(T t, SQL sql) {
+    protected final SQL onCreate2(T t, SQL sql) {
         if (t.getOwnerId() == null) {
             t.setOwnerId(0L);
         }
-        return onSave3(t, sql
-                .VALUES_IF("NEXT_SCAN_TIME", "#{nextScanTime}", t.getNextScanTime() != null));
+        sql.VALUES_IF("NEXT_SCAN_TIME", "#{nextScanTime}", t.getNextScanTime() != null);
+        onCreate3(t, sql);
+        return sql;
     }
 
-    protected abstract SQL onSave3(T t, SQL sql);
+    protected abstract SQL onCreate3(T t, SQL sql);
 
     @Override
-    protected final SQL onUpdate2(T t, SQL sql) {
-        return onUpdate3(t, sql
-                .SET_IF("NEXT_SCAN_TIME=#{nextScanTime}", t.getNextScanTime() != null));
+    protected final SQL onUpdate(T t, SQL sql) {
+        sql.SET_IF("NEXT_SCAN_TIME=#{nextScanTime}", t.getNextScanTime() != null);
+        onUpdate2(t, sql);
+        return sql;
     }
 
-    protected abstract SQL onUpdate3(T t, SQL sql);
+    protected abstract SQL onUpdate2(T t, SQL sql);
 }

@@ -18,9 +18,9 @@ import java.util.List;
 @Mapper
 public interface EventMapper {
 
-    @InsertProvider(type = EventSqlProvider.class, method = "save")
+    @InsertProvider(type = EventSqlProvider.class, method = "create")
     @SelectKey(statement = "SELECT NEXTVAL('SEQ_EVENT_ID')", keyProperty = "id", before = true, resultType = Long.class)
-    int save(Event dbEvent);
+    int create(Event dbEvent);
 
     @SelectProvider(type = EventSqlProvider.class, method = "findAllWithNewCreated")
     List<Event> findAllWithNewCreated(RowBounds rowBounds);

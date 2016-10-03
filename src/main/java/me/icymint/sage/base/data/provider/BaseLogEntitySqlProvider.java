@@ -9,66 +9,70 @@ public abstract class BaseLogEntitySqlProvider<T extends BaseLogEntity> {
 
     protected abstract String getEntityTable();
 
-    public final String save(T t) {
+    public final String create(T t) {
         SQL sql = new SQL()
                 .INSERT_INTO(getEntityTable())
                 .VALUES("ID", "#{id}")
                 .VALUES("OWNER_ID", "#{ownerId}")
                 .VALUES_IF("CREATE_TIME", "#{createTime}", t.getCreateTime() != null);
-        onSave(t, sql);
+        onCreate(t, sql);
         return sql.toString();
     }
 
-    protected abstract SQL onSave(T t, SQL sql);
+    protected abstract SQL onCreate(T t, SQL sql);
 
     protected abstract SQL onFind(SQL sql);
 
-    protected final SQL selectFrom() {
+    protected final SQL selectAllFrom() {
+        return selectFrom("*");
+    }
+
+    protected final SQL selectFrom(String items) {
         return onFind(new SQL()
-                .SELECT("*")
+                .SELECT(items)
                 .FROM(getEntityTable()));
     }
 
+    public final String findOneForUpdate() {
+        return findOne() + " FOR UPDATE";
+    }
+
     public final String findOne() {
-        return selectFrom()
+        return selectAllFrom()
                 .WHERE("ID=#{id}")
                 .toString();
     }
 
     public final String findOneByOwnerId() {
-        return selectFrom()
+        return selectAllFrom()
                 .WHERE("ID=#{id}")
                 .WHERE("OWNER_ID=#{ownerId}")
                 .toString();
     }
 
     public final String findByOwnerId() {
-        return selectFrom()
+        return selectAllFrom()
                 .WHERE("OWNER_ID=#{ownerId}")
                 .toString();
     }
 
-
     public final String findAll() {
-        return selectFrom().toString();
+        return selectAllFrom().toString();
     }
 
-
-    protected SQL deleteBy() {
+    protected SQL deleteOne() {
         return new SQL()
                 .DELETE_FROM(getEntityTable());
     }
 
     public final String delete() {
-        return deleteBy()
+        return deleteOne()
                 .WHERE("ID=#{id}")
                 .toString();
     }
 
-    public String exists() {
-        return new SQL()
-                .SELECT("COUNT(1)")
-                .FROM(getEntityTable())
+    public final String exists() {
+        return selectFrom("COUNT(1)")
                 .WHERE("ID=#{id}")
                 .toString();
     }

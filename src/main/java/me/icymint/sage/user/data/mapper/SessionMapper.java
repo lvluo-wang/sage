@@ -15,10 +15,9 @@ import org.apache.ibatis.annotations.UpdateProvider;
 @Mapper
 public interface SessionMapper {
 
-    @InsertProvider(type = SessionSqlProvider.class, method = "save")
+    @InsertProvider(type = SessionSqlProvider.class, method = "create")
     @SelectKey(statement = "SELECT NEXTVAL('SEQ_SESSION_ID')", keyProperty = "id", before = true, resultType = Long.class)
-    int save(Session session);
-
+    int create(Session session);
 
     @UpdateProvider(type = SessionSqlProvider.class, method = "update")
     int update(Session session);

@@ -61,7 +61,7 @@ public class SessionServiceImpl implements SessionService {
         Session session = sessionMapper.findBySessionId(attributes.getSessionId());
         if (session == null) {
             HttpSession hs = attributes.getRequest().getSession(false);
-            sessionMapper.save(new Session()
+            sessionMapper.create(new Session()
                     .setOwnerId(userId)
                     .setSessionId(attributes.getSessionId())
                     .setClientId(context.getClientId())

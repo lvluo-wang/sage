@@ -17,9 +17,9 @@ import java.util.List;
 @Mapper
 public interface IdentityMapper {
 
-    @InsertProvider(type = IdentitySqlProvider.class, method = "save")
+    @InsertProvider(type = IdentitySqlProvider.class, method = "create")
     @SelectKey(statement = "SELECT NEXTVAL('SEQ_IDENTITY_ID')", keyProperty = "id", before = true, resultType = Long.class)
-    int save(Identity identity);
+    int create(Identity identity);
 
     @SelectProvider(type = IdentitySqlProvider.class, method = "findOne")
     Identity findOne(@Param("id") Long id);

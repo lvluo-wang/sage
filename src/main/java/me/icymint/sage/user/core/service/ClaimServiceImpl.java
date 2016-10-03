@@ -11,6 +11,7 @@ import me.icymint.sage.user.spec.def.UserCode;
 import me.icymint.sage.user.spec.entity.Claim;
 import me.icymint.sage.user.spec.exception.UserServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,13 +43,14 @@ public class ClaimServiceImpl implements ClaimService {
                 .setPrimaryKey(type.isGlobalUnique() ?
                         Magics.CLAIM_GLOBAL_UNIQUE
                         : String.valueOf(identityId));
-        if (claimMapper.save(claim) != 1) {
+        if (claimMapper.create(claim) != 1) {
             throw new UserServiceException(context, UserCode.CLAIM_CREATE_FAILED);
         }
         return claim.getId();
     }
 
     @Override
+    @Cacheable(value = Magics.CACHE_CLAIM, key = "#id")
     public Claim findOne(Long id, Long ownerId) {
         return claimMapper.findOneByOwnerId(id, ownerId);
     }

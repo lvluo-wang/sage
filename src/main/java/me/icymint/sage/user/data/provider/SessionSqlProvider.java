@@ -14,7 +14,7 @@ public class SessionSqlProvider extends BaseEntitySqlProvider<Session> {
     }
 
     @Override
-    protected SQL onSave2(Session session, SQL sql) {
+    protected SQL onCreate2(Session session, SQL sql) {
         return sql
                 .VALUES("SESSION_ID", "#{sessionId}")
                 .VALUES("EXPIRE_TIME", "#{expireTime}")
@@ -29,7 +29,7 @@ public class SessionSqlProvider extends BaseEntitySqlProvider<Session> {
     }
 
     @Override
-    protected SQL onUpdate2(Session session, SQL sql) {
+    protected SQL onUpdate(Session session, SQL sql) {
         return sql
                 .SET_IF("CLIENT_ID=#{clientId}", session.getClientId() != null)
                 .SET_IF("IP=#{ip}", session.getIp() != null)
@@ -41,17 +41,13 @@ public class SessionSqlProvider extends BaseEntitySqlProvider<Session> {
     }
 
     public String findBySessionId() {
-        return new SQL()
-                .SELECT("*")
-                .FROM(getEntityTable())
+        return selectAllFrom()
                 .WHERE("SESSION_ID=#{sessionId}")
                 .toString();
     }
 
     public String existsSessionId() {
-        return new SQL()
-                .SELECT("COUNT(1)")
-                .FROM(getEntityTable())
+        return selectFrom("COUNT(1)")
                 .WHERE("SESSION_ID=#{sessionId}")
                 .toString();
     }

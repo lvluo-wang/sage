@@ -21,7 +21,7 @@ public class ClaimSqlProvider extends BaseEntitySqlProvider<Claim> {
     }
 
     @Override
-    protected SQL onSave2(Claim claim, SQL sql) {
+    protected SQL onCreate2(Claim claim, SQL sql) {
         return sql.VALUES("TYPE", "#{type}")
                 .VALUES("VALUE", "#{value}")
                 .VALUES("PRIMARY_KEY", "#{primaryKey}")
@@ -34,17 +34,15 @@ public class ClaimSqlProvider extends BaseEntitySqlProvider<Claim> {
     }
 
     @Override
-    protected SQL onUpdate2(Claim claim, SQL sql) {
+    protected SQL onUpdate(Claim claim, SQL sql) {
         return sql
                 .SET_IF("IS_VERIFIED=#{isVerified}", claim.getIsVerified() != null);
     }
 
     public String findByTypeAndValue() {
-        return onFind(new SQL()
-                .SELECT("*")
-                .FROM(getEntityTable())
+        return selectAllFrom()
                 .WHERE("TYPE=#{type}")
-                .WHERE("VALUE=#{value}"))
+                .WHERE("VALUE=#{value}")
                 .toString();
     }
 

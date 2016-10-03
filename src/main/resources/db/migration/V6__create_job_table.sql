@@ -1,15 +1,16 @@
 CREATE SEQUENCE SEQ_JOB_ID INCREMENT BY 1 MINVALUE 1 NO MAXVALUE START WITH 1000;
 
 CREATE TABLE T_JOB (
-  ID          BIGINT                                    NOT NULL,
-  OWNER_ID    BIGINT                                    NOT NULL,
-  CREATE_TIME TIMESTAMP DEFAULT CURRENT_TIMESTAMP       NOT NULL,
-  UPDATE_TIME TIMESTAMP                                 NULL,
-  IS_DELETED  CHAR(1) DEFAULT 'N'                       NOT NULL,
+  ID             BIGINT                                       NOT NULL,
+  OWNER_ID       BIGINT                                       NOT NULL,
+  CREATE_TIME    TIMESTAMP DEFAULT CURRENT_TIMESTAMP          NOT NULL,
+  UPDATE_TIME    TIMESTAMP                                    NULL,
+  IS_DELETED     CHAR(1) DEFAULT 'N'                          NOT NULL,
+  NEXT_SCAN_TIME TIMESTAMP DEFAULT CURRENT_TIMESTAMP          NOT NULL,
   --
-  RUNNER_ID   CHAR(36)                                  NULL,
-  IS_ACTIVE   CHAR(1) DEFAULT 'Y'                       NOT NULL,
-  EXPIRE_TIME TIMESTAMP DEFAULT CURRENT_TIMESTAMP       NOT NULL,
+  INSTANCE_ID    CHAR(36)                                     NULL,
+  IS_ACTIVE      CHAR(1) DEFAULT 'Y'                          NOT NULL,
+  EXPIRE_TIME    TIMESTAMP DEFAULT CURRENT_TIMESTAMP          NOT NULL,
   CONSTRAINT PK_JOB PRIMARY KEY (ID),
   CONSTRAINT FK_JOB_OWNER_ID FOREIGN KEY (OWNER_ID) REFERENCES T_IDENTITY (ID)
 );

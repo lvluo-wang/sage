@@ -4,6 +4,7 @@ import me.icymint.sage.base.spec.annotation.LogInvokeMethod;
 import me.icymint.sage.base.spec.annotation.NotifyInTransactionEvent;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.Bool;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.base.spec.internal.api.EventProducer;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
@@ -18,6 +19,7 @@ import me.icymint.sage.user.spec.entity.Identity;
 import me.icymint.sage.user.spec.exception.UserServiceException;
 import me.icymint.sage.user.spec.internal.entity.RegisterEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,7 @@ public class IdentityServiceImpl implements IdentityService {
     Clock clock;
 
     @Override
+    @Cacheable(value = Magics.CACHE_IDENTITY, key = "#identityId")
     public Identity findOne(Long identityId) {
         return identityMapper.findOne(identityId);
     }
@@ -79,7 +82,7 @@ public class IdentityServiceImpl implements IdentityService {
                 .setSalt(salt)
                 .setType(IdentityType.USER)
                 .setValidSeconds(null);
-        if (identityMapper.save(identity) != 1) {
+        if (identityMapper.create(identity) != 1) {
             throw new UserServiceException(context, UserCode.IDENTITY_CREATE_FAILED);
         }
         identity = identityMapper.findOne(identity.getId());
@@ -97,7 +100,7 @@ public class IdentityServiceImpl implements IdentityService {
         if (claim == null) {
             return null;
         }
-        return identityMapper.findOne(claim.getOwnerId());
+        return findOne(claim.getOwnerId());
     }
 
 

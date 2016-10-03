@@ -113,7 +113,7 @@ public class EventServiceImpl implements BatchJob<Event> {
             }
         }
         logger.info("Saving async event {}", event);
-        eventRepository.save(dbEvent);
+        eventRepository.create(dbEvent);
     }
 
     private void executeEventHandlers(BaseEvent event) {

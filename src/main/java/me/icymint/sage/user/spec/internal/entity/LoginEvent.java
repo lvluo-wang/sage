@@ -21,4 +21,12 @@ public class LoginEvent extends BaseEvent<LoginEvent> {
     protected LoginEvent getSelf() {
         return this;
     }
+
+
+    @Override
+    public String toString() {
+        return "LoginEvent{" +
+                "tokenId=" + tokenId +
+                "} " + super.toString();
+    }
 }

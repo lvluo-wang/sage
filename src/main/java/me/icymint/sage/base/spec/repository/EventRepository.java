@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface EventRepository {
 
-    default void save(Event event) {
+    default void create(Event event) {
     }
 
     default List<Event> findAllWithNewCreated(PageBounds pageBounds) {
