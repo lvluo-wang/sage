@@ -14,13 +14,22 @@ public class Identity extends BaseEntity<Identity> {
     @JsonIgnore
     private String password;
     @JsonIgnore
-    private Long createBy;
-    @JsonIgnore
     private IdentityType type;
+    @JsonIgnore
+    private Long createId;
     @ToLabel
     private Bool isBlocked;
     @JsonIgnore
     private Long validSeconds;
+
+    public Long getCreateId() {
+        return createId;
+    }
+
+    public Identity setCreateId(Long createId) {
+        this.createId = createId;
+        return this;
+    }
 
     public IdentityType getType() {
         return type;
@@ -28,15 +37,6 @@ public class Identity extends BaseEntity<Identity> {
 
     public Identity setType(IdentityType type) {
         this.type = type;
-        return this;
-    }
-
-    public Long getCreateBy() {
-        return createBy;
-    }
-
-    public Identity setCreateBy(Long createBy) {
-        this.createBy = createBy;
         return this;
     }
 
@@ -86,8 +86,8 @@ public class Identity extends BaseEntity<Identity> {
         return "Identity{" +
                 "salt='" + salt + '\'' +
                 ", password='" + password + '\'' +
-                ", createBy=" + createBy +
                 ", type=" + type +
+                ", createId=" + createId +
                 ", isBlocked=" + isBlocked +
                 ", validSeconds=" + validSeconds +
                 "} " + super.toString();

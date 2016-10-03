@@ -1,6 +1,8 @@
 package me.icymint.sage.user.core.service;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import me.icymint.sage.base.spec.annotation.NotifyEvent;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.BaseCode;
@@ -10,26 +12,37 @@ import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.base.spec.exception.UnauthorizedException;
 import me.icymint.sage.base.spec.internal.api.EventProducer;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
+import me.icymint.sage.base.spec.internal.api.SageValidator;
 import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.user.data.mapper.TokenMapper;
 import me.icymint.sage.user.rest.context.TokenContext;
+import me.icymint.sage.user.spec.annotation.CheckToken;
+import me.icymint.sage.user.spec.api.ClaimService;
 import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.api.TokenService;
 import me.icymint.sage.user.spec.def.IdentityType;
+import me.icymint.sage.user.spec.def.RoleType;
 import me.icymint.sage.user.spec.def.UserCode;
 import me.icymint.sage.user.spec.entity.Identity;
 import me.icymint.sage.user.spec.entity.Token;
+import me.icymint.sage.user.spec.internal.api.AuthorizationMethod;
 import me.icymint.sage.user.spec.internal.entity.LoginEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -40,12 +53,16 @@ import java.util.stream.Stream;
  */
 @Service
 public class TokenServiceImpl implements TokenService {
+    private final Logger logger = LoggerFactory.getLogger(TokenServiceImpl.class);
+    private final Map<String, AuthorizationMethod> authorizationMethodMap = Maps.newHashMap();
+
     @Autowired
     ApplicationContext context;
+    @Autowired
+    AuthorizationMethod[] authorizationMethods;
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     TokenMapper tokenMapper;
-    @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     IdentityService identityService;
     @Autowired
@@ -53,33 +70,46 @@ public class TokenServiceImpl implements TokenService {
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     CacheManager cacheManager;
-    @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     RuntimeContext runtimeContext;
+    @Autowired
+    ClaimService claimService;
+    @Autowired
+    SageValidator sageValidator;
 
-    public TokenContext parseTokenContext(String tokenString) {
-        TokenContext context = new TokenContext();
-        if (StringUtils.isEmpty(tokenString)
-                || !tokenString.startsWith(Magics.TOKEN_SIGN_HEAD)
-                || tokenString.equals(Magics.TOKEN_SIGN_HEAD)) {
-            return null;
+    @PostConstruct
+    protected void init() {
+        for (AuthorizationMethod method : authorizationMethods) {
+            Assert.isNull(authorizationMethodMap.put(method.methodHeader(), method),
+                    "Authorization method " + method.methodHeader() + " duplicated!");
         }
-        tokenString = tokenString.substring(Magics.TOKEN_SIGN_HEAD.length());
-        context.setSign(tokenString.substring(0, Magics.TOKEN_SIGN_LENGTH));
-        List<String> parameterList = Splitter.on("|")
-                .omitEmptyStrings()
-                .trimResults()
-                .splitToList(tokenString.substring(Magics.TOKEN_SIGN_LENGTH));
-        if (parameterList.size() != 4) {
-            return null;
-        }
-        context.setClientId(Long.valueOf(parameterList.get(0)));
-        context.setTokenId(Long.valueOf(parameterList.get(1)));
-        context.setTimestamp(Long.valueOf(parameterList.get(2)));
-        context.setNonce(parameterList.get(3));
-        return context;
     }
 
+    public TokenContext parseTokenContext(String tokenString) {
+        if (!isSageHeader(tokenString)) {
+            throw new UnauthorizedException(this.context, UserCode.AUTHORIZATION_HEADER_NOT_SUPPORTED);
+        }
+        tokenString = tokenString.substring(Magics.TOKEN_AUTHORIZATION_HEAD.length());
+        List<String> list = Splitter.on(" ")
+                .trimResults()
+                .omitEmptyStrings()
+                .limit(2)
+                .splitToList(tokenString);
+        if (list.size() != 2) {
+            return null;
+        }
+        AuthorizationMethod method = authorizationMethodMap.get(list.get(0));
+        if (method == null) {
+            throw new UnauthorizedException(this.context, UserCode.AUTHORIZATION_HEADER_NOT_SUPPORTED);
+        }
+        return method.parse(list.get(1));
+    }
+
+    private boolean isSageHeader(String tokenString) {
+        return StringUtils.isEmpty(tokenString)
+                || !tokenString.startsWith(Magics.TOKEN_AUTHORIZATION_HEAD)
+                || tokenString.equals(Magics.TOKEN_AUTHORIZATION_HEAD);
+    }
 
     @Override
     @Transactional
@@ -116,7 +146,7 @@ public class TokenServiceImpl implements TokenService {
 
         //Step 3
         Identity identity = checkAndGetIdentity(identityId, IdentityType.USER);
-        String calculatedHash = calculateHash(identityId, clientId, nonce, timestamp, identity.getPassword());
+        String calculatedHash = calculateLoginHash(identityId, clientId, nonce, timestamp, identity.getPassword());
         if (!Objects.equals(hash, calculatedHash)) {
             throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
         }
@@ -142,7 +172,7 @@ public class TokenServiceImpl implements TokenService {
         return tokenMapper.findOne(token.getId());
     }
 
-    public String calculateHash(Long identityId, Long clientId, String nonce, Long timestamp, String password) {
+    public String calculateLoginHash(Long identityId, Long clientId, String nonce, Long timestamp, String password) {
         String data = Stream.of(identityId,
                 clientId,
                 nonce,
@@ -204,6 +234,96 @@ public class TokenServiceImpl implements TokenService {
     @Transactional
     public void expireBySessionId(String sessionId) {
         tokenMapper.deleteBySessionId(sessionId);
+    }
+
+    public void authorize(CheckToken checkToken, boolean expireTimeCheck) {
+        try {
+            String header = runtimeContext.getHeader(Magics.HEADER_AUTHORIZATION);
+            if (checkToken.allowNone() && Strings.isNullOrEmpty(header)) {
+                return;
+            }
+            doAuthorize(header, checkToken.allowRoles(), expireTimeCheck);
+        } finally {
+            if (runtimeContext.getTokenId() == null) {
+                runtimeContext.setTokenId(null);
+            }
+            if (runtimeContext.getUserId() == null) {
+                runtimeContext.setUserId(null);
+            }
+        }
+    }
+
+    private void doAuthorize(String header, RoleType[] roleTypes, boolean expireTimeCheck) {
+        TokenContext tokenContext = parseTokenContext(header);
+        if (tokenContext == null) {
+            throw new UnauthorizedException(context, BaseCode.AUTHORIZATION_REQUIRED);
+        }
+        logger.debug("authorize tokenContext passed in :{}", tokenContext);
+
+        sageValidator.validate(tokenContext, "tokenContext");
+
+        String nonce = tokenContext.getNonce();
+        Long timestamp = tokenContext.getTimestamp();
+
+        //Step 1
+        Instant now = clock.now();
+        Instant ts = Instant.ofEpochSecond(timestamp);
+        if (now.plusSeconds(Magics.TOKEN_SPAN).isBefore(ts)
+                || now.minusSeconds(Magics.TOKEN_SPAN).isAfter(ts)) {
+            throw new UnauthorizedException(context, UserCode.ACCESS_SPAN_NOT_VALID);
+        }
+
+        //Step 2
+        String hash = tokenContext.getSign();
+        String cacheKey = nonce + ":" + timestamp + ":" + hash;
+        if (getCache().get(cacheKey) != null) {
+            throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
+        }
+
+        //Step 3
+        Token token = findOne(tokenContext.getTokenId());
+        if (token == null) {
+            throw new UnauthorizedException(context, UserCode.TOKEN__NOT_FOUND, tokenContext.getTokenId());
+        }
+        if (!Objects.equals(token.getClientId(), tokenContext.getClientId())) {
+            throw new UnauthorizedException(context, UserCode.CLIENT_ID__ILLEGAL, tokenContext.getClientId());
+        }
+        runtimeContext.setClientId(String.valueOf(tokenContext.getClientId()));
+
+        //Step 4
+        if (expireTimeCheck && (token.getExpireTime() == null || token.getExpireTime().isBefore(ts))) {
+            throw new UnauthorizedException(context, UserCode.TOKEN__EXPIRED, token.getId());
+        }
+        String calculatedHash = calculateTokenHash(tokenContext.getClientId(),
+                tokenContext.getNonce(),
+                tokenContext.getTimestamp(),
+                tokenContext.getTokenId(),
+                token.getAccessSecret());
+        if (!Objects.equals(hash, calculatedHash)) {
+            logger.warn("auth sign not valid");
+            throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
+        }
+        //Step 5
+        if (!claimService.hasRoles(token.getOwnerId(), roleTypes)) {
+            logger.warn("user {} has no roles {}", token.getOwnerId(), Arrays.toString(roleTypes));
+            throw new UnauthorizedException(context, UserCode.ACCESS_PERMISSION_DENIED);
+        }
+
+        tokenContext.setOwnerId(token.getOwnerId());
+        runtimeContext.setUserId(token.getOwnerId());
+        runtimeContext.setTokenId(token.getId());
+
+        getCache().put(cacheKey, "true");
+    }
+
+    public String calculateTokenHash(Long clientId, String nonce, Long timestamp, Long tokenId, String secret) {
+        String data = Stream.of(clientId,
+                nonce,
+                timestamp,
+                tokenId)
+                .map(String::valueOf)
+                .collect(Collectors.joining("|"));
+        return HMacs.encodeToBase64(secret, data);
     }
 
     public static class LoginEventProducer implements EventProducer<Token, LoginEvent> {

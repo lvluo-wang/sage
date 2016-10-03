@@ -3,10 +3,10 @@ package me.icymint.sage.user.core.service;
 import me.icymint.sage.base.spec.annotation.LogMethodInvoke;
 import me.icymint.sage.base.spec.annotation.NotifyInTransactionEvent;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.internal.api.EventProducer;
-import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
+import me.icymint.sage.base.spec.internal.api.EventProducer;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.data.mapper.IdentityMapper;
 import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.def.ClaimType;
@@ -73,7 +73,7 @@ public class IdentityServiceImpl implements IdentityService {
         runtimeContext.setClientId(String.valueOf(clientId));
         Identity identity = new Identity()
                 .setOwnerId(clientId)
-                .setCreateBy(clientId)
+                .setCreateId(clientId)
                 .setIsBlocked(Bool.N)
                 .setPassword(password)
                 .setSalt(salt)

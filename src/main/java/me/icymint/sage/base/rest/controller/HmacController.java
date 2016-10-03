@@ -8,7 +8,7 @@ import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.user.core.service.TokenServiceImpl;
-import me.icymint.sage.user.rest.authorization.DefaultTokenAuthorization;
+import me.icymint.sage.user.rest.authorization.HmacAuthorizationMethod;
 import me.icymint.sage.user.spec.entity.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,9 +37,9 @@ public class HmacController {
     @Autowired
     TokenServiceImpl tokenService;
     @Autowired
-    DefaultTokenAuthorization defaultTokenAuthorization;
-    @Autowired
     Clock clock;
+    @Autowired
+    HmacAuthorizationMethod authorizationMethod;
 
     @GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
     public String salt() {
@@ -58,7 +58,7 @@ public class HmacController {
     public Token login(@RequestBody LoginRequest request) {
         String nonce = salt();
         Long timestamp = clock.timestamp();
-        String hash = tokenService.calculateHash(request.getIdentityId(), request.getClientId(), nonce, timestamp, request.getPassword());
+        String hash = tokenService.calculateLoginHash(request.getIdentityId(), request.getClientId(), nonce, timestamp, request.getPassword());
         return tokenService.login(request.getIdentityId(), request.getClientId(), nonce, timestamp, hash);
     }
 
@@ -66,11 +66,14 @@ public class HmacController {
     public String loginHash(@RequestBody LoginHashRequest request) {
         String nonce = salt();
         Long timestamp = clock.timestamp();
-        String hash = defaultTokenAuthorization.calculateHash(request.getClientId(), nonce, timestamp, request.getId(), request.getAccessSecret());
-        return Magics.TOKEN_SIGN_HEAD + hash + Stream
-                .of(String.valueOf(request.getClientId()),
-                        String.valueOf(request.getId()),
-                        String.valueOf(timestamp),
-                        nonce).collect(joining("|"));
+        String hash = tokenService.calculateTokenHash(request.getClientId(), nonce, timestamp, request.getId(), request.getAccessSecret());
+        return Magics.TOKEN_AUTHORIZATION_HEAD
+                + authorizationMethod.methodHeader()
+                + " "
+                + hash
+                + Stream.of(String.valueOf(request.getClientId()),
+                String.valueOf(request.getId()),
+                String.valueOf(timestamp),
+                nonce).collect(joining("|"));
     }
 }

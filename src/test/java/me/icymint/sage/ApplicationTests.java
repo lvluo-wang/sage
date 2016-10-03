@@ -2,8 +2,8 @@ package me.icymint.sage;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.core.service.EventServiceImpl;
-import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.base.spec.def.Magics;
+import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.user.data.mapper.EventMapper;
 import me.icymint.sage.user.data.mapper.IdentityMapper;
 import me.icymint.sage.user.spec.api.IdentityService;
@@ -55,10 +55,7 @@ public class ApplicationTests {
         logger.info("HelloResource");
         System.out.println("hello");
         Identity id = new Identity()
-                .setCreateBy(0L)
                 .setOwnerId(0L)
-                .setSalt("-")
-                .setPassword("-")
                 .setType(IdentityType.USER);
         assertEquals(1, identityMapper.save(id));
         id = identityMapper.findOne(id.getId());

@@ -49,8 +49,8 @@ public class Magics {
     public static final String HEADER_AUTHORIZATION = "Authorization";
 
     //Token
-    public static final String TOKEN_SIGN_HEAD = "TK-1";
-    public static final int TOKEN_SIGN_LENGTH = 44;
+    public static final String TOKEN_AUTHORIZATION_HEAD = "SAGE-";
+    public static final String TOKEN_AUTHORIZATION_METHOD_HMAC_1 = PROP_PREFIX + "token.method.hmac.1";
     public static final long TOKEN_SPAN = Duration.ofMinutes(10L).getSeconds();
 
     //Job config

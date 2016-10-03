@@ -17,6 +17,7 @@ public class TokenSqlProvider extends BaseEntitySqlProvider<Token> {
         return sql.VALUES("CLIENT_ID", "#{clientId}")
                 .VALUES("ACCESS_SECRET", "#{accessSecret}")
                 .VALUES("EXPIRE_TIME", "#{expireTime}")
+                .VALUES_IF("TYPE", "#{type}", token.getType() != null)
                 .VALUES_IF("SESSION_ID", "#{sessionId}", token.getSessionId() != null);
     }
 

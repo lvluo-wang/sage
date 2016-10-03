@@ -15,10 +15,10 @@ public class IdentitySqlProvider extends BaseEntitySqlProvider<Identity> {
 
     @Override
     protected SQL onSave2(Identity identity, SQL sql) {
-        return sql.VALUES("SALT", "#{salt}")
-                .VALUES("PASSWORD", "#{password}")
+        return sql.VALUES_IF("SALT", "#{salt}", identity.getSalt() != null)
+                .VALUES_IF("PASSWORD", "#{password}", identity.getSalt() != null)
+                .VALUES_IF("CREATE_ID", "#{createId}", identity.getCreateId() != null, "#{ownerId}")
                 .VALUES_IF("TYPE", "#{type}", identity.getType() != null, "'" + IdentityType.USER + "'")
-                .VALUES("CREATE_BY", "#{createBy}")
                 .VALUES_IF("VALID_SECONDS", "#{validSeconds}", identity.getValidSeconds() != null)
                 .VALUES_IF("IS_BLOCKED", "#{isBlocked}", identity.getIsBlocked() != null);
     }

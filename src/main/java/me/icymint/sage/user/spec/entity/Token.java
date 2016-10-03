@@ -1,6 +1,7 @@
 package me.icymint.sage.user.spec.entity;
 
 import me.icymint.sage.base.spec.entity.BaseEntity;
+import me.icymint.sage.user.spec.def.TokenType;
 
 import java.time.Instant;
 
@@ -9,9 +10,19 @@ import java.time.Instant;
  */
 public class Token extends BaseEntity<Token> {
     private Long clientId;
+    private TokenType type;
     private String accessSecret;
     private Instant expireTime;
     private String sessionId;
+
+    public TokenType getType() {
+        return type;
+    }
+
+    public Token setType(TokenType type) {
+        this.type = type;
+        return this;
+    }
 
     public Long getClientId() {
         return clientId;

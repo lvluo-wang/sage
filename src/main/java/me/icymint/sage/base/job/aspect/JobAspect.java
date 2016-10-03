@@ -28,7 +28,7 @@ public class JobAspect {
     JobService jobService;
 
     @SuppressWarnings("unchecked")
-    @Around("@annotation(scheduled) && !execution(* me.icymint.sage.base.job.config.BaseJobConfig.lockJob(..))")
+    @Around("@annotation(scheduled) && !execution(* me.icymint.sage.base.job.config.BaseJobConfig.lockJob())")
     public Object around(ProceedingJoinPoint proceedingJoinPoint, Scheduled scheduled) {
         if (jobService.needQuit()) {
             logger.debug("Job ignore");
