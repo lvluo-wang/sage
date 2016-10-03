@@ -10,6 +10,7 @@ import me.icymint.sage.base.util.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
@@ -43,6 +44,9 @@ public class DefaultExceptionHandler extends AbstractHandlerMethodExceptionResol
     ApplicationContext context;
     @Autowired
     RequestValidateHandler requestValidateHandler;
+    @Value("${" + Magics.PROP_DEV_MODE + ":false}")
+    boolean isDevMode;
+
 
     @Override
     protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Exception ex) {
@@ -54,7 +58,7 @@ public class DefaultExceptionHandler extends AbstractHandlerMethodExceptionResol
     public ResponseEntity<ResultResource> handleException(Exception ex) throws Exception {
         ServiceException se = translate(ex);
         logError(se);
-        return new ResponseEntity<>(new ResultResource(se), getStatus(ex));
+        return new ResponseEntity<>(new ResultResource(se, isDevMode), getStatus(ex));
     }
 
     private void logError(Exception ex) {

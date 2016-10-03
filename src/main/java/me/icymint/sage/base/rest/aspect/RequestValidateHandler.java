@@ -28,6 +28,7 @@ public class RequestValidateHandler implements SageValidator {
 
     @Autowired
     ApplicationContext context;
+    @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     Validator validator;
 

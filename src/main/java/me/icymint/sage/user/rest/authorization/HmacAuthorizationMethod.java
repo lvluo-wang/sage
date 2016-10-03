@@ -17,7 +17,7 @@ public class HmacAuthorizationMethod implements AuthorizationMethod {
 
     @Override
     public String methodHeader() {
-        return "HMAC-1";
+        return "HMAC";
     }
 
     @Override

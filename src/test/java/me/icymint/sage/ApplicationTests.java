@@ -72,7 +72,6 @@ public class ApplicationTests {
         assertEquals("97yD9DBThCSxMpjmqm+xQ+9NWaFJRhdZl0edvC0aPNg=", hmac_64);
     }
 
-
     @Test
     @Timed(millis = 120 * 1000L)
     public void testEvent() {

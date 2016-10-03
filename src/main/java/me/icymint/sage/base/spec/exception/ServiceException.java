@@ -17,6 +17,7 @@ public class ServiceException extends RuntimeException {
     private final Object[] args;
     private final MessageSource source;
     private final String id;
+    private final Enum<?> errorCode;
     private Integer httpStatus;
 
     public ServiceException(Throwable e) {
@@ -40,7 +41,8 @@ public class ServiceException extends RuntimeException {
     }
 
     public ServiceException(Throwable ex, MessageSource source, Enum<?> code, Object... args) {
-        super(getI18nKey(code), ex);
+        super(getI18nKey(code == null ? BaseCode.UNKNOWN_EXCEPTION : code), ex);
+        this.errorCode = code == null ? BaseCode.UNKNOWN_EXCEPTION : code;
         this.source = source;
         this.args = args;
         this.id = UUID.randomUUID().toString();
@@ -69,6 +71,10 @@ public class ServiceException extends RuntimeException {
 
     public String getServerLocalizedMessage() {
         return getI18nValue(source, Locale.getDefault(), super.getMessage(), args);
+    }
+
+    public Enum<?> getErrorCode() {
+        return errorCode;
     }
 
     public String getCode() {

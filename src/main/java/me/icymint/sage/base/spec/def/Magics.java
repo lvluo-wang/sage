@@ -14,6 +14,7 @@ public class Magics {
 
     // Props
     public static final String PROP_PREFIX = "sage.";  //自定义配置属性键值前缀
+    public static final String PROP_DEV_MODE = PROP_PREFIX + "dev.mode";
     public static final String PROP_BASE_URL = PROP_PREFIX + "baseUrl";
     public static final String PROP_ENABLE_HMAC = PROP_PREFIX + "enable.hmac";
     public static final String PROP_ENABLE_DB_CLOCK = PROP_PREFIX + "enable.db.clock";
@@ -50,7 +51,6 @@ public class Magics {
 
     //Token
     public static final String TOKEN_AUTHORIZATION_HEAD = "SAGE-";
-    public static final String TOKEN_AUTHORIZATION_METHOD_HMAC_1 = PROP_PREFIX + "token.method.hmac.1";
     public static final long TOKEN_SPAN = Duration.ofMinutes(10L).getSeconds();
 
     //Job config
@@ -61,7 +61,4 @@ public class Magics {
     //Page
     public static final int PAGE_DEFAULT_LIMIT = 10;
     public static final int PAGE_MAX_LIMIT = 1000;
-
-    //Controller
-    public static final String CONTROLLER_DATA_MOBILE = "/data/mobiles";
 }

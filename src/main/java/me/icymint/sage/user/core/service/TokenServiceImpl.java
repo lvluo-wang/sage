@@ -85,32 +85,6 @@ public class TokenServiceImpl implements TokenService {
         }
     }
 
-    public TokenContext parseTokenContext(String tokenString) {
-        if (!isSageHeader(tokenString)) {
-            throw new UnauthorizedException(this.context, UserCode.AUTHORIZATION_HEADER_NOT_SUPPORTED);
-        }
-        tokenString = tokenString.substring(Magics.TOKEN_AUTHORIZATION_HEAD.length());
-        List<String> list = Splitter.on(" ")
-                .trimResults()
-                .omitEmptyStrings()
-                .limit(2)
-                .splitToList(tokenString);
-        if (list.size() != 2) {
-            return null;
-        }
-        AuthorizationMethod method = authorizationMethodMap.get(list.get(0));
-        if (method == null) {
-            throw new UnauthorizedException(this.context, UserCode.AUTHORIZATION_HEADER_NOT_SUPPORTED);
-        }
-        return method.parse(list.get(1));
-    }
-
-    private boolean isSageHeader(String tokenString) {
-        return StringUtils.isEmpty(tokenString)
-                || !tokenString.startsWith(Magics.TOKEN_AUTHORIZATION_HEAD)
-                || tokenString.equals(Magics.TOKEN_AUTHORIZATION_HEAD);
-    }
-
     @Override
     @Transactional
     @NotifyEvent(eventProducerClass = LoginEventProducer.class)
@@ -251,6 +225,29 @@ public class TokenServiceImpl implements TokenService {
                 runtimeContext.setUserId(null);
             }
         }
+    }
+
+
+    private TokenContext parseTokenContext(String tokenString) {
+        if (StringUtils.isEmpty(tokenString)
+                || !tokenString.startsWith(Magics.TOKEN_AUTHORIZATION_HEAD)
+                || tokenString.equals(Magics.TOKEN_AUTHORIZATION_HEAD)) {
+            throw new UnauthorizedException(this.context, UserCode.AUTHORIZATION_HEADER_UNKNOWN);
+        }
+        tokenString = tokenString.substring(Magics.TOKEN_AUTHORIZATION_HEAD.length());
+        List<String> list = Splitter.on(" ")
+                .trimResults()
+                .omitEmptyStrings()
+                .limit(2)
+                .splitToList(tokenString);
+        if (list.size() != 2) {
+            return null;
+        }
+        AuthorizationMethod method = authorizationMethodMap.get(list.get(0));
+        if (method == null) {
+            throw new UnauthorizedException(this.context, UserCode.AUTHORIZATION_HEADER__NOT_SUPPORTED, list.get(0));
+        }
+        return method.parse(list.get(1));
     }
 
     private void doAuthorize(String header, RoleType[] roleTypes, boolean expireTimeCheck) {
