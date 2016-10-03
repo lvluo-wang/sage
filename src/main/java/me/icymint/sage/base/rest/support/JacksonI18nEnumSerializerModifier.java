@@ -8,11 +8,10 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import me.icymint.sage.base.spec.annotation.ToLabel;
-import me.icymint.sage.base.spec.def.Magics;
+import me.icymint.sage.base.spec.def.EnumMode;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -33,9 +32,11 @@ public class JacksonI18nEnumSerializerModifier extends BeanSerializerModifier {
     private final Map<Class<Enum<?>>, StdScalarSerializer> expendedEnumMap = new ConcurrentHashMap<>();
     private final Map<Class<Enum<?>>, StdScalarSerializer> notExpendedEnumMap = new ConcurrentHashMap<>();
     private final MessageSource messageSource;
+    private final RuntimeContext runtimeContext;
 
-    public JacksonI18nEnumSerializerModifier(MessageSource messageSource) {
+    public JacksonI18nEnumSerializerModifier(RuntimeContext runtimeContext, MessageSource messageSource) {
         this.messageSource = messageSource;
+        this.runtimeContext = runtimeContext;
     }
 
     @SuppressWarnings("unchecked")
@@ -77,18 +78,19 @@ public class JacksonI18nEnumSerializerModifier extends BeanSerializerModifier {
         return new StdScalarSerializer<Enum<?>>(enumClass, false) {
             @Override
             public void serialize(Enum<?> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-                if (!disableToLabel()) {
+                EnumMode mode = runtimeContext.getEnumMode();
+                if (mode == EnumMode.NAME_ONLY) {
                     gen.writeString(value.name());
                     return;
                 }
                 String label = getLabel(labelMethod, prefix, value);
-                if (toLabel.expend()) {
+                if (mode == EnumMode.LABEL_ONLY || !toLabel.expend()) {
+                    gen.writeString(label);
+                } else {
                     gen.writeStartObject();
                     gen.writeStringField("name", value.name());
                     gen.writeStringField("label", label);
                     gen.writeEndObject();
-                } else {
-                    gen.writeString(label);
                 }
             }
 
@@ -104,12 +106,6 @@ public class JacksonI18nEnumSerializerModifier extends BeanSerializerModifier {
                     }
                 }
                 return messageSource.getMessage(prefix + value.name(), null, value.name(), LocaleContextHolder.getLocale());
-            }
-
-            private boolean disableToLabel() {
-                ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-                String value = attributes.getRequest().getHeader(Magics.HEADER_X_DISABLE_TO_LABEL);
-                return value == null || !"false".equals(value);
             }
         };
     }

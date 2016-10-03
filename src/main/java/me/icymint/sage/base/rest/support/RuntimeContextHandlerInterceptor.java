@@ -1,6 +1,7 @@
 package me.icymint.sage.base.rest.support;
 
 import me.icymint.sage.base.spec.api.Clock;
+import me.icymint.sage.base.spec.def.EnumMode;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.util.Exceptions;
@@ -15,10 +16,12 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.UUID;
 
 import static me.icymint.sage.base.rest.util.StringLogs.append;
+import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Created by daniel on 16/9/3.
@@ -40,7 +43,7 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
 
     private String buildCorrelationId(HttpServletRequest request) {
         String id = request.getHeader(Magics.HEADER_CORRELATION_ID);
-        if (StringUtils.isEmpty(id)) {
+        if (isEmpty(id)) {
             id = UUID.randomUUID().toString();
         }
         return id;
@@ -49,10 +52,23 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        response.setHeader(Magics.HEADER_X_TIMESTAMP, String.valueOf((clock.timestamp())));
+        Instant now = clock.now();
+        response.setDateHeader(Magics.HEADER_DATE, now.toEpochMilli());
+        response.setHeader(Magics.HEADER_X_TIMESTAMP, String.valueOf(now.getEpochSecond()));
         runtimeContext.setCorrelationId(buildCorrelationId(request));
 
-        String userAddress = StringUtils.isEmpty(request.getHeader(Magics.HEADER_FORWARDED_FOR_HEADER))
+        String value = request.getHeader(Magics.HEADER_X_ENUM_MODE);
+        EnumMode mode = EnumMode.DEFAULT;
+        try {
+            if (!isEmpty(value)) {
+                mode = EnumMode.valueOf(value);
+            }
+        } catch (Exception e) {
+            Exceptions.catching(e, false);
+        }
+        runtimeContext.set(RuntimeContext.ENUM_MODE, mode.name());
+
+        String userAddress = isEmpty(request.getHeader(Magics.HEADER_FORWARDED_FOR_HEADER))
                 ? request.getRemoteHost()
                 : request.getHeader(Magics.HEADER_FORWARDED_FOR_HEADER);
         if (StringUtils.hasText(userAddress) && userAddress.indexOf(',') > 0) {
@@ -62,7 +78,7 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
         runtimeContext.setUserAddress(userAddress);
         String requestPath = request.getRequestURI();
         String requestQueryString = request.getQueryString();
-        if (!StringUtils.isEmpty(requestQueryString)) {
+        if (!isEmpty(requestQueryString)) {
             requestPath += "?" + requestQueryString;
         }
 
@@ -81,7 +97,7 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
         String timeZone = request.getHeader(Magics.HEADER_X_TIMEZONE);
         ZoneId zone = null;
         try {
-            zone = StringUtils.isEmpty(timeZone) ? null : ZoneId.of(timeZone);
+            zone = isEmpty(timeZone) ? null : ZoneId.of(timeZone);
         } catch (Exception e) {
             Exceptions.catching(e, false);
         }
@@ -111,7 +127,7 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
     private String buildRequestPath(HttpServletRequest request) {
         String requestPath = request.getRequestURI();
         String requestQueryString = request.getQueryString();
-        if (!StringUtils.isEmpty(requestQueryString)) {
+        if (!isEmpty(requestQueryString)) {
             requestPath += "?" + requestQueryString;
         }
 

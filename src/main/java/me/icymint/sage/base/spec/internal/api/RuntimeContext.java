@@ -1,5 +1,6 @@
 package me.icymint.sage.base.spec.internal.api;
 
+import me.icymint.sage.base.spec.def.EnumMode;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -32,6 +33,8 @@ public interface RuntimeContext {
     String REFER = "refer";
 
     String TIME_ZONE = "timeZone";
+
+    String ENUM_MODE = "enumMode";
 
     boolean needShutdown();
 
@@ -130,4 +133,10 @@ public interface RuntimeContext {
 
     void clear();
 
+    default EnumMode getEnumMode() {
+        String mode = get(ENUM_MODE);
+        return StringUtils.isEmpty(mode)
+                ? EnumMode.DEFAULT
+                : EnumMode.valueOf(get(ENUM_MODE));
+    }
 }

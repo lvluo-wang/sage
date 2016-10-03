@@ -35,7 +35,7 @@ public class Magics {
 
 
     // Http Constants
-    public static final String HEADER_X_DISABLE_TO_LABEL = "X-Disable-To-Label"; //定义是否拒绝转换
+    public static final String HEADER_X_ENUM_MODE = "X-Enum-Mode"; //定义是否拒绝转换
     public static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
     public static final String HEADER_FORWARDED_FOR_HEADER = "X-Forwarded-For";
     public static final String HEADER_X_FORWARDED_PROTO = "X-Forwarded-Proto";
@@ -47,6 +47,7 @@ public class Magics {
     public static final String HEADER_X_TIMESTAMP = "X-TIMESTAMP";
     public static final String HEADER_X_PAGING = "X-PAGING";
     public static final String HEADER_AUTHORIZATION = "Authorization";
+    public static final String HEADER_DATE = "date";
 
     //Token
     public static final String TOKEN_AUTHORIZATION_HEAD = "SAGE-";

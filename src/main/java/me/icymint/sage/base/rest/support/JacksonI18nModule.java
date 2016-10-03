@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.module.SimpleSerializers;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -23,10 +24,12 @@ public class JacksonI18nModule extends SimpleModule {
     ApplicationContext context;
     @Autowired
     EntityConverters converter;
+    @Autowired
+    RuntimeContext runtimeContext;
 
     @PostConstruct
     public void init() {
-        this.setSerializerModifier(new JacksonI18nEnumSerializerModifier(context));
+        this.setSerializerModifier(new JacksonI18nEnumSerializerModifier(runtimeContext, context));
         SimpleSerializers serializers = new SimpleSerializers();
         converter.getConverterSets().forEach(cell -> {
             Function<Object, Object> handler = cell.getValue();
