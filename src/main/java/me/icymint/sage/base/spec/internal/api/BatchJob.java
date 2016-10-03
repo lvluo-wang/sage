@@ -9,6 +9,11 @@ import java.util.List;
  * Created by daniel on 2016/9/24.
  */
 public interface BatchJob<E extends BaseJobEntity<E>> {
+
+    default int batchSize() {
+        return 100;
+    }
+
     List<E> getRecords(PageBounds pageBounds);
 
     void updateNextScanTime(Long id);

@@ -22,24 +22,25 @@ public class JacksonI18nModule extends SimpleModule {
     @Autowired
     ApplicationContext context;
     @Autowired
-    RestConverter converter;
+    EntityConverters converter;
 
     @PostConstruct
     public void init() {
         this.setSerializerModifier(new JacksonI18nEnumSerializerModifier(context));
         SimpleSerializers serializers = new SimpleSerializers();
-        converter.getConverterCell().forEach(cell -> serializers
-                .addSerializer(cell.getRowKey(), new JsonSerializer<Object>() {
-                    @Override
-                    public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
-                        Function<Object, Object> handler = cell.getValue();
-                        if (handler != null) {
+        converter.getConverterSets().forEach(cell -> {
+            Function<Object, Object> handler = cell.getValue();
+            if (handler == null) {
+                return;
+            }
+            serializers
+                    .addSerializer(cell.getRowKey(), new JsonSerializer<Object>() {
+                        @Override
+                        public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
                             gen.writeObject(handler.apply(value));
-                        } else {
-                            gen.writeObject(value);
                         }
-                    }
-                }));
+                    });
+        });
         this.setSerializers(serializers);
     }
 }

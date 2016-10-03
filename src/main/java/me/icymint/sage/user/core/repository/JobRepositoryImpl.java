@@ -1,6 +1,6 @@
 package me.icymint.sage.user.core.repository;
 
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.entity.Job;
 import me.icymint.sage.base.spec.repository.JobRepository;
 import me.icymint.sage.user.data.mapper.JobMapper;
@@ -15,7 +15,7 @@ import java.time.Instant;
  * Created by daniel on 2016/10/1.
  */
 @Repository
-@ConditionalOnProperty(name = MagicConstants.PROP_ENABLE_JOB, havingValue = "true")
+@ConditionalOnProperty(name = Magics.PROP_ENABLE_JOB, havingValue = "true")
 public class JobRepositoryImpl implements JobRepository {
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired

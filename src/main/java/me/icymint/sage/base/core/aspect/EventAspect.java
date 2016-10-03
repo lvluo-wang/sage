@@ -2,7 +2,7 @@ package me.icymint.sage.base.core.aspect;
 
 import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.spec.annotation.NotifyEvent;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-@Order(MagicConstants.AOP_ORDER_EVENT)
+@Order(Magics.AOP_ORDER_EVENT)
 public class EventAspect {
     @Autowired
     EventServiceImpl eventService;

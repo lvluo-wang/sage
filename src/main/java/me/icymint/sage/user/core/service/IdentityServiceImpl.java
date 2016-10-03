@@ -12,7 +12,7 @@ import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.def.ClaimType;
 import me.icymint.sage.user.spec.def.IdentityType;
 import me.icymint.sage.user.spec.def.RoleType;
-import me.icymint.sage.user.spec.def.UserExceptionCode;
+import me.icymint.sage.user.spec.def.UserCode;
 import me.icymint.sage.user.spec.entity.Claim;
 import me.icymint.sage.user.spec.entity.Identity;
 import me.icymint.sage.user.spec.exception.UserServiceException;
@@ -58,17 +58,17 @@ public class IdentityServiceImpl implements IdentityService {
         if (StringUtils.isEmpty(username)) {
             username = null;
         } else if (!PATTERN_USERNAME.matcher(username).matches()) {
-            throw new InvalidArgumentException(context, UserExceptionCode.USERNAME__ILLEGAL, username);
+            throw new InvalidArgumentException(context, UserCode.USERNAME__ILLEGAL, username);
         }
         if (StringUtils.isEmpty(salt)) {
-            throw new UserServiceException(context, UserExceptionCode.SALT_IS_NULL);
+            throw new UserServiceException(context, UserCode.SALT_IS_NULL);
         }
         if (StringUtils.isEmpty(password)) {
-            throw new UserServiceException(context, UserExceptionCode.PASSWORD_IS_NULL);
+            throw new UserServiceException(context, UserCode.PASSWORD_IS_NULL);
         }
         Identity client = identityMapper.findOne(clientId);
         if (client == null || client.getType() != IdentityType.CLIENT) {
-            throw new UserServiceException(context, UserExceptionCode.CLIENT_ID__ILLEGAL, clientId);
+            throw new UserServiceException(context, UserCode.CLIENT_ID__ILLEGAL, clientId);
         }
         runtimeContext.setClientId(String.valueOf(clientId));
         Identity identity = new Identity()
@@ -80,7 +80,7 @@ public class IdentityServiceImpl implements IdentityService {
                 .setType(IdentityType.USER)
                 .setValidSeconds(null);
         if (identityMapper.save(identity) != 1) {
-            throw new UserServiceException(context, UserExceptionCode.IDENTITY_CREATE_FAILED);
+            throw new UserServiceException(context, UserCode.IDENTITY_CREATE_FAILED);
         }
         identity = identityMapper.findOne(identity.getId());
         username = StringUtils.isEmpty(username) ?

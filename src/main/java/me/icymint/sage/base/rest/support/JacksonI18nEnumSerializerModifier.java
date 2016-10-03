@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import me.icymint.sage.base.spec.annotation.ToLabel;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -108,7 +108,7 @@ public class JacksonI18nEnumSerializerModifier extends BeanSerializerModifier {
 
             private boolean disableToLabel() {
                 ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-                String value = attributes.getRequest().getHeader(MagicConstants.HEADER_X_DISABLE_TO_LABEL);
+                String value = attributes.getRequest().getHeader(Magics.HEADER_X_DISABLE_TO_LABEL);
                 return value == null || !"false".equals(value);
             }
         };

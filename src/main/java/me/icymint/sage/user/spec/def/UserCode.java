@@ -6,15 +6,13 @@ import me.icymint.sage.base.spec.annotation.I18nEnum;
  * Created by daniel on 16/9/4.
  */
 @I18nEnum("user.error")
-public enum UserExceptionCode {
+public enum UserCode {
     CLIENT_ID__ILLEGAL,
     TOKEN__NOT_FOUND,
     ACCESS_SPAN_NOT_VALID,
     ACCESS_TOKEN_ILLEGAL,
-    IDENTITY_NULL,
     IDENTITY__IS_BLOCKED,
     IDENTITY__ILLEGAL,
-    USERNAME__EXISTS,
     PASSWORD_IS_NULL,
     CLAIM_CREATE_FAILED,
     SALT_IS_NULL,
@@ -23,7 +21,8 @@ public enum UserExceptionCode {
     IDENTITY__NOT_FOUND,
     CLAIM_TYPE_NULL,
     USE_MULTI_CLAIM_QUERY_API_INSTEAD,
-    MISSING_REQUEST_HEADER_,
     EVENT__SAVE_FAILED,
-    EVENT__UPDATE_FAILED, ACCESS_PERMISSION_DENIED, TOKEN__EXPIRED;
+    EVENT__UPDATE_FAILED,
+    ACCESS_PERMISSION_DENIED,
+    TOKEN__EXPIRED;
 }

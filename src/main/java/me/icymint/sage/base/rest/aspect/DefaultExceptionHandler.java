@@ -1,8 +1,8 @@
 package me.icymint.sage.base.rest.aspect;
 
 import me.icymint.sage.base.rest.resource.ResultResource;
-import me.icymint.sage.base.spec.def.BaseExceptionCode;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.BaseCode;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.exception.InternalServerErrorException;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.base.spec.exception.ServiceException;
@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
  * Created by daniel on 16/9/2.
  */
 @ControllerAdvice
-@Order(MagicConstants.AOP_ORDER_EXCEPTION)
+@Order(Magics.AOP_ORDER_EXCEPTION)
 public class DefaultExceptionHandler extends AbstractHandlerMethodExceptionResolver {
 
     private final Logger logger = LoggerFactory.getLogger(DefaultExceptionHandler.class);
@@ -79,20 +79,20 @@ public class DefaultExceptionHandler extends AbstractHandlerMethodExceptionResol
 
     private ServiceException translate(Exception ex) {
         if (ex instanceof ServletRequestBindingException && ex.getMessage().contains("Missing request header 'Authorization'")) {
-            ex = new InvalidArgumentException(ex, context, BaseExceptionCode.AUTHORIZATION_REQUIRED);
+            ex = new InvalidArgumentException(ex, context, BaseCode.AUTHORIZATION_REQUIRED);
         } else if (ex instanceof NestedServletException) {
             Throwable cause = ex.getCause();
             if (cause instanceof ServiceException) {
                 ex = (Exception) cause;
             } else {
-                ex = new InvalidArgumentException(ex, context, BaseExceptionCode.PARAM__ILLEGAL);
+                ex = new InvalidArgumentException(ex, context, BaseCode.PARAM__ILLEGAL);
             }
         } else if (ex instanceof DuplicateKeyException) {
-            ex = new ServiceException(ex, context, BaseExceptionCode.DUPLICATE_KEY);
+            ex = new ServiceException(ex, context, BaseCode.DUPLICATE_KEY);
         } else if (ex instanceof MethodArgumentNotValidException) {
             @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
             InvalidArgumentException e = requestValidateHandler.checkExceptions(((MethodArgumentNotValidException) ex).getBindingResult());
-            ex = e != null ? e : new InvalidArgumentException(ex, context, BaseExceptionCode.__, ex.getMessage());
+            ex = e != null ? e : new InvalidArgumentException(ex, context, BaseCode.__, ex.getMessage());
         } else if (!(ex instanceof ServiceException)) {
             ex = new InternalServerErrorException(ex, context);
         }

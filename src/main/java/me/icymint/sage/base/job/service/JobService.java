@@ -2,7 +2,7 @@ package me.icymint.sage.base.job.service;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.entity.BaseJobEntity;
 import me.icymint.sage.base.spec.internal.api.BatchJob;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
@@ -42,9 +42,9 @@ public class JobService {
 
 
     @Transactional(propagation = Propagation.NEVER)
-    public <E extends BaseJobEntity<E>> void executeBatchJob(BatchJob<E> batchJob, int limit) {
+    public <E extends BaseJobEntity<E>> void executeBatchJob(BatchJob<E> batchJob) {
         while (!needQuit()
-                && executeSingleBatchJob(new PageBounds(0, limit), batchJob)) {
+                && executeSingleBatchJob(new PageBounds(0, batchJob.batchSize()), batchJob)) {
             try {
                 TimeUnit.MILLISECONDS.sleep(10);
             } catch (InterruptedException e) {
@@ -89,7 +89,7 @@ public class JobService {
 
         if (Objects.equals(runnerId, job.getRunnerId())) {
             if (job.getExpireTime()
-                    .isAfter(now.plusMillis(MagicConstants.JOB_LOCK_REFRESH_DURATION))) {
+                    .isAfter(now.plusMillis(Magics.JOB_LOCK_REFRESH_DURATION))) {
                 hasJobLock = true;
                 return;
             }
@@ -100,7 +100,7 @@ public class JobService {
             }
         }
         logger.info("Try take job lock...");
-        hasJobLock = jobRepository.lockJob(jobId, runnerId, now.plusMillis(MagicConstants.JOB_LOCK_EXPIRE_DURATION));
+        hasJobLock = jobRepository.lockJob(jobId, runnerId, now.plusMillis(Magics.JOB_LOCK_EXPIRE_DURATION));
         if (hasJobLock) {
             logger.info("Take job lock OK!");
         } else {

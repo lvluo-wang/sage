@@ -1,7 +1,8 @@
 package me.icymint.sage.base.job.aspect;
 
 import me.icymint.sage.base.job.service.JobService;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
+import me.icymint.sage.base.spec.internal.api.BatchJob;
 import me.icymint.sage.base.util.Exceptions;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -19,13 +20,14 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
-@Order(MagicConstants.AOP_ORDER_JOB)
+@Order(Magics.AOP_ORDER_JOB)
 @ConditionalOnBean(JobService.class)
 public class JobAspect {
     private final Logger logger = LoggerFactory.getLogger(JobAspect.class);
     @Autowired
     JobService jobService;
 
+    @SuppressWarnings("unchecked")
     @Around("@annotation(scheduled) && !execution(* me.icymint.sage.base.job.config.BaseJobConfig.lockJob(..))")
     public Object around(ProceedingJoinPoint proceedingJoinPoint, Scheduled scheduled) {
         if (jobService.needQuit()) {
@@ -34,7 +36,12 @@ public class JobAspect {
         }
         logger.info("Start Job " + proceedingJoinPoint.getSignature().toShortString());
         try {
-            return proceedingJoinPoint.proceed();
+            Object result = proceedingJoinPoint.proceed();
+            if (result instanceof BatchJob) {
+                jobService.executeBatchJob((BatchJob) result);
+                result = null;
+            }
+            return result;
         } catch (Throwable e) {
             Exceptions.catching(e);
             return null;

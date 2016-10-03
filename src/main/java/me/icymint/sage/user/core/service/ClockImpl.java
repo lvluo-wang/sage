@@ -1,7 +1,7 @@
 package me.icymint.sage.user.core.service;
 
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.user.data.mapper.ClockMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,7 +15,7 @@ import java.time.Instant;
  */
 @Profile("default")
 @Service
-@ConditionalOnProperty(name = MagicConstants.PROP_ENABLE_DB_CLOCK, havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = Magics.PROP_ENABLE_DB_CLOCK, havingValue = "true", matchIfMissing = true)
 public class ClockImpl implements Clock {
 
     @Autowired

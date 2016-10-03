@@ -5,7 +5,7 @@ import me.icymint.sage.base.rest.request.LoginRequest;
 import me.icymint.sage.base.rest.request.PasswordRequest;
 import me.icymint.sage.base.rest.resource.HmacResponse;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.user.core.service.TokenServiceImpl;
 import me.icymint.sage.user.rest.authorization.DefaultTokenAuthorization;
@@ -29,7 +29,7 @@ import static java.util.stream.Collectors.joining;
  */
 @RestController
 @RequestMapping("/hmacs")
-@ConditionalOnProperty(name = MagicConstants.PROP_ENABLE_HMAC, havingValue = "true")
+@ConditionalOnProperty(name = Magics.PROP_ENABLE_HMAC, havingValue = "true")
 public class HmacController {
 
     @Autowired
@@ -67,7 +67,7 @@ public class HmacController {
         String nonce = salt();
         Long timestamp = clock.timestamp();
         String hash = defaultTokenAuthorization.calculateHash(request.getClientId(), nonce, timestamp, request.getId(), request.getAccessSecret());
-        return MagicConstants.TOKEN_SIGN_HEAD + hash + Stream
+        return Magics.TOKEN_SIGN_HEAD + hash + Stream
                 .of(String.valueOf(request.getClientId()),
                         String.valueOf(request.getId()),
                         String.valueOf(timestamp),

@@ -4,7 +4,7 @@ import com.github.miemiedev.mybatis.paginator.domain.Order;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.google.common.base.Splitter;
 import me.icymint.sage.base.rest.util.QueryStrings;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -38,12 +38,12 @@ public class PageBoundsArgumentResolver extends AbstractNamedValueMethodArgument
 
     @Override
     protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception {
-        String text = request.getHeader(MagicConstants.HEADER_X_PAGING);
+        String text = request.getHeader(Magics.HEADER_X_PAGING);
         if (!StringUtils.hasText(text)) {
             text = request.getNativeRequest(HttpServletRequest.class).getQueryString();
         }
         if (!StringUtils.hasText(text)) {
-            return new PageBounds(1, MagicConstants.PAGE_MAX_LIMIT);
+            return new PageBounds(1, Magics.PAGE_MAX_LIMIT);
         }
 
         MultiValueMap<String, String> map = QueryStrings.parse(text);
@@ -86,11 +86,11 @@ public class PageBoundsArgumentResolver extends AbstractNamedValueMethodArgument
             page = Integer.parseInt(pageStr);
         }
         page = Math.max(1, page);
-        int size = MagicConstants.PAGE_DEFAULT_LIMIT;
+        int size = Magics.PAGE_DEFAULT_LIMIT;
         if (!StringUtils.isEmpty(sizeStr)) {
             size = Integer.parseInt(sizeStr);
         }
-        size = Math.min(size, MagicConstants.PAGE_MAX_LIMIT);
+        size = Math.min(size, Magics.PAGE_MAX_LIMIT);
         size = Math.max(1, size);
 
         return new PageBounds(page, size, orders, containsTotal);

@@ -5,8 +5,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Primitives;
 import me.icymint.sage.base.rest.entity.PaginatorResponse;
-import me.icymint.sage.base.rest.support.RestConverter;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.rest.support.EntityConverters;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,7 @@ import static me.icymint.sage.base.util.Classes.isValueClass;
 @EnableSwagger2
 public class SwaggerConfig {
     @Autowired
-    RestConverter restConverter;
+    EntityConverters restConverter;
 
     @Bean
     public Docket sageApi() {
@@ -52,7 +52,7 @@ public class SwaggerConfig {
     @Bean
     public Docket sageAuthApi() {
         return build("sage-auth-api", "Backend Auth APIs for Sage", this::needToken, a -> a.globalOperationParameters(Lists.newArrayList(new ParameterBuilder()
-                .name(MagicConstants.HEADER_AUTHORIZATION)
+                .name(Magics.HEADER_AUTHORIZATION)
                 .description("Token Auth")
                 .parameterType("header")
                 .modelRef(new ModelRef("string"))
@@ -94,7 +94,7 @@ public class SwaggerConfig {
 
     private Docket addConverters(Docket docket) {
         TypeResolver typeResolver = new TypeResolver();
-        restConverter.getConverterCell().forEach(cell -> {
+        restConverter.getConverterSets().forEach(cell -> {
             if (cell.getRowKey() != null
                     && !isValueClass(cell.getRowKey())
                     && !cell.getRowKey().isPrimitive()

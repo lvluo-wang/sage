@@ -3,7 +3,7 @@ package me.icymint.sage.base.core.aspect;
 import com.google.common.collect.Maps;
 import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.spec.annotation.LogMethodInvoke;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.ToString;
 import me.icymint.sage.base.spec.internal.entity.LogEvent;
 import org.aspectj.lang.JoinPoint;
@@ -24,7 +24,7 @@ import static me.icymint.sage.base.util.Classes.isValueClass;
  */
 @Aspect
 @Component
-@Order(MagicConstants.AOP_ORDER_EVENT_LOG)
+@Order(Magics.AOP_ORDER_EVENT_LOG)
 public class LogEventAspect {
     private final Map<Class<?>, ToString<?>> toStringMap = Maps.newHashMap();
     @Autowired

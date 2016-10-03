@@ -1,6 +1,6 @@
 package me.icymint.sage.base.spec.exception;
 
-import me.icymint.sage.base.spec.def.BaseExceptionCode;
+import me.icymint.sage.base.spec.def.BaseCode;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -47,7 +47,7 @@ public class ServiceException extends RuntimeException {
     }
 
     public ServiceException(Throwable ex, MessageSource source, String code) {
-        this(ex, source, BaseExceptionCode.__, code);
+        this(ex, source, BaseCode.__, code);
     }
 
     public String getId() {

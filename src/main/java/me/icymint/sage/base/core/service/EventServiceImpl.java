@@ -3,16 +3,16 @@ package me.icymint.sage.base.core.service;
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.google.common.collect.Lists;
 import me.icymint.sage.base.spec.api.Clock;
+import me.icymint.sage.base.spec.def.Magics;
+import me.icymint.sage.base.spec.entity.BaseEvent;
+import me.icymint.sage.base.spec.entity.BaseLogEvent;
+import me.icymint.sage.base.spec.internal.api.BatchJob;
 import me.icymint.sage.base.spec.internal.api.EventHandler;
 import me.icymint.sage.base.spec.internal.api.EventProducer;
 import me.icymint.sage.base.spec.internal.api.EventTransferHandler;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
-import me.icymint.sage.base.spec.def.MagicConstants;
-import me.icymint.sage.base.spec.entity.BaseEvent;
-import me.icymint.sage.base.spec.entity.BaseLogEvent;
-import me.icymint.sage.base.util.Exceptions;
-import me.icymint.sage.base.spec.internal.api.BatchJob;
 import me.icymint.sage.base.spec.repository.EventRepository;
+import me.icymint.sage.base.util.Exceptions;
 import me.icymint.sage.user.spec.def.EventStatus;
 import me.icymint.sage.user.spec.entity.Event;
 import org.aspectj.lang.JoinPoint;
@@ -69,7 +69,6 @@ public class EventServiceImpl implements BatchJob<Event> {
 
     }
 
-    @SuppressWarnings("unchecked")
     private void addHandler(EventHandler eventHandler) {
         EventTransferHandler transferHandler = event -> {
             eventHandler.accept(event);
@@ -78,7 +77,6 @@ public class EventServiceImpl implements BatchJob<Event> {
         addHandler(transferHandler);
     }
 
-    @SuppressWarnings("unchecked")
     private void addHandler(EventTransferHandler handler) {
         Method handlerMethod = null;
         for (Method method : AopUtils.getTargetClass(handler).getMethods()) {
@@ -109,7 +107,7 @@ public class EventServiceImpl implements BatchJob<Event> {
         Event dbEvent = toDbEvent(event);
         if (isLog) {
             dbEvent.setStatus(EventStatus.PROCESSED);
-            if (!environment.getProperty(MagicConstants.PROP_ALWAYS_SAVE_LOG, Boolean.class, false)) {
+            if (!environment.getProperty(Magics.PROP_ALWAYS_SAVE_LOG, Boolean.class, false)) {
                 logger.info("LogEvent - {}", dbEvent);
                 return;
             }
@@ -135,7 +133,6 @@ public class EventServiceImpl implements BatchJob<Event> {
         return dbEvent;
     }
 
-    @SuppressWarnings("unchecked")
     private <E extends BaseEvent> E fromDbEvent(Event dbEvent) {
         try {
             Class<E> clazz = (Class<E>) Class.forName(dbEvent.getAsyncEventType());

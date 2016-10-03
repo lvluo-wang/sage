@@ -2,8 +2,8 @@ package me.icymint.sage.base.rest.support;
 
 import com.google.common.base.Strings;
 import me.icymint.sage.base.spec.api.SessionService;
-import me.icymint.sage.base.spec.def.BaseExceptionCode;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.BaseCode;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.exception.UnauthorizedException;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import org.slf4j.MDC;
@@ -62,7 +62,7 @@ public class DefaultRuntimeContext implements RuntimeContext, ApplicationListene
 
     private void setLong(String key, Long id) {
         if (get(key) != null) {
-            throw new UnauthorizedException(context, BaseExceptionCode.AUTHORIZATION_DOUBLE_CHECKED);
+            throw new UnauthorizedException(context, BaseCode.AUTHORIZATION_DOUBLE_CHECKED);
         }
         if (id == null) {
             set(key, "NULL");
@@ -83,7 +83,7 @@ public class DefaultRuntimeContext implements RuntimeContext, ApplicationListene
 
 
     private String normalizeKey(String key) {
-        return MagicConstants.PROP_PREFIX + key;
+        return Magics.PROP_PREFIX + key;
     }
 
     @Override

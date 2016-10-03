@@ -2,12 +2,12 @@ package me.icymint.sage.user.core.service;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.def.Bool;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.user.data.mapper.ClaimMapper;
 import me.icymint.sage.user.spec.api.ClaimService;
 import me.icymint.sage.user.spec.def.ClaimType;
 import me.icymint.sage.user.spec.def.RoleType;
-import me.icymint.sage.user.spec.def.UserExceptionCode;
+import me.icymint.sage.user.spec.def.UserCode;
 import me.icymint.sage.user.spec.entity.Claim;
 import me.icymint.sage.user.spec.exception.UserServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class ClaimServiceImpl implements ClaimService {
     @Transactional
     public Long createClaim(Long identityId, ClaimType type, String value, boolean isVerified) {
         if (type == null) {
-            throw new UserServiceException(context, UserExceptionCode.CLAIM_TYPE_NULL);
+            throw new UserServiceException(context, UserCode.CLAIM_TYPE_NULL);
         }
         Claim claim = new Claim()
                 .setOwnerId(identityId)
@@ -40,10 +40,10 @@ public class ClaimServiceImpl implements ClaimService {
                 .setType(type)
                 .setValue(value)
                 .setPrimaryKey(type.isGlobalUnique() ?
-                        MagicConstants.CLAIM_GLOBAL_UNIQUE
+                        Magics.CLAIM_GLOBAL_UNIQUE
                         : String.valueOf(identityId));
         if (claimMapper.save(claim) != 1) {
-            throw new UserServiceException(context, UserExceptionCode.CLAIM_CREATE_FAILED);
+            throw new UserServiceException(context, UserCode.CLAIM_CREATE_FAILED);
         }
         return claim.getId();
     }
@@ -56,10 +56,10 @@ public class ClaimServiceImpl implements ClaimService {
     @Override
     public Claim findOneByTypeAndValue(ClaimType type, String value) {
         if (type == null) {
-            throw new UserServiceException(context, UserExceptionCode.CLAIM_TYPE_NULL);
+            throw new UserServiceException(context, UserCode.CLAIM_TYPE_NULL);
         }
         if (!type.isGlobalUnique()) {
-            throw new UserServiceException(context, UserExceptionCode.USE_MULTI_CLAIM_QUERY_API_INSTEAD);
+            throw new UserServiceException(context, UserCode.USE_MULTI_CLAIM_QUERY_API_INSTEAD);
         }
         return claimMapper.findOneByTypeAndValue(type, value);
     }

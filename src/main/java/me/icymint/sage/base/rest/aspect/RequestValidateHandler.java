@@ -1,7 +1,7 @@
 package me.icymint.sage.base.rest.aspect;
 
 import me.icymint.sage.base.spec.internal.api.SageValidator;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -21,7 +21,7 @@ import org.springframework.validation.Validator;
  */
 @Aspect
 @Component
-@Order(MagicConstants.AOP_ORDER_REQUEST_VALIDATE)
+@Order(Magics.AOP_ORDER_REQUEST_VALIDATE)
 public class RequestValidateHandler implements SageValidator {
 
     private final Logger logger = LoggerFactory.getLogger(RequestValidateHandler.class);

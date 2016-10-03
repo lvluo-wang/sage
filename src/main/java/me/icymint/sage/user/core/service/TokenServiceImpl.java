@@ -3,9 +3,9 @@ package me.icymint.sage.user.core.service;
 import com.google.common.base.Splitter;
 import me.icymint.sage.base.spec.annotation.NotifyEvent;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.def.BaseExceptionCode;
+import me.icymint.sage.base.spec.def.BaseCode;
 import me.icymint.sage.base.spec.def.Bool;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.base.spec.exception.UnauthorizedException;
 import me.icymint.sage.base.spec.internal.api.EventProducer;
@@ -16,7 +16,7 @@ import me.icymint.sage.user.rest.context.TokenContext;
 import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.api.TokenService;
 import me.icymint.sage.user.spec.def.IdentityType;
-import me.icymint.sage.user.spec.def.UserExceptionCode;
+import me.icymint.sage.user.spec.def.UserCode;
 import me.icymint.sage.user.spec.entity.Identity;
 import me.icymint.sage.user.spec.entity.Token;
 import me.icymint.sage.user.spec.internal.entity.LoginEvent;
@@ -60,16 +60,16 @@ public class TokenServiceImpl implements TokenService {
     public TokenContext parseTokenContext(String tokenString) {
         TokenContext context = new TokenContext();
         if (StringUtils.isEmpty(tokenString)
-                || !tokenString.startsWith(MagicConstants.TOKEN_SIGN_HEAD)
-                || tokenString.equals(MagicConstants.TOKEN_SIGN_HEAD)) {
+                || !tokenString.startsWith(Magics.TOKEN_SIGN_HEAD)
+                || tokenString.equals(Magics.TOKEN_SIGN_HEAD)) {
             return null;
         }
-        tokenString = tokenString.substring(MagicConstants.TOKEN_SIGN_HEAD.length());
-        context.setSign(tokenString.substring(0, MagicConstants.TOKEN_SIGN_LENGTH));
+        tokenString = tokenString.substring(Magics.TOKEN_SIGN_HEAD.length());
+        context.setSign(tokenString.substring(0, Magics.TOKEN_SIGN_LENGTH));
         List<String> parameterList = Splitter.on("|")
                 .omitEmptyStrings()
                 .trimResults()
-                .splitToList(tokenString.substring(MagicConstants.TOKEN_SIGN_LENGTH));
+                .splitToList(tokenString.substring(Magics.TOKEN_SIGN_LENGTH));
         if (parameterList.size() != 4) {
             return null;
         }
@@ -86,45 +86,45 @@ public class TokenServiceImpl implements TokenService {
     @NotifyEvent(eventProducerClass = LoginEventProducer.class)
     public Token login(Long identityId, Long clientId, String nonce, Long timestamp, String hash) {
         if (identityId == null) {
-            throw new InvalidArgumentException(context, BaseExceptionCode.PARAM__ILLEGAL, "uid");
+            throw new InvalidArgumentException(context, BaseCode.PARAM__ILLEGAL, "uid");
         }
         if (clientId == null) {
-            throw new InvalidArgumentException(context, BaseExceptionCode.PARAM__ILLEGAL, "cid");
+            throw new InvalidArgumentException(context, BaseCode.PARAM__ILLEGAL, "cid");
         }
         if (nonce == null) {
-            throw new InvalidArgumentException(context, BaseExceptionCode.PARAM__ILLEGAL, "nonce");
+            throw new InvalidArgumentException(context, BaseCode.PARAM__ILLEGAL, "nonce");
         }
         if (timestamp == null) {
-            throw new InvalidArgumentException(context, BaseExceptionCode.PARAM__ILLEGAL, "ts");
+            throw new InvalidArgumentException(context, BaseCode.PARAM__ILLEGAL, "ts");
         }
         if (hash == null) {
-            throw new InvalidArgumentException(context, BaseExceptionCode.PARAM__ILLEGAL, "sign");
+            throw new InvalidArgumentException(context, BaseCode.PARAM__ILLEGAL, "sign");
         }
         //Step 1
         Instant now = clock.now();
         Instant ts = Instant.ofEpochSecond(timestamp);
-        if (now.plusSeconds(MagicConstants.TOKEN_SPAN).isBefore(ts)
-                || now.minusSeconds(MagicConstants.TOKEN_SPAN).isAfter(ts)) {
-            throw new UnauthorizedException(context, UserExceptionCode.ACCESS_SPAN_NOT_VALID);
+        if (now.plusSeconds(Magics.TOKEN_SPAN).isBefore(ts)
+                || now.minusSeconds(Magics.TOKEN_SPAN).isAfter(ts)) {
+            throw new UnauthorizedException(context, UserCode.ACCESS_SPAN_NOT_VALID);
         }
 
         //Step 2
         String cacheKey = nonce + ":" + timestamp + ":" + hash;
         if (getCache().get(cacheKey) != null) {
-            throw new UnauthorizedException(context, UserExceptionCode.ACCESS_TOKEN_ILLEGAL);
+            throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
         }
 
         //Step 3
         Identity identity = checkAndGetIdentity(identityId, IdentityType.USER);
         String calculatedHash = calculateHash(identityId, clientId, nonce, timestamp, identity.getPassword());
         if (!Objects.equals(hash, calculatedHash)) {
-            throw new UnauthorizedException(context, UserExceptionCode.ACCESS_TOKEN_ILLEGAL);
+            throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
         }
 
         //Step 4
         Identity client = checkAndGetIdentity(clientId, IdentityType.CLIENT);
         if (client.getValidSeconds() == null || client.getValidSeconds() <= 0) {
-            throw new UnauthorizedException(context, UserExceptionCode.CLIENT_ID__ILLEGAL, clientId);
+            throw new UnauthorizedException(context, UserCode.CLIENT_ID__ILLEGAL, clientId);
         }
 
         //Step 5
@@ -155,22 +155,22 @@ public class TokenServiceImpl implements TokenService {
     private Identity checkAndGetIdentity(Long identityId, IdentityType... types) {
         Identity identity = identityService.findOne(identityId);
         if (identity == null) {
-            throw new InvalidArgumentException(context, UserExceptionCode.IDENTITY__NOT_FOUND, identityId);
+            throw new InvalidArgumentException(context, UserCode.IDENTITY__NOT_FOUND, identityId);
         }
         if (identity.getIsBlocked() == Bool.Y) {
-            throw new UnauthorizedException(context, UserExceptionCode.IDENTITY__IS_BLOCKED, identityId);
+            throw new UnauthorizedException(context, UserCode.IDENTITY__IS_BLOCKED, identityId);
         }
         for (IdentityType type : types) {
             if (identity.getType() == type) {
                 return identity;
             }
         }
-        throw new UnauthorizedException(context, UserExceptionCode.IDENTITY__ILLEGAL, identityId);
+        throw new UnauthorizedException(context, UserCode.IDENTITY__ILLEGAL, identityId);
     }
 
 
     private Cache getCache() {
-        return cacheManager.getCache(MagicConstants.CACHE_SIGNATURE);
+        return cacheManager.getCache(Magics.CACHE_SIGNATURE);
     }
 
     @Override
@@ -181,6 +181,9 @@ public class TokenServiceImpl implements TokenService {
     @Override
     @Transactional
     public boolean isExpire(Long tokenId) {
+        if (tokenId == null) {
+            return true;
+        }
         Token token = findOne(tokenId);
         if (token != null) {
             Instant now = clock.now();

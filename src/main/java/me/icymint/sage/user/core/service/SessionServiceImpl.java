@@ -3,7 +3,7 @@ package me.icymint.sage.user.core.service;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.api.SessionService;
 import me.icymint.sage.base.spec.def.Bool;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.data.mapper.SessionMapper;
 import me.icymint.sage.user.spec.entity.Session;
@@ -24,7 +24,7 @@ import java.util.Optional;
 /**
  * Created by daniel on 16/9/6.
  */
-@ConditionalOnProperty(name = MagicConstants.PROP_ENABLE_SESSION_STORAGE, havingValue = "true")
+@ConditionalOnProperty(name = Magics.PROP_ENABLE_SESSION_STORAGE, havingValue = "true")
 @Service
 public class SessionServiceImpl implements SessionService {
     @Autowired

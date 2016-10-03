@@ -2,18 +2,19 @@ package me.icymint.sage.user.rest.authorization;
 
 import com.google.common.base.Strings;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.def.BaseExceptionCode;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.BaseCode;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.exception.UnauthorizedException;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.internal.api.SageValidator;
+import me.icymint.sage.base.util.Exceptions;
 import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.user.core.service.TokenServiceImpl;
 import me.icymint.sage.user.rest.context.TokenContext;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.api.ClaimService;
 import me.icymint.sage.user.spec.def.RoleType;
-import me.icymint.sage.user.spec.def.UserExceptionCode;
+import me.icymint.sage.user.spec.def.UserCode;
 import me.icymint.sage.user.spec.entity.Token;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -38,7 +39,7 @@ import java.util.stream.Stream;
  */
 @Component
 @Aspect
-@Order(MagicConstants.AOP_ORDER_TOKEN)
+@Order(Magics.AOP_ORDER_TOKEN)
 public class DefaultTokenAuthorization {
     private final Logger logger = LoggerFactory.getLogger(DefaultTokenAuthorization.class);
 
@@ -71,31 +72,31 @@ public class DefaultTokenAuthorization {
         //Step 1
         Instant now = clock.now();
         Instant ts = Instant.ofEpochSecond(timestamp);
-        if (now.plusSeconds(MagicConstants.TOKEN_SPAN).isBefore(ts)
-                || now.minusSeconds(MagicConstants.TOKEN_SPAN).isAfter(ts)) {
-            throw new UnauthorizedException(context, UserExceptionCode.ACCESS_SPAN_NOT_VALID);
+        if (now.plusSeconds(Magics.TOKEN_SPAN).isBefore(ts)
+                || now.minusSeconds(Magics.TOKEN_SPAN).isAfter(ts)) {
+            throw new UnauthorizedException(context, UserCode.ACCESS_SPAN_NOT_VALID);
         }
 
         //Step 2
         String hash = tokenContext.getSign();
         String cacheKey = nonce + ":" + timestamp + ":" + hash;
         if (getCache().get(cacheKey) != null) {
-            throw new UnauthorizedException(context, UserExceptionCode.ACCESS_TOKEN_ILLEGAL);
+            throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
         }
 
         //Step 3
         Token token = tokenService.findOne(tokenContext.getTokenId());
         if (token == null) {
-            throw new UnauthorizedException(context, UserExceptionCode.TOKEN__NOT_FOUND, tokenContext.getTokenId());
+            throw new UnauthorizedException(context, UserCode.TOKEN__NOT_FOUND, tokenContext.getTokenId());
         }
         if (!Objects.equals(token.getClientId(), tokenContext.getClientId())) {
-            throw new UnauthorizedException(context, UserExceptionCode.CLIENT_ID__ILLEGAL, tokenContext.getClientId());
+            throw new UnauthorizedException(context, UserCode.CLIENT_ID__ILLEGAL, tokenContext.getClientId());
         }
         runtimeContext.setClientId(String.valueOf(tokenContext.getClientId()));
 
         //Step 4
         if (expireTimeCheck && (token.getExpireTime() == null || token.getExpireTime().isBefore(ts))) {
-            throw new UnauthorizedException(context, UserExceptionCode.TOKEN__EXPIRED, token.getId());
+            throw new UnauthorizedException(context, UserCode.TOKEN__EXPIRED, token.getId());
         }
         String calculatedHash = calculateHash(tokenContext.getClientId(),
                 tokenContext.getNonce(),
@@ -104,12 +105,12 @@ public class DefaultTokenAuthorization {
                 token.getAccessSecret());
         if (!Objects.equals(hash, calculatedHash)) {
             logger.warn("auth sign not valid");
-            throw new UnauthorizedException(context, UserExceptionCode.ACCESS_TOKEN_ILLEGAL);
+            throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
         }
         //Step 5
         if (!claimService.hasRoles(token.getOwnerId(), roleTypes)) {
             logger.warn("user {} has no roles {}", token.getOwnerId(), Arrays.toString(roleTypes));
-            throw new UnauthorizedException(context, UserExceptionCode.ACCESS_PERMISSION_DENIED);
+            throw new UnauthorizedException(context, UserCode.ACCESS_PERMISSION_DENIED);
         }
 
         tokenContext.setOwnerId(token.getOwnerId());
@@ -135,7 +136,11 @@ public class DefaultTokenAuthorization {
 
     @Before("@annotation(checkToken) && specialApi()")
     public void authorizeInExpired(CheckToken checkToken) {
-        doAuthorize(checkToken, false);
+        try {
+            doAuthorize(checkToken, false);
+        } catch (Exception e) {
+            Exceptions.catching(e, false);
+        }
     }
 
     @Before("@annotation(checkToken) && !specialApi()")
@@ -145,13 +150,13 @@ public class DefaultTokenAuthorization {
 
     private void doAuthorize(CheckToken checkToken, boolean expireTimeCheck) {
         try {
-            String header = runtimeContext.getHeader(MagicConstants.HEADER_AUTHORIZATION);
+            String header = runtimeContext.getHeader(Magics.HEADER_AUTHORIZATION);
             if (checkToken.allowNone() && Strings.isNullOrEmpty(header)) {
                 return;
             }
             TokenContext context = tokenService.parseTokenContext(header);
             if (context == null) {
-                throw new UnauthorizedException(this.context, BaseExceptionCode.AUTHORIZATION_REQUIRED);
+                throw new UnauthorizedException(this.context, BaseCode.AUTHORIZATION_REQUIRED);
             }
             authorize(context, checkToken.allowRoles(), expireTimeCheck);
         } finally {
@@ -165,6 +170,6 @@ public class DefaultTokenAuthorization {
     }
 
     private Cache getCache() {
-        return cacheManager.getCache(MagicConstants.CACHE_SIGNATURE);
+        return cacheManager.getCache(Magics.CACHE_SIGNATURE);
     }
 }

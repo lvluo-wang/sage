@@ -7,9 +7,10 @@ import java.time.Duration;
 /**
  * Created by daniel on 16/9/2.
  */
-public class MagicConstants {
+public class Magics {
     // Basic Constants
     public static final String CLAIM_GLOBAL_UNIQUE = "-";
+    public static final String CACHE_SIGNATURE = "signature";
 
     // Props
     public static final String PROP_PREFIX = "sage.";  //自定义配置属性键值前缀
@@ -20,7 +21,6 @@ public class MagicConstants {
     public static final String PROP_ENABLE_SESSION_STORAGE = PROP_PREFIX + "enable.session.storage";
     public static final String PROP_ALWAYS_SAVE_LOG = PROP_PREFIX + "always.save.log";
     public static final String PROP_JOB_EVENT_CRON = PROP_PREFIX + "job.event.cron";
-    public static final String PROP_ENABLE_RESPONSE_BASE_PACKAGE = PROP_PREFIX + "enable.response.base.package";
 
     // AOP Order From Highest to Lowest Order
 
@@ -47,7 +47,6 @@ public class MagicConstants {
     public static final String HEADER_X_TIMESTAMP = "X-TIMESTAMP";
     public static final String HEADER_X_PAGING = "X-PAGING";
     public static final String HEADER_AUTHORIZATION = "Authorization";
-    public static final String CACHE_SIGNATURE = "signature";
 
     //Token
     public static final String TOKEN_SIGN_HEAD = "TK-1";
@@ -62,4 +61,7 @@ public class MagicConstants {
     //Page
     public static final int PAGE_DEFAULT_LIMIT = 10;
     public static final int PAGE_MAX_LIMIT = 1000;
+
+    //Controller
+    public static final String CONTROLLER_DATA_MOBILE = "/data/mobiles";
 }

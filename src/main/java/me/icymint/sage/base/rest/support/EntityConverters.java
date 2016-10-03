@@ -2,7 +2,7 @@ package me.icymint.sage.base.rest.support;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import me.icymint.sage.base.spec.annotation.ResponseConverter;
+import me.icymint.sage.base.spec.annotation.EntityConverter;
 import me.icymint.sage.base.util.Exceptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,17 +20,17 @@ import static me.icymint.sage.base.util.Classes.isValueClass;
  * Created by daniel on 2016/10/2.
  */
 @Component
-public class RestConverter {
+public class EntityConverters {
 
     @Autowired(required = false)
-    ResponseConverter[] converters;
+    EntityConverter[] converters;
 
     private final Table<Class<?>, Class<?>, Function<Object, Object>> converterTable = HashBasedTable.create();
 
     @PostConstruct
     protected void init() {
         if (converters != null) {
-            for (ResponseConverter converter : converters) {
+            for (EntityConverter converter : converters) {
                 for (Method method : converter.getClass().getMethods()) {
                     if (method.getParameterCount() == 1) {
                         Class<?> fromClass = wrap(method.getParameterTypes()[0]);
@@ -54,11 +54,7 @@ public class RestConverter {
         }
     }
 
-    public Function<Object, Object> getConverter(Class<?> fromClass, Class<?> toClass) {
-        return converterTable.get(fromClass, toClass);
-    }
-
-    public Set<Table.Cell<Class<?>, Class<?>, Function<Object, Object>>> getConverterCell() {
+    public Set<Table.Cell<Class<?>, Class<?>, Function<Object, Object>>> getConverterSets() {
         return converterTable.cellSet();
     }
 }

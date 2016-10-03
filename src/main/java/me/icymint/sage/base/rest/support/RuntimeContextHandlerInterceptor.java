@@ -1,7 +1,7 @@
 package me.icymint.sage.base.rest.support;
 
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.util.Exceptions;
 import org.slf4j.Logger;
@@ -32,14 +32,14 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
     RuntimeContext runtimeContext;
     @Autowired
     Clock clock;
-    @Value("${" + MagicConstants.PROP_BASE_URL + "}")
+    @Value("${" + Magics.PROP_BASE_URL + "}")
     String baseUrl;
     @Value("${spring.jackson.time-zone:UTC}")
     String timezone;
 
 
     private String buildCorrelationId(HttpServletRequest request) {
-        String id = request.getHeader(MagicConstants.HEADER_CORRELATION_ID);
+        String id = request.getHeader(Magics.HEADER_CORRELATION_ID);
         if (StringUtils.isEmpty(id)) {
             id = UUID.randomUUID().toString();
         }
@@ -49,12 +49,12 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        response.setHeader(MagicConstants.HEADER_X_TIMESTAMP, String.valueOf((clock.timestamp())));
+        response.setHeader(Magics.HEADER_X_TIMESTAMP, String.valueOf((clock.timestamp())));
         runtimeContext.setCorrelationId(buildCorrelationId(request));
 
-        String userAddress = StringUtils.isEmpty(request.getHeader(MagicConstants.HEADER_FORWARDED_FOR_HEADER))
+        String userAddress = StringUtils.isEmpty(request.getHeader(Magics.HEADER_FORWARDED_FOR_HEADER))
                 ? request.getRemoteHost()
-                : request.getHeader(MagicConstants.HEADER_FORWARDED_FOR_HEADER);
+                : request.getHeader(Magics.HEADER_FORWARDED_FOR_HEADER);
         if (StringUtils.hasText(userAddress) && userAddress.indexOf(',') > 0) {
             userAddress = userAddress.substring(0, userAddress.indexOf(','));
         }
@@ -68,9 +68,9 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
 
         runtimeContext.setResourcePath(requestPath);
         // parser request base url
-        String proto = request.getHeader(MagicConstants.HEADER_X_FORWARDED_PROTO);
-        String host = request.getHeader(MagicConstants.HEADER_X_FORWARDED_HOST);
-        String port = request.getHeader(MagicConstants.HEADER_X_FORWARDED_PORT);
+        String proto = request.getHeader(Magics.HEADER_X_FORWARDED_PROTO);
+        String host = request.getHeader(Magics.HEADER_X_FORWARDED_HOST);
+        String port = request.getHeader(Magics.HEADER_X_FORWARDED_PORT);
         if (StringUtils.hasText(proto) && StringUtils.hasText(host) && StringUtils.hasText(port)) {
             String requestBaseUrl = proto + "://" + host + ":" + port;
             runtimeContext.setRequestBaseUrl(requestBaseUrl);
@@ -78,7 +78,7 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
             runtimeContext.setRequestBaseUrl(baseUrl);
         }
 
-        String timeZone = request.getHeader(MagicConstants.HEADER_X_TIMEZONE);
+        String timeZone = request.getHeader(Magics.HEADER_X_TIMEZONE);
         ZoneId zone = null;
         try {
             zone = StringUtils.isEmpty(timeZone) ? null : ZoneId.of(timeZone);
@@ -88,9 +88,9 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
         if (zone != null) {
             runtimeContext.setTimeZone(zone);
         }
-        response.setHeader(MagicConstants.HEADER_X_TIMEZONE, this.timezone);
+        response.setHeader(Magics.HEADER_X_TIMEZONE, this.timezone);
 
-        runtimeContext.setRefer(request.getHeader(MagicConstants.HEADER_REFERER));
+        runtimeContext.setRefer(request.getHeader(Magics.HEADER_REFERER));
         logger.info(buildRequestLog(request));
         return true;
     }
@@ -99,12 +99,12 @@ public class RuntimeContextHandlerInterceptor extends HandlerInterceptorAdapter 
     private String buildRequestLog(HttpServletRequest request) {
         StringBuilder accessLog = new StringBuilder();
         append(accessLog, request.getRemoteHost());
-        append(accessLog, request.getHeader(MagicConstants.HEADER_FORWARDED_FOR_HEADER));
+        append(accessLog, request.getHeader(Magics.HEADER_FORWARDED_FOR_HEADER));
         append(accessLog, request.getRemoteUser());
         append(accessLog, request.getMethod());
         append(accessLog, buildRequestPath(request));
-        append(accessLog, request.getHeader(MagicConstants.HEADER_REFERER));
-        append(accessLog, request.getHeader(MagicConstants.HEADER_USER_AGENT));
+        append(accessLog, request.getHeader(Magics.HEADER_REFERER));
+        append(accessLog, request.getHeader(Magics.HEADER_USER_AGENT));
         return accessLog.toString().substring(1);
     }
 

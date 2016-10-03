@@ -1,7 +1,7 @@
 package me.icymint.sage.base.core.support;
 
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
-import me.icymint.sage.base.spec.def.MagicConstants;
+import me.icymint.sage.base.spec.def.Magics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,8 @@ public class ExternalRequestInterceptor implements ClientHttpRequestInterceptor 
         logger.info("External: {} {}", request.getMethod(), request.getURI());
         if (runtimeContext != null) {
             String correlationId = runtimeContext.getCorrelationId();
-            if (correlationId != null && !request.getHeaders().containsKey(MagicConstants.HEADER_CORRELATION_ID)) {
-                request.getHeaders().add(MagicConstants.HEADER_CORRELATION_ID, correlationId);
+            if (correlationId != null && !request.getHeaders().containsKey(Magics.HEADER_CORRELATION_ID)) {
+                request.getHeaders().add(Magics.HEADER_CORRELATION_ID, correlationId);
             }
         }
         ClientHttpResponse response = execution.execute(request, body);
