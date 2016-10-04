@@ -38,7 +38,7 @@ public interface ClaimMapper {
     Set<RoleType> findRolesByOwnerId(@Param("ownerId") Long ownerId);
 
     @SelectProvider(type = ClaimSqlProvider.class, method = "findPrivilegesByOwnerId")
-    Set<Privilege> findPrivilegesByOwnerId(@Param("ownerId")Long ownerId);
+    Set<Privilege> findPrivilegesByOwnerId(@Param("ownerId") Long ownerId);
 
     @SelectProvider(type = ClaimSqlProvider.class, method = "findByOwnerId")
     List<Claim> findByOwnerId(@Param("ownerId") Long userId, RowBounds rowBounds);

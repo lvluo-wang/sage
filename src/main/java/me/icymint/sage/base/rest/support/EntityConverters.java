@@ -22,10 +22,9 @@ import static me.icymint.sage.base.util.Classes.isValueClass;
 @Component
 public class EntityConverters {
 
+    private final Table<Class<?>, Class<?>, Function<Object, Object>> converterTable = HashBasedTable.create();
     @Autowired(required = false)
     EntityConverter[] converters;
-
-    private final Table<Class<?>, Class<?>, Function<Object, Object>> converterTable = HashBasedTable.create();
 
     @PostConstruct
     protected void init() {

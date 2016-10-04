@@ -4,6 +4,7 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.core.service.IdentityServiceImpl;
 import me.icymint.sage.user.rest.request.GroupRequest;
+import me.icymint.sage.user.rest.resource.GroupResource;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.annotation.Permission;
 import me.icymint.sage.user.spec.def.Privilege;
@@ -57,19 +58,28 @@ public class GroupController {
     @CheckToken
     @Permission(Privilege.ADMIN)
     @GetMapping(value = "/{groupId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Identity findOne(@RequestParam("groupId") Long groupId) {
-        return identityService.findGroup(groupId);
+    public GroupResource findOne(@RequestParam("groupId") Long groupId) {
+        return build(identityService.findGroup(groupId));
+    }
+
+    private GroupResource build(Identity group) {
+        if (group == null) {
+            return null;
+        }
+        return new GroupResource()
+                .setId(group.getId())
+                .setName(group.getDescription());
     }
 
     @CheckToken
     @Permission(Privilege.ADMIN)
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Identity createGroup(@Valid @RequestBody GroupRequest groupRequest) {
-        return identityService.createGroup(runtimeContext.getClientId(),
+    public GroupResource createGroup(@Valid @RequestBody GroupRequest groupRequest) {
+        return build(identityService.createGroup(runtimeContext.getClientId(),
                 runtimeContext.getUserId(),
                 groupRequest.getName(),
                 groupRequest.getRoleTypeList(),
-                groupRequest.getPrivilegeList());
+                groupRequest.getPrivilegeList()));
     }
 
 

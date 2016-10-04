@@ -52,16 +52,16 @@ public class DefaultRuntimeContext implements RuntimeContext, ApplicationListene
         return toLong(get(USER_ID));
     }
 
+    @Override
+    public void setUserId(Long id) {
+        setLong(USER_ID, id);
+    }
+
     private Long toLong(String value) {
         if (Strings.isNullOrEmpty(value) || "NULL".equals(value)) {
             return null;
         }
         return Long.valueOf(value);
-    }
-
-    @Override
-    public void setUserId(Long id) {
-        setLong(USER_ID, id);
     }
 
     private void setLong(String key, Long id) {

@@ -31,15 +31,13 @@ import java.util.concurrent.TimeUnit;
 public class JobService {
     private final Logger logger = LoggerFactory.getLogger(JobService.class);
     private final String instanceId = UUID.randomUUID().toString();
-    private volatile boolean hasJobLock = false;
-
     @Autowired
     Clock clock;
     @Autowired
     RuntimeContext runtimeContext;
     @Autowired
     JobRepository jobRepository;
-
+    private volatile boolean hasJobLock = false;
 
     @Transactional(propagation = Propagation.NEVER)
     public <E extends BaseJobEntity<E>> void executeBatchJob(BatchJob<E> batchJob) {

@@ -1,7 +1,7 @@
 package me.icymint.sage.base.core.support;
 
-import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.def.Magics;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

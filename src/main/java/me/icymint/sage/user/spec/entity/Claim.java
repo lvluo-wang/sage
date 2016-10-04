@@ -3,7 +3,6 @@ package me.icymint.sage.user.spec.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.icymint.sage.base.spec.annotation.ToLabel;
 import me.icymint.sage.base.spec.def.Bool;
-import me.icymint.sage.base.spec.entity.BaseEntity;
 import me.icymint.sage.base.spec.entity.BaseLogEntity;
 import me.icymint.sage.user.spec.def.ClaimType;
 
