@@ -37,14 +37,14 @@ public class GroupController {
     @CheckToken
     @Permission(Privilege.ADMIN)
     @GetMapping(value = "/privileges", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Privilege[] findPrivilegesById() {
+    public Privilege[] findAllPrivileges() {
         return Privilege.values();
     }
 
     @CheckToken
     @Permission(Privilege.ADMIN)
     @GetMapping(value = "/roles", produces = MediaType.APPLICATION_JSON_VALUE)
-    public RoleType[] findRolesById() {
+    public RoleType[] findAllRoles() {
         return RoleType.values();
     }
 

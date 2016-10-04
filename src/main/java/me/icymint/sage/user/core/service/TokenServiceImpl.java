@@ -126,6 +126,11 @@ public class TokenServiceImpl implements TokenService {
 
         //Step 3
         Identity identity = checkAndGetIdentity(identityId, IdentityType.MEMBER);
+
+        if (identity.getIsBlocked() != Bool.N || identity.getPassword().length() < 32) {
+            throw new UnauthorizedException(context, UserCode.USER__LOGIN_DENIED, identityId);
+        }
+
         String calculatedHash = calculateLoginHash(identityId, clientId, nonce, timestamp, identity.getPassword());
         if (!Objects.equals(hash, calculatedHash)) {
             throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
