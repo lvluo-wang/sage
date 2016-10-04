@@ -46,7 +46,8 @@ public abstract class BaseEntitySqlProvider<T extends BaseEntity> extends BaseLo
                 .UPDATE(getEntityTable())
                 .SET_IF("UPDATE_TIME=#{updateTime}",
                         t.getUpdateTime() != null,
-                        "UPDATE_TIME=CURRENT_TIMESTAMP");
+                        "UPDATE_TIME=CURRENT_TIMESTAMP")
+                .SET_IF("IS_DELETED=#{isDeleted}", t.getIsDeleted() == Bool.Y);
         onUpdate(t, sql);
         sql.WHERE("IS_DELETED='" + Bool.N + "'");
         return sql;

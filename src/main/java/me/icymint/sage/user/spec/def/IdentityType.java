@@ -9,5 +9,6 @@ import me.icymint.sage.base.spec.annotation.I18nEnum;
 public enum IdentityType {
     SYSTEM,
     CLIENT,
-    USER
+    GROUP,
+    MEMBER
 }

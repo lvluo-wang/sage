@@ -11,6 +11,8 @@ CREATE TABLE T_TOKEN (
   TYPE          VARCHAR(64) DEFAULT 'DEFAULT'                NOT NULL,
   ACCESS_SECRET VARCHAR(64)                                  NOT NULL,
   SESSION_ID    VARCHAR(100)                                 NULL,
+  IP            VARCHAR(100)                                 NULL,
+  TIME_ZONE     VARCHAR(100)                                 NULL,
   EXPIRE_TIME   TIMESTAMP                                    NULL,
   CONSTRAINT PK_TOKEN PRIMARY KEY (ID),
   CONSTRAINT FK_TOKEN_OWNER FOREIGN KEY (OWNER_ID) REFERENCES T_IDENTITY (ID),

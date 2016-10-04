@@ -40,7 +40,6 @@ public class EventSqlProvider extends BaseJobEntitySqlProvider<Event> {
                 .VALUES_IF("BODY", "#{body}", event.getBody() != null)
                 .VALUES("ASYNC_EVENT_TYPE", "#{asyncEventType}")
                 .VALUES_IF("CORRELATION_ID", "#{correlationId}", event.getCorrelationId() != null)
-                .VALUES_IF("SESSION_ID", "#{sessionId}", event.getSessionId() != null)
                 .VALUES_IF("IP_ADDRESS", "#{ipAddress}", event.getIpAddress() != null)
                 .VALUES_IF("CLIENT_ID", "#{clientId}", event.getClientId() != null);
     }

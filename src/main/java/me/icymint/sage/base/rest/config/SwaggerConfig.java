@@ -80,7 +80,6 @@ public class SwaggerConfig {
     }
 
     private Docket build(String groupName, String description, Predicate<RequestHandler> selector, Function<Docket, Docket> handelr) {
-
         Docket docket = addConverters(new Docket(DocumentationType.SWAGGER_2)
                 .groupName(groupName)
                 .apiInfo(apiInfo(description)));

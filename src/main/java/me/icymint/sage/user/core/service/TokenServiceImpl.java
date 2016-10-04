@@ -17,13 +17,15 @@ import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.user.data.mapper.TokenMapper;
 import me.icymint.sage.user.rest.context.TokenContext;
 import me.icymint.sage.user.spec.annotation.CheckToken;
-import me.icymint.sage.user.spec.api.ClaimService;
+import me.icymint.sage.user.spec.annotation.Permission;
 import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.api.TokenService;
 import me.icymint.sage.user.spec.def.IdentityType;
-import me.icymint.sage.user.spec.def.RoleType;
+import me.icymint.sage.user.spec.def.PermissionStrategy;
+import me.icymint.sage.user.spec.def.Privilege;
 import me.icymint.sage.user.spec.def.UserCode;
 import me.icymint.sage.user.spec.entity.Identity;
+import me.icymint.sage.user.spec.entity.IdentityExtension;
 import me.icymint.sage.user.spec.entity.Token;
 import me.icymint.sage.user.spec.internal.api.AuthorizationMethod;
 import me.icymint.sage.user.spec.internal.entity.LoginEvent;
@@ -42,10 +44,10 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -108,7 +110,14 @@ public class TokenServiceImpl implements TokenService {
         if (hash == null) {
             throw new InvalidArgumentException(context, BaseCode.PARAM__ILLEGAL, "sign");
         }
+
         //Step 1
+        String cacheKey = nonce + ":" + timestamp + ":" + hash;
+        if (getCache().get(cacheKey) != null) {
+            throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
+        }
+
+        //Step 2
         Instant now = clock.now();
         Instant ts = Instant.ofEpochSecond(timestamp);
         if (now.plusSeconds(Magics.TOKEN_SPAN).isBefore(ts)
@@ -116,14 +125,8 @@ public class TokenServiceImpl implements TokenService {
             throw new UnauthorizedException(context, UserCode.ACCESS_SPAN_NOT_VALID);
         }
 
-        //Step 2
-        String cacheKey = nonce + ":" + timestamp + ":" + hash;
-        if (getCache().get(cacheKey) != null) {
-            throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
-        }
-
         //Step 3
-        Identity identity = checkAndGetIdentity(identityId, IdentityType.USER);
+        Identity identity = checkAndGetIdentity(identityId, IdentityType.MEMBER);
         String calculatedHash = calculateLoginHash(identityId, clientId, nonce, timestamp, identity.getPassword());
         if (!Objects.equals(hash, calculatedHash)) {
             throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
@@ -131,23 +134,35 @@ public class TokenServiceImpl implements TokenService {
 
         //Step 4
         Identity client = checkAndGetIdentity(clientId, IdentityType.CLIENT);
-        if (client.getValidSeconds() == null || client.getValidSeconds() <= 0) {
+        IdentityExtension clientExtension = getClientExtension(client);
+        if (clientExtension.getValidSeconds() == null || clientExtension.getValidSeconds() <= 0) {
             throw new UnauthorizedException(context, UserCode.CLIENT_ID__ILLEGAL, clientId);
         }
 
         //Step 5
+        tokenService.expireByClientId(clientId);
+
+        //Step 6
         runtimeContext.setClientId(clientId);
         runtimeContext.setUserId(identityId);
         Token token = new Token()
-                .setExpireTime(now.plusSeconds(client.getValidSeconds()))
+                .setExpireTime(now.plusSeconds(clientExtension.getValidSeconds()))
                 .setAccessSecret(UUID.randomUUID().toString())
                 .setClientId(clientId)
                 .setCreateTime(now)
                 .setOwnerId(identityId)
                 .setSessionId(runtimeContext.getSessionId());
         tokenMapper.create(token);
+
+
         getCache().put(cacheKey, "true");
-        return tokenMapper.findOne(token.getId());
+        return tokenService.findOne(token.getId());
+    }
+
+    private IdentityExtension getClientExtension(Identity client) {
+        return client.getExtension() == null
+                ? new IdentityExtension().setValidSeconds(600L)
+                : client.getExtension();
     }
 
     public String calculateLoginHash(Long identityId, Long clientId, String nonce, Long timestamp, String password) {
@@ -211,18 +226,19 @@ public class TokenServiceImpl implements TokenService {
         tokenMapper.delete(tokenId);
     }
 
+
     @Transactional
-    public void expireBySessionId(String sessionId, Long clientId) {
-        tokenMapper.findBySessionIdAndClientId(sessionId, clientId).forEach(tokenService::expire);
+    public void expireByClientId(Long clientId) {
+        tokenMapper.findByClientId(clientId).forEach(tokenService::expire);
     }
 
-    public void authorize(CheckToken checkToken, boolean expireTimeCheck) {
+    public void authorize(CheckToken checkToken, Permission permission, boolean expireTimeCheck) {
         try {
             String header = runtimeContext.getHeader(Magics.HEADER_AUTHORIZATION);
             if (checkToken.allowNone() && Strings.isNullOrEmpty(header)) {
                 return;
             }
-            doAuthorize(header, checkToken.allowRoles(), expireTimeCheck);
+            doAuthorize(header, permission, expireTimeCheck);
         } finally {
             if (runtimeContext.getTokenId() == null) {
                 runtimeContext.setTokenId(null);
@@ -256,7 +272,7 @@ public class TokenServiceImpl implements TokenService {
         return method.parse(list.get(1));
     }
 
-    private void doAuthorize(String header, RoleType[] roleTypes, boolean expireTimeCheck) {
+    private void doAuthorize(String header, Permission permission, boolean expireTimeCheck) {
         TokenContext tokenContext = parseTokenContext(header);
         if (tokenContext == null) {
             throw new UnauthorizedException(context, BaseCode.AUTHORIZATION_REQUIRED);
@@ -269,6 +285,13 @@ public class TokenServiceImpl implements TokenService {
         Long timestamp = tokenContext.getTimestamp();
 
         //Step 1
+        String hash = tokenContext.getSign();
+        String cacheKey = nonce + ":" + timestamp + ":" + hash;
+        if (getCache().get(cacheKey) != null) {
+            throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
+        }
+
+        //Step 2
         Instant now = clock.now();
         Instant ts = Instant.ofEpochSecond(timestamp);
         if (now.plusSeconds(Magics.TOKEN_SPAN).isBefore(ts)
@@ -276,15 +299,8 @@ public class TokenServiceImpl implements TokenService {
             throw new UnauthorizedException(context, UserCode.ACCESS_SPAN_NOT_VALID);
         }
 
-        //Step 2
-        String hash = tokenContext.getSign();
-        String cacheKey = nonce + ":" + timestamp + ":" + hash;
-        if (getCache().get(cacheKey) != null) {
-            throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
-        }
-
         //Step 3
-        Token token = findOne(tokenContext.getTokenId());
+        Token token = tokenService.findOne(tokenContext.getTokenId());
         if (token == null) {
             throw new UnauthorizedException(context, UserCode.TOKEN__NOT_FOUND, tokenContext.getTokenId());
         }
@@ -307,8 +323,8 @@ public class TokenServiceImpl implements TokenService {
             throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
         }
         //Step 5
-        if (!claimService.hasRoles(token.getOwnerId(), roleTypes)) {
-            logger.warn("user {} has no roles {}", token.getOwnerId(), Arrays.toString(roleTypes));
+
+        if (!checkPermission(token, permission)) {
             throw new UnauthorizedException(context, UserCode.ACCESS_PERMISSION_DENIED);
         }
 
@@ -317,6 +333,24 @@ public class TokenServiceImpl implements TokenService {
         runtimeContext.setTokenId(token.getId());
 
         getCache().put(cacheKey, "true");
+    }
+
+    private boolean checkPermission(Token token, Permission permission) {
+        if (permission == null
+                || (permission.value().length == 0)) {
+            return true;
+        }
+        Set<Privilege> userPrivileges = getPermissionsByToken(token);
+        if (permission.strategy() == PermissionStrategy.MATCH_ANY) {
+            return Stream.of(permission.value()).anyMatch(userPrivileges::contains);
+        } else {
+            return Stream.of(permission.value()).allMatch(userPrivileges::contains);
+        }
+    }
+
+    private Set<Privilege> getPermissionsByToken(Token token) {
+        //ignore clientId and token type
+        return identityService.findPrivilegesById(token.getOwnerId());
     }
 
     public String calculateTokenHash(Long clientId, String nonce, Long timestamp, Long tokenId, String secret) {
@@ -340,8 +374,8 @@ public class TokenServiceImpl implements TokenService {
             return new LoginEvent()
                     .setOwnerId(token.getOwnerId())
                     .setTokenId(token.getId())
-                    .setClientId(token.getClientId())
-                    .setSessionId(token.getSessionId());
+                    .setSessionId(token.getSessionId())
+                    .setClientId(token.getClientId());
         }
     }
 }

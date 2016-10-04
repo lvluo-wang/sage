@@ -16,7 +16,7 @@ public class Magics {
     public static final String CACHE_SIGNATURE = "signature";
     public static final String CACHE_CLAIM = "claim";
     public static final String CACHE_TOKEN = "token";
-    public static final String CACHE_SESSION = "session";
+    public static final String CACHE_GRANT = "grant";
 
     // Props
     public static final String PROP_PREFIX = "sage.";  //自定义配置属性键值前缀
@@ -24,7 +24,6 @@ public class Magics {
     public static final String PROP_BASE_URL = PROP_PREFIX + "baseUrl";
     public static final String PROP_ENABLE_DB_CLOCK = PROP_PREFIX + "enable.db.clock";
     public static final String PROP_ENABLE_JOB = PROP_PREFIX + "enable.job";
-    public static final String PROP_ENABLE_SESSION_STORAGE = PROP_PREFIX + "enable.session.storage";
     public static final String PROP_ALWAYS_SAVE_LOG = PROP_PREFIX + "always.save.log";
     public static final String PROP_JOB_EVENT_CRON = PROP_PREFIX + "job.event.cron";
 
@@ -32,7 +31,8 @@ public class Magics {
 
     public static final int AOP_ORDER_EXCEPTION = Ordered.HIGHEST_PRECEDENCE + 1;
     public static final int AOP_ORDER_EVENT_LOG = AOP_ORDER_EXCEPTION + 10;
-    public static final int AOP_ORDER_TOKEN = AOP_ORDER_EXCEPTION + 11;
+    public static final int AOP_ORDER_PERMISSION = AOP_ORDER_EXCEPTION + 11;
+    public static final int AOP_ORDER_TOKEN = AOP_ORDER_EXCEPTION + 12;
     public static final int AOP_ORDER_REQUEST_VALIDATE = Ordered.LOWEST_PRECEDENCE - 3;
     public static final int AOP_ORDER_EVENT = Ordered.LOWEST_PRECEDENCE - 3;
     public static final int AOP_ORDER_TRANSACTION = Ordered.LOWEST_PRECEDENCE - 2;

@@ -16,7 +16,6 @@ public class Event extends BaseJobEntity<Event> {
     private String ipAddress;
     private String correlationId;
     private String clientId;
-    private String sessionId;
 
     public String getEventId() {
         return eventId;
@@ -95,15 +94,6 @@ public class Event extends BaseJobEntity<Event> {
         return this;
     }
 
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public Event setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-        return this;
-    }
-
     @Override
     public String toString() {
         return "Event{" +
@@ -115,7 +105,6 @@ public class Event extends BaseJobEntity<Event> {
                 ", ipAddress='" + ipAddress + '\'' +
                 ", correlationId='" + correlationId + '\'' +
                 ", clientId='" + clientId + '\'' +
-                ", sessionId='" + sessionId + '\'' +
                 "} " + super.toString();
     }
 }

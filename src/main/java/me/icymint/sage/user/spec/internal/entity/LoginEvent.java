@@ -7,6 +7,7 @@ import me.icymint.sage.base.spec.entity.BaseEvent;
  */
 public class LoginEvent extends BaseEvent<LoginEvent> {
     private Long tokenId;
+    private String sessionId;
 
     public Long getTokenId() {
         return tokenId;
@@ -14,6 +15,15 @@ public class LoginEvent extends BaseEvent<LoginEvent> {
 
     public LoginEvent setTokenId(Long tokenId) {
         this.tokenId = tokenId;
+        return this;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public LoginEvent setSessionId(String sessionId) {
+        this.sessionId = sessionId;
         return this;
     }
 
@@ -27,6 +37,7 @@ public class LoginEvent extends BaseEvent<LoginEvent> {
     public String toString() {
         return "LoginEvent{" +
                 "tokenId=" + tokenId +
+                ", sessionId='" + sessionId + '\'' +
                 "} " + super.toString();
     }
 }

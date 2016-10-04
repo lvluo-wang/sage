@@ -11,8 +11,6 @@ CREATE TABLE T_EVENT (
   CLIENT_ID        VARCHAR(64)                                  NULL,
   IP_ADDRESS       VARCHAR(200)                                 NULL,
   CORRELATION_ID   CHAR(36)                                     NULL,
-  SESSION_ID       VARCHAR(100)                                 NULL,
-
 
   EVENT_ID         CHAR(36) UNIQUE                              NOT NULL,
   PARENT_EVENT_ID  CHAR(36)                                     NULL,

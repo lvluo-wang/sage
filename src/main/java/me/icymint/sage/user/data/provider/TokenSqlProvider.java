@@ -18,6 +18,8 @@ public class TokenSqlProvider extends BaseEntitySqlProvider<Token> {
                 .VALUES("ACCESS_SECRET", "#{accessSecret}")
                 .VALUES("EXPIRE_TIME", "#{expireTime}")
                 .VALUES_IF("TYPE", "#{type}", token.getType() != null)
+                .VALUES_IF("IP", "#{ip}", token.getIp() != null)
+                .VALUES_IF("TIME_ZONE", "#{timeZone}", token.getTimeZone() != null)
                 .VALUES_IF("SESSION_ID", "#{sessionId}", token.getSessionId() != null);
     }
 
@@ -28,12 +30,11 @@ public class TokenSqlProvider extends BaseEntitySqlProvider<Token> {
 
     @Override
     protected SQL onUpdate(Token token, SQL sql) {
-        return sql.SET_IF("SESSION_ID=#{sessionId}", token.getSessionId() != null);
+        return sql;
     }
 
-    public String findBySessionIdAndClientId() {
+    public String findByClientId() {
         return selectFrom("ID")
-                .WHERE("SESSION_ID=#{sessionId}")
                 .WHERE("CLIENT_ID=#{clientId}")
                 .toString();
     }

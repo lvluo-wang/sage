@@ -7,6 +7,7 @@ import me.icymint.sage.base.spec.annotation.I18nEnum;
  */
 @I18nEnum("role.type")
 public enum RoleType {
-    ADMIN,
-    USER
+    ROLE_ADMIN,
+    ROLE_USER,
+    ROLE_DEV;
 }

@@ -1,7 +1,6 @@
 package me.icymint.sage.base.rest.support;
 
 import com.google.common.base.Strings;
-import me.icymint.sage.base.spec.api.SessionService;
 import me.icymint.sage.base.spec.def.BaseCode;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.exception.UnauthorizedException;
@@ -12,6 +11,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by daniel on 16/9/3.
@@ -19,9 +22,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultRuntimeContext implements RuntimeContext, ApplicationListener<ContextClosedEvent> {
 
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    @Autowired
-    SessionService sessionService;
     @Autowired
     ApplicationContext context;
     private volatile boolean shutdown = false;
@@ -38,9 +38,13 @@ public class DefaultRuntimeContext implements RuntimeContext, ApplicationListene
 
     @Override
     public String getSessionId() {
-        String sessionId = sessionService.fetchSession(this);
-        set(normalizeKey(SESSION_ID), sessionId);
-        return sessionId;
+        return RequestContextHolder.getRequestAttributes().getSessionId();
+    }
+
+    @Override
+    public HttpServletRequest getNativeRequest() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        return attributes.getRequest();
     }
 
     @Override

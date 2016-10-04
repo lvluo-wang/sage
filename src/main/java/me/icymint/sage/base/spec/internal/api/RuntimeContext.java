@@ -2,9 +2,8 @@ package me.icymint.sage.base.spec.internal.api;
 
 import me.icymint.sage.base.spec.def.EnumMode;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.ZoneId;
 
 /**
@@ -40,9 +39,14 @@ public interface RuntimeContext {
 
     String getSessionId();
 
+    HttpServletRequest getNativeRequest();
+
     default String getHeader(String header) {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        return attributes.getRequest().getHeader(header);
+        HttpServletRequest httpRequest = getNativeRequest();
+        if (httpRequest != null) {
+            return httpRequest.getHeader(header);
+        }
+        return null;
     }
 
     default Long getClientId() {
