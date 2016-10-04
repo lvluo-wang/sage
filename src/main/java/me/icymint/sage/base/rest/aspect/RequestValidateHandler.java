@@ -13,8 +13,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.Validator;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * Created by daniel on 16/9/5.
@@ -44,8 +45,12 @@ public class RequestValidateHandler implements SageValidator {
     public InvalidArgumentException checkExceptions(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             logger.warn("Request {} failed!", bindingResult.getModel());
-            FieldError err = bindingResult.getFieldError();
-            return new InvalidArgumentException(context, err.getField() + ":" + err.getDefaultMessage());
+            return new InvalidArgumentException(context, bindingResult
+                    .getFieldErrors()
+                    .stream()
+                    .sorted((x, y) -> x.getField().compareTo(y.getField()))
+                    .map(f -> f.getField() + ":" + f.getDefaultMessage())
+                    .collect(joining(";")));
         }
         return null;
     }

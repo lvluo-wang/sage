@@ -13,6 +13,7 @@ import me.icymint.sage.user.spec.entity.Identity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,7 +56,7 @@ public class GroupController {
 
     @CheckToken
     @GetMapping(value = "/{groupId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public GroupResource findOne(@RequestParam("groupId") Long groupId) {
+    public GroupResource findOne(@PathVariable("groupId") Long groupId) {
         return build(identityService.findGroup(groupId));
     }
 

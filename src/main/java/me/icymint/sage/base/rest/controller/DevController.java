@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -50,7 +51,7 @@ public class DevController {
     }
 
     @PostMapping(value = "/password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public HmacResponse hash(@RequestBody PasswordRequest request) {
+    public HmacResponse hash(@Valid @RequestBody PasswordRequest request) {
         String salt = salt();
         return new HmacResponse()
                 .setSalt(salt)
@@ -58,7 +59,7 @@ public class DevController {
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Token login(@RequestBody LoginRequest request) {
+    public Token login(@Valid @RequestBody LoginRequest request) {
         String nonce = salt();
         Long timestamp = clock.timestamp();
         String hash = tokenService.calculateLoginHash(request.getIdentityId(), request.getClientId(), nonce, timestamp, request.getPassword());
@@ -66,7 +67,7 @@ public class DevController {
     }
 
     @PostMapping(value = "/hash", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public String loginHash(@RequestBody LoginHashRequest request) {
+    public String loginHash(@Valid @RequestBody LoginHashRequest request) {
         String nonce = salt();
         Long timestamp = clock.timestamp();
         String hash = tokenService.calculateTokenHash(request.getClientId(), nonce, timestamp, request.getId(), request.getAccessSecret());
