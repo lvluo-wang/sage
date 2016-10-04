@@ -241,7 +241,7 @@ public class TokenServiceImpl implements TokenService {
         tokenMapper.findByClientId(clientId).forEach(tokenService::expire);
     }
 
-    public void authorize(CheckToken checkToken, Permission classPermission, Permission permission) {
+    public void authorize(CheckToken checkToken, Permission classPermission) {
         try {
             boolean expireTimeCheck = checkToken == null;
             String header = runtimeContext.getHeader(Magics.HEADER_AUTHORIZATION);
@@ -250,7 +250,7 @@ public class TokenServiceImpl implements TokenService {
                     && Strings.isNullOrEmpty(header)) {
                 return;
             }
-            doAuthorize(header, classPermission, permission, expireTimeCheck);
+            doAuthorize(header, classPermission, expireTimeCheck);
         } finally {
             if (runtimeContext.getTokenId() == null) {
                 runtimeContext.setTokenId(null);
@@ -283,7 +283,7 @@ public class TokenServiceImpl implements TokenService {
         return method.parse(list.get(1));
     }
 
-    private void doAuthorize(String header, Permission classPermission, Permission permission, boolean expireTimeCheck) {
+    private void doAuthorize(String header, Permission classPermission, boolean expireTimeCheck) {
         TokenContext tokenContext = parseTokenContext(header);
         if (tokenContext == null) {
             throw new UnauthorizedException(context, BaseCode.AUTHORIZATION_REQUIRED);
@@ -335,8 +335,7 @@ public class TokenServiceImpl implements TokenService {
         }
 
         //Step 5
-        if (!checkPermission(token, classPermission)
-                || !checkPermission(token, permission)) {
+        if (!checkPermission(token, classPermission)) {
             throw new UnauthorizedException(context, UserCode.ACCESS_PERMISSION_DENIED);
         }
 

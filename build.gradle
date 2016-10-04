@@ -73,6 +73,8 @@ bootRun {
     systemProperty 'spring.devtools.restart.enabled', 'true'
     systemProperty 'logback_level', 'INFO'
     systemProperty 'sage.always.save.log', 'true'
+    systemProperty 'sage.enable.api.ROLE_DEV', 'true'
+    systemProperty 'sage.enable.api.ROLE_ADMIN', 'true'
     systemProperty 'sage.dev.mode', 'true'
     addResources = true
 }

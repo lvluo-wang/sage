@@ -24,15 +24,11 @@ public class DefaultPermissionAuthorization {
     @Autowired
     ApplicationContext context;
 
-    @Pointcut("@annotation(me.icymint.sage.user.spec.annotation.Permission) && !@annotation(me.icymint.sage.user.spec.annotation.CheckToken)")
-    public void methodDenied() {
-    }
-
     @Pointcut("within(@me.icymint.sage.user.spec.annotation.Permission *) && !@annotation(me.icymint.sage.user.spec.annotation.CheckToken)")
     public void classDenied() {
     }
 
-    @Before("methodDenied() || classDenied()")
+    @Before("classDenied()")
     public void permissionWithoutCheckToken() {
         throw new UnauthorizedException(context, BaseCode.AUTHORIZATION_REQUIRED);
     }

@@ -1,5 +1,6 @@
 package me.icymint.sage.base.rest.controller;
 
+import io.swagger.annotations.Api;
 import me.icymint.sage.base.rest.request.LoginHashRequest;
 import me.icymint.sage.base.rest.request.LoginRequest;
 import me.icymint.sage.base.rest.request.PasswordRequest;
@@ -27,6 +28,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * Created by daniel on 16/9/6.
  */
+@Api(tags = Magics.API_DEV)
 @RestController
 @RequestMapping("/dev")
 @ConditionalOnProperty(name = Magics.PROP_DEV_MODE, havingValue = "true")

@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Created by daniel on 2016/10/4.
  */
-@Api(tags = Magics.API_ADMIN)
+@Api(tags = Magics.API_DEV)
 @Permission(Privilege.DEV_API)
 @RestController
 @RequestMapping("/examples/admin")

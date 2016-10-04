@@ -26,6 +26,7 @@ public class Magics {
     public static final String PROP_ENABLE_JOB = PROP_PREFIX + "enable.job";
     public static final String PROP_ALWAYS_SAVE_LOG = PROP_PREFIX + "always.save.log";
     public static final String PROP_JOB_EVENT_CRON = PROP_PREFIX + "job.event.cron";
+    public static final String PROP_ENABLE_API_ = PROP_PREFIX + "enable.api.";
 
     // AOP Order From Highest to Lowest Order
 
@@ -70,4 +71,5 @@ public class Magics {
 
     //API tag
     public static final String API_ADMIN = "Admin APIs";
+    public static final String API_DEV = "Dev APIs";
 }

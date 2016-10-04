@@ -34,8 +34,10 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(properties = {
+        Magics.PROP_ENABLE_API_ + "ROLE_DEV=true",
+        Magics.PROP_ENABLE_API_ + "ROLE_ADMIN=true",
         Magics.PROP_DEV_MODE + "=true",
-        Magics.PROP_ALWAYS_SAVE_LOG + "=false",
+        Magics.PROP_ALWAYS_SAVE_LOG + "=true",
         Magics.PROP_JOB_EVENT_CRON + "=0/1 * * * * *"
 })
 public class ApplicationTests {
