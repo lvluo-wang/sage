@@ -2,10 +2,10 @@ package me.icymint.sage.user.rest.controller;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
+import me.icymint.sage.user.core.service.IdentityServiceImpl;
 import me.icymint.sage.user.rest.request.GroupRequest;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.annotation.Permission;
-import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.def.Privilege;
 import me.icymint.sage.user.spec.def.RoleType;
 import me.icymint.sage.user.spec.entity.Identity;
@@ -29,7 +29,7 @@ import java.util.List;
 public class GroupController {
 
     @Autowired
-    IdentityService identityService;
+    IdentityServiceImpl identityService;
     @Autowired
     RuntimeContext runtimeContext;
 

@@ -81,7 +81,6 @@ public class IdentityServiceImpl implements IdentityService {
         return identityMapper.findOne(identityId);
     }
 
-    @Override
     public Identity findClient(Long clientId) {
         Identity identity = identityService.findOne(clientId);
         if (identity != null && identity.getType() == IdentityType.CLIENT) {
@@ -90,7 +89,6 @@ public class IdentityServiceImpl implements IdentityService {
         return null;
     }
 
-    @Override
     public Identity findGroup(Long groupId) {
         Identity identity = identityService.findOne(groupId);
         if (identity != null && identity.getType() == IdentityType.GROUP) {
@@ -143,7 +141,6 @@ public class IdentityServiceImpl implements IdentityService {
         return identity;
     }
 
-    @Override
     @Transactional
     public Identity createGroup(Long clientId, Long createId, String description, List<RoleType> roleTypes, List<Privilege> privilegeList) {
         Identity client = identityService.findClient(clientId);
@@ -180,7 +177,6 @@ public class IdentityServiceImpl implements IdentityService {
         return findOne(claim.getOwnerId());
     }
 
-    @Override
     public Set<Privilege> findPrivilegesById(Long ownerId) {
         return Stream.concat(Stream.of(ownerId),
                 grantService
@@ -194,12 +190,10 @@ public class IdentityServiceImpl implements IdentityService {
                 .collect(toSet());
     }
 
-    @Override
     public Set<RoleType> findRolesById(Long ownerId) {
         return claimService.findRolesByOwnerId(ownerId);
     }
 
-    @Override
     public List<Long> findGroupIds(PageBounds pageBounds) {
         return identityMapper.findGroupIds(pageBounds);
     }

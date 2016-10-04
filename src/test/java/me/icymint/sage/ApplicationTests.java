@@ -1,6 +1,5 @@
 package me.icymint.sage;
 
-import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.rest.controller.HmacController;
 import me.icymint.sage.base.rest.request.LoginRequest;
@@ -8,9 +7,8 @@ import me.icymint.sage.base.rest.request.PasswordRequest;
 import me.icymint.sage.base.rest.resource.HmacResponse;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.util.HMacs;
+import me.icymint.sage.user.core.service.IdentityServiceImpl;
 import me.icymint.sage.user.data.mapper.EventMapper;
-import me.icymint.sage.user.data.mapper.IdentityMapper;
-import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.api.TokenService;
 import me.icymint.sage.user.spec.def.EventStatus;
 import me.icymint.sage.user.spec.def.IdentityType;
@@ -45,13 +43,11 @@ public class ApplicationTests {
     @Autowired
     DataSource dataSource;
     @Autowired
-    IdentityMapper identityMapper;
-    @Autowired
     EventMapper eventMapper;
     @Autowired
     EventServiceImpl eventService;
     @Autowired
-    IdentityService identityService;
+    IdentityServiceImpl identityService;
     @Autowired
     TokenService tokenService;
     @Autowired
@@ -84,7 +80,6 @@ public class ApplicationTests {
         assertEquals(id.getId(), token.getOwnerId());
 
         System.out.println(id);
-        System.out.println(identityMapper.findAll(new PageBounds(1, 10)));
     }
 
     @Test

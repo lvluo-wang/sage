@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * Created by daniel on 16/9/6.
@@ -72,14 +71,6 @@ public class ClaimService {
             throw new UserServiceException(context, UserCode.USE_MULTI_CLAIM_QUERY_API_INSTEAD);
         }
         return claimMapper.findOneByTypeAndValue(type, value);
-    }
-
-    public boolean hasRoles(Long ownerId, RoleType[] roleTypes) {
-        Set<RoleType> roleTypeSet = claimService.findRolesByOwnerId(ownerId);
-        if (roleTypes != null) {
-            return Stream.of(roleTypes).anyMatch(roleTypeSet::contains);
-        }
-        return false;
     }
 
     @Cacheable(value = Magics.CACHE_CLAIM, key = "T(me.icymint.sage.user.spec.def.ClaimType).ROLE+'-'+#ownerId")

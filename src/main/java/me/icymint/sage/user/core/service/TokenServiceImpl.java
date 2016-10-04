@@ -18,7 +18,6 @@ import me.icymint.sage.user.data.mapper.TokenMapper;
 import me.icymint.sage.user.rest.context.TokenContext;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.annotation.Permission;
-import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.api.TokenService;
 import me.icymint.sage.user.spec.def.IdentityType;
 import me.icymint.sage.user.spec.def.PermissionStrategy;
@@ -68,7 +67,7 @@ public class TokenServiceImpl implements TokenService {
     @Autowired
     TokenMapper tokenMapper;
     @Autowired
-    IdentityService identityService;
+    IdentityServiceImpl identityService;
     @Autowired
     Clock clock;
     @SuppressWarnings("SpringJavaAutowiringInspection")
@@ -248,7 +247,6 @@ public class TokenServiceImpl implements TokenService {
             }
         }
     }
-
 
     private TokenContext parseTokenContext(String tokenString) {
         if (StringUtils.isEmpty(tokenString)
