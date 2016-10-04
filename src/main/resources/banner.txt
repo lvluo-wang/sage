@@ -9,5 +9,5 @@ ${AnsiColor.BRIGHT_RED}
          ░  ░  ░    ░   ▒   ░ ░   ░    ░
                ░        ░  ░      ░    ░  ░
 
-${AnsiColor.CYAN}
-::: Project Sage ::: ＼(^O^)／ Spring-Boot ${spring-boot.version}
+${AnsiColor.DEFAULT}
+::: Project ${AnsiColor.CYAN}Sage${AnsiColor.DEFAULT} ::: ＼(^O^)／ Spring-Boot ${spring-boot.version}

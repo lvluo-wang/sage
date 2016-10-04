@@ -17,7 +17,7 @@ static String getProp(String key) {
 String level = getProp("logback_level")
 String path = getProp("logback_path")
 path = !path || path.endsWith('/') ? path : path + '/'
-logPattern = "%date $localhost[%thread] %.-5level %logger{32} - [%mdc{sage.correlationId}] %message%n%exception{32}"
+logPattern = "%date $localhost[%thread] %highlight(%.-5level) %logger{32} - [%mdc{sage.correlationId}] %message%n%exception{32}"
 
 appender('CONSOLE', ConsoleAppender) {
     filter(ThresholdFilter) {
