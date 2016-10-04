@@ -1,7 +1,5 @@
 package me.icymint.sage.user.rest.controller;
 
-import io.swagger.annotations.Api;
-import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.core.service.GrantService;
 import me.icymint.sage.user.spec.annotation.CheckToken;
@@ -21,7 +19,6 @@ import java.util.List;
 /**
  * Created by daniel on 2016/10/4.
  */
-@Api(tags = Magics.API_ADMIN)
 @Permission(Privilege.ADMIN)
 @RestController
 @RequestMapping("/grants")

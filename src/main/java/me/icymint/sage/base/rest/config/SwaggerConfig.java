@@ -7,7 +7,10 @@ import com.google.common.primitives.Primitives;
 import me.icymint.sage.base.rest.entity.PaginatorResponse;
 import me.icymint.sage.base.rest.support.EntityConverters;
 import me.icymint.sage.base.spec.def.Magics;
+import me.icymint.sage.base.util.Permissions;
 import me.icymint.sage.user.spec.annotation.CheckToken;
+import me.icymint.sage.user.spec.annotation.Permission;
+import me.icymint.sage.user.spec.def.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,12 +49,23 @@ public class SwaggerConfig {
 
     @Bean
     public Docket sageApi() {
-        return build("sage-api", "Backend APIs for Sage", this::sageApi, null);
+        return build("sage-open-api", "Backend APIs for Sage", this::sageApi, null);
     }
 
     @Bean
     public Docket sageAuthApi() {
-        return build("sage-auth-api", "Backend Auth APIs for Sage", this::needToken, a -> a.globalOperationParameters(Lists.newArrayList(new ParameterBuilder()
+        return build("sage-user-api", "Backend Member APIs for Sage", b -> needToken(b) && !adminApi(b), a -> a.globalOperationParameters(Lists.newArrayList(new ParameterBuilder()
+                .name(Magics.HEADER_AUTHORIZATION)
+                .description("Token Auth")
+                .parameterType("header")
+                .modelRef(new ModelRef("string"))
+                .required(true)
+                .build())));
+    }
+
+    @Bean
+    public Docket sageAdminApi() {
+        return build("sage-admin-api", "Backend Administrator APIs for Sage", this::adminApi, a -> a.globalOperationParameters(Lists.newArrayList(new ParameterBuilder()
                 .name(Magics.HEADER_AUTHORIZATION)
                 .description("Token Auth")
                 .parameterType("header")
@@ -66,7 +80,7 @@ public class SwaggerConfig {
     }
 
     private boolean sageApi(RequestHandler requestHandler) {
-        return !needToken(requestHandler) && !systemApi(requestHandler);
+        return !needToken(requestHandler) && !adminApi(requestHandler) && !systemApi(requestHandler);
     }
 
     private boolean systemApi(RequestHandler requestHandler) {
@@ -77,6 +91,11 @@ public class SwaggerConfig {
     private boolean needToken(RequestHandler requestHandler) {
         HandlerMethod method = requestHandler.getHandlerMethod();
         return method != null && method.hasMethodAnnotation(CheckToken.class);
+    }
+
+    private boolean adminApi(RequestHandler requestHandler) {
+        Permission permission = requestHandler.getHandlerMethod().getBeanType().getAnnotation(Permission.class);
+        return permission != null && Permissions.matchesRole(permission.value(), permission.strategy(), role -> role == RoleType.ROLE_ADMIN);
     }
 
     private Docket build(String groupName, String description, Predicate<RequestHandler> selector, Function<Docket, Docket> handelr) {

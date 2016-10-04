@@ -1,8 +1,6 @@
 package me.icymint.sage.user.rest.controller;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
-import io.swagger.annotations.Api;
-import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.core.service.IdentityServiceImpl;
 import me.icymint.sage.user.rest.request.GroupRequest;
@@ -27,7 +25,6 @@ import java.util.List;
 /**
  * Created by daniel on 2016/10/4.
  */
-@Api(tags = Magics.API_ADMIN)
 @Permission(Privilege.ADMIN)
 @RestController
 @RequestMapping("/groups")

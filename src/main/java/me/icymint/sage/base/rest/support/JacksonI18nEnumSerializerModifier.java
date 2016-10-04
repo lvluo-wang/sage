@@ -79,7 +79,7 @@ public class JacksonI18nEnumSerializerModifier extends BeanSerializerModifier {
             @Override
             public void serialize(Enum<?> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
                 EnumMode mode = runtimeContext.getEnumMode();
-                if (mode == EnumMode.NAME_ONLY) {
+                if (mode == EnumMode.NAME_ONLY && toLabel.expend()) {
                     gen.writeString(value.name());
                     return;
                 }

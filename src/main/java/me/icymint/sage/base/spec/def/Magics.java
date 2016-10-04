@@ -70,6 +70,5 @@ public class Magics {
     public static final int PAGE_MAX_LIMIT = 1000;
 
     //API tag
-    public static final String API_ADMIN = "Admin APIs";
     public static final String API_DEV = "Dev APIs";
 }

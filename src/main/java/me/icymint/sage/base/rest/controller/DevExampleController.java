@@ -28,7 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/examples/admin")
 @ConditionalOnProperty(name = Magics.PROP_DEV_MODE, havingValue = "true")
-public class AdminExampleController {
+public class DevExampleController {
     @Autowired
     Clock clock;
 

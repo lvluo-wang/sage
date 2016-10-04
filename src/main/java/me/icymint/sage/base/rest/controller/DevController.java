@@ -13,6 +13,7 @@ import me.icymint.sage.user.rest.authorization.HmacAuthorizationMethod;
 import me.icymint.sage.user.spec.entity.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,5 +78,10 @@ public class DevController {
                 String.valueOf(request.getId()),
                 String.valueOf(timestamp),
                 nonce).collect(joining("|"));
+    }
+
+    @GetMapping(value = "/locale", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String locale() {
+        return LocaleContextHolder.getLocale().toString();
     }
 }
