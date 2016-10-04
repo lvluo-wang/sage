@@ -1,5 +1,7 @@
 package me.icymint.sage.user.rest.controller;
 
+import io.swagger.annotations.Api;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.core.service.GrantService;
 import me.icymint.sage.user.spec.annotation.CheckToken;
@@ -19,6 +21,8 @@ import java.util.List;
 /**
  * Created by daniel on 2016/10/4.
  */
+@Api(tags = Magics.API_ADMIN)
+@Permission(Privilege.ADMIN)
 @RestController
 @RequestMapping("/grants")
 public class GrantController {
@@ -28,7 +32,6 @@ public class GrantController {
     RuntimeContext runtimeContext;
 
     @CheckToken
-    @Permission(Privilege.ADMIN)
     @GetMapping(value = "/{ownerId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Long> groupsByOwnerId(@PathVariable("ownerId") Long ownerId) {
         if (ownerId == null) {
@@ -38,17 +41,15 @@ public class GrantController {
     }
 
     @CheckToken
-    @Permission(Privilege.ADMIN)
     @PostMapping(value = "/{ownerId}/{groupId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public void grant(@PathVariable("ownerId") Long ownerId, @PathVariable("groupId") Long groupId) {
-        grantService.grant(runtimeContext.getUserId(), ownerId, groupId);
+        grantService.grant(ownerId, groupId);
     }
 
     @CheckToken
-    @Permission(Privilege.ADMIN)
     @DeleteMapping(value = "/{ownerId}/{groupId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public void revoke(@PathVariable("ownerId") Long ownerId, @PathVariable("groupId") Long groupId) {
-        grantService.revoke(runtimeContext.getUserId(), ownerId, groupId);
+        grantService.revoke(ownerId, groupId);
     }
 
 }

@@ -1,7 +1,7 @@
 package me.icymint.sage;
 
 import me.icymint.sage.base.core.service.EventServiceImpl;
-import me.icymint.sage.base.rest.controller.HmacController;
+import me.icymint.sage.base.rest.controller.DevController;
 import me.icymint.sage.base.rest.request.LoginRequest;
 import me.icymint.sage.base.rest.request.PasswordRequest;
 import me.icymint.sage.base.rest.resource.HmacResponse;
@@ -53,7 +53,7 @@ public class ApplicationTests {
     @Autowired
     TestService testService;
     @Autowired
-    HmacController hmacController;
+    DevController hmacController;
 
     @Test
     public void contextLoads() {

@@ -1,6 +1,8 @@
 package me.icymint.sage.user.rest.controller;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import io.swagger.annotations.Api;
+import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.core.service.IdentityServiceImpl;
 import me.icymint.sage.user.rest.request.GroupRequest;
@@ -25,6 +27,8 @@ import java.util.List;
 /**
  * Created by daniel on 2016/10/4.
  */
+@Api(tags = Magics.API_ADMIN)
+@Permission(Privilege.ADMIN)
 @RestController
 @RequestMapping("/groups")
 public class GroupController {
@@ -35,28 +39,24 @@ public class GroupController {
     RuntimeContext runtimeContext;
 
     @CheckToken
-    @Permission(Privilege.ADMIN)
     @GetMapping(value = "/privileges", produces = MediaType.APPLICATION_JSON_VALUE)
     public Privilege[] findAllPrivileges() {
         return Privilege.values();
     }
 
     @CheckToken
-    @Permission(Privilege.ADMIN)
     @GetMapping(value = "/roles", produces = MediaType.APPLICATION_JSON_VALUE)
     public RoleType[] findAllRoles() {
         return RoleType.values();
     }
 
     @CheckToken
-    @Permission(Privilege.ADMIN)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Long> groups(PageBounds pageBounds) {
         return identityService.findGroupIds(pageBounds);
     }
 
     @CheckToken
-    @Permission(Privilege.ADMIN)
     @GetMapping(value = "/{groupId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public GroupResource findOne(@RequestParam("groupId") Long groupId) {
         return build(identityService.findGroup(groupId));
@@ -68,11 +68,11 @@ public class GroupController {
         }
         return new GroupResource()
                 .setId(group.getId())
-                .setName(group.getDescription());
+                .setName(group.getDescription())
+                .setCreateTime(group.getCreateTime());
     }
 
     @CheckToken
-    @Permission(Privilege.ADMIN)
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public GroupResource createGroup(@Valid @RequestBody GroupRequest groupRequest) {
         return build(identityService.createGroup(runtimeContext.getClientId(),

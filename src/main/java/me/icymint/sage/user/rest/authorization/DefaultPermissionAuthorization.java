@@ -6,6 +6,7 @@ import me.icymint.sage.base.spec.exception.UnauthorizedException;
 import me.icymint.sage.user.spec.annotation.Permission;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
@@ -23,9 +24,16 @@ public class DefaultPermissionAuthorization {
     @Autowired
     ApplicationContext context;
 
+    @Pointcut("@annotation(me.icymint.sage.user.spec.annotation.Permission) && !@annotation(me.icymint.sage.user.spec.annotation.CheckToken)")
+    public void methodDenied() {
+    }
 
-    @Before("@annotation(permission) && !@annotation(me.icymint.sage.user.spec.annotation.CheckToken)")
-    public void permissionWithoutCheckToken(Permission permission) {
+    @Pointcut("within(@me.icymint.sage.user.spec.annotation.Permission *) && !@annotation(me.icymint.sage.user.spec.annotation.CheckToken)")
+    public void classDenied() {
+    }
+
+    @Before("methodDenied() || classDenied()")
+    public void permissionWithoutCheckToken() {
         throw new UnauthorizedException(context, BaseCode.AUTHORIZATION_REQUIRED);
     }
 

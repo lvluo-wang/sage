@@ -98,6 +98,19 @@ public class EventServiceImpl implements BatchJob<Event> {
         if (event == null) {
             return;
         }
+        if (event.getOwnerId() == null) {
+            event.setOwnerId(runtimeContext.getUserId());
+        }
+        if (event.getClientId() == null) {
+            event.setClientId(runtimeContext.getClientId());
+        }
+        if (event.getCorrelationId() == null) {
+            event.setCorrelationId(runtimeContext.getCorrelationId());
+        }
+        if (event.getIpAddress() == null) {
+            event.setIpAddress(runtimeContext.getUserAddress());
+        }
+
         event.setEventId(UUID.randomUUID().toString());
         boolean isLog = event instanceof BaseLogEvent;
         if (!isLog && event.getAsync() != null && !event.getAsync()) {
@@ -210,15 +223,6 @@ public class EventServiceImpl implements BatchJob<Event> {
                     if (!event.getAsync() &&
                             (isInTransaction || TransactionSynchronizationManager.isActualTransactionActive())) {
                         logger.warn("Post sync event {} in transaction is not recommended", event);
-                    }
-                    if (event.getClientId() == null) {
-                        event.setClientId(runtimeContext.getClientId());
-                    }
-                    if (event.getCorrelationId() == null) {
-                        event.setCorrelationId(runtimeContext.getCorrelationId());
-                    }
-                    if (event.getIpAddress() == null) {
-                        event.setIpAddress(runtimeContext.getUserAddress());
                     }
                     eventService.post(event);
                 }

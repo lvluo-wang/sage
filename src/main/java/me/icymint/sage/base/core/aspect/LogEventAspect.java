@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import me.icymint.sage.base.core.service.EventServiceImpl;
 import me.icymint.sage.base.spec.annotation.LogInvokeMethod;
 import me.icymint.sage.base.spec.def.Magics;
+import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.internal.api.ToString;
 import me.icymint.sage.base.spec.internal.entity.LogEvent;
 import org.aspectj.lang.JoinPoint;
@@ -31,6 +32,8 @@ public class LogEventAspect {
     EventServiceImpl eventService;
     @Autowired(required = false)
     ToString[] toStrings;
+    @Autowired
+    RuntimeContext runtimeContext;
 
     @PostConstruct
     protected void init() {

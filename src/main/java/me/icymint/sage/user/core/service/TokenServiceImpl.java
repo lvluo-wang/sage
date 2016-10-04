@@ -241,13 +241,16 @@ public class TokenServiceImpl implements TokenService {
         tokenMapper.findByClientId(clientId).forEach(tokenService::expire);
     }
 
-    public void authorize(CheckToken checkToken, Permission permission, boolean expireTimeCheck) {
+    public void authorize(CheckToken checkToken, Permission classPermission, Permission permission) {
         try {
+            boolean expireTimeCheck = checkToken == null;
             String header = runtimeContext.getHeader(Magics.HEADER_AUTHORIZATION);
-            if (checkToken.allowNone() && Strings.isNullOrEmpty(header)) {
+            if (checkToken != null
+                    && checkToken.allowNone()
+                    && Strings.isNullOrEmpty(header)) {
                 return;
             }
-            doAuthorize(header, permission, expireTimeCheck);
+            doAuthorize(header, classPermission, permission, expireTimeCheck);
         } finally {
             if (runtimeContext.getTokenId() == null) {
                 runtimeContext.setTokenId(null);
@@ -280,7 +283,7 @@ public class TokenServiceImpl implements TokenService {
         return method.parse(list.get(1));
     }
 
-    private void doAuthorize(String header, Permission permission, boolean expireTimeCheck) {
+    private void doAuthorize(String header, Permission classPermission, Permission permission, boolean expireTimeCheck) {
         TokenContext tokenContext = parseTokenContext(header);
         if (tokenContext == null) {
             throw new UnauthorizedException(context, BaseCode.AUTHORIZATION_REQUIRED);
@@ -330,9 +333,10 @@ public class TokenServiceImpl implements TokenService {
             logger.warn("auth sign not valid");
             throw new UnauthorizedException(context, UserCode.ACCESS_TOKEN_ILLEGAL);
         }
-        //Step 5
 
-        if (!checkPermission(token, permission)) {
+        //Step 5
+        if (!checkPermission(token, classPermission)
+                || !checkPermission(token, permission)) {
             throw new UnauthorizedException(context, UserCode.ACCESS_PERMISSION_DENIED);
         }
 
@@ -344,8 +348,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     private boolean checkPermission(Token token, Permission permission) {
-        if (permission == null
-                || (permission.value().length == 0)) {
+        if (permission == null || permission.value().length == 0) {
             return true;
         }
         Set<Privilege> userPrivileges = getPermissionsByToken(token);
@@ -357,7 +360,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     private Set<Privilege> getPermissionsByToken(Token token) {
-        //ignore clientId and token type
+        //TODO ignore clientId and token type
         return identityService.findPrivilegesById(token.getOwnerId());
     }
 

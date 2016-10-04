@@ -28,9 +28,9 @@ import static java.util.stream.Collectors.joining;
  * Created by daniel on 16/9/6.
  */
 @RestController
-@RequestMapping("/hmacs")
+@RequestMapping("/dev")
 @ConditionalOnProperty(name = Magics.PROP_DEV_MODE, havingValue = "true")
-public class HmacController {
+public class DevController {
 
     @Autowired
     Environment environment;
@@ -41,12 +41,12 @@ public class HmacController {
     @Autowired
     HmacAuthorizationMethod authorizationMethod;
 
-    @GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
+    @GetMapping(value = "/salt", produces = MediaType.TEXT_PLAIN_VALUE)
     public String salt() {
         return environment.getRequiredProperty("random.value").substring(0, 16);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/password", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public HmacResponse hash(@RequestBody PasswordRequest request) {
         String salt = salt();
         return new HmacResponse()
@@ -62,7 +62,7 @@ public class HmacController {
         return tokenService.login(request.getIdentityId(), request.getClientId(), nonce, timestamp, hash);
     }
 
-    @PostMapping(value = "/login-hash", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(value = "/hash", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public String loginHash(@RequestBody LoginHashRequest request) {
         String nonce = salt();
         Long timestamp = clock.timestamp();
