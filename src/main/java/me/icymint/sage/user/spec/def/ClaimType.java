@@ -8,6 +8,7 @@ import me.icymint.sage.base.spec.annotation.I18nEnum;
 @I18nEnum("claim.type")
 public enum ClaimType {
     ROLE(false),
+    PRIVILEGE(false),
     USERNAME,
     EMAIL,
     OPENID_QQ,

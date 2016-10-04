@@ -4,8 +4,8 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.user.data.mapper.ClaimMapper;
-import me.icymint.sage.user.spec.api.ClaimService;
 import me.icymint.sage.user.spec.def.ClaimType;
+import me.icymint.sage.user.spec.def.Privilege;
 import me.icymint.sage.user.spec.def.RoleType;
 import me.icymint.sage.user.spec.def.UserCode;
 import me.icymint.sage.user.spec.entity.Claim;
@@ -13,6 +13,7 @@ import me.icymint.sage.user.spec.exception.UserServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,17 +26,21 @@ import java.util.stream.Stream;
  * Created by daniel on 16/9/6.
  */
 @Service
-public class ClaimServiceImpl implements ClaimService {
+public class ClaimService {
     @Autowired
     ApplicationContext context;
     @SuppressWarnings("SpringJavaAutowiringInspection")
     @Autowired
     ClaimMapper claimMapper;
     @Autowired
-    ClaimServiceImpl claimService;
+    ClaimService claimService;
 
     @Transactional
-    @CacheEvict(value = Magics.CACHE_CLAIM, key = "'id'+#identityId", condition = "#type==T(me.icymint.sage.user.spec.def.ClaimType).ROLE")
+    @Caching(evict = {
+            @CacheEvict(value = Magics.CACHE_CLAIM, key = "#type+'-'+#identityId", condition = "!#type.globalUnique"),
+            @CacheEvict(value = Magics.CACHE_CLAIM, key = "T(me.icymint.sage.user.spec.def.ClaimType).PRIVILEGE+'-'+#identityId",
+                    condition = "T(me.icymint.sage.user.spec.def.ClaimType).ROLE==#type")
+    })
     public Long createClaim(Long identityId, ClaimType type, String value, boolean isVerified) {
         if (type == null) {
             throw new UserServiceException(context, UserCode.CLAIM_TYPE_NULL);
@@ -54,13 +59,11 @@ public class ClaimServiceImpl implements ClaimService {
         return claim.getId();
     }
 
-    @Override
-    @Cacheable(value = Magics.CACHE_CLAIM, key = "'claim-'+#id", unless = "#result.type==T(me.icymint.sage.user.spec.def.ClaimType).ROLE")
+    @Cacheable(value = Magics.CACHE_CLAIM, key = "#id", unless = "#result.type.globalUnique")
     public Claim findOne(Long id, Long ownerId) {
         return claimMapper.findOneByOwnerId(id, ownerId);
     }
 
-    @Override
     public Claim findOneByTypeAndValue(ClaimType type, String value) {
         if (type == null) {
             throw new UserServiceException(context, UserCode.CLAIM_TYPE_NULL);
@@ -71,7 +74,6 @@ public class ClaimServiceImpl implements ClaimService {
         return claimMapper.findOneByTypeAndValue(type, value);
     }
 
-    @Override
     public boolean hasRoles(Long ownerId, RoleType[] roleTypes) {
         Set<RoleType> roleTypeSet = claimService.findRolesByOwnerId(ownerId);
         if (roleTypes != null) {
@@ -80,14 +82,16 @@ public class ClaimServiceImpl implements ClaimService {
         return false;
     }
 
-
-    @Override
-    @Cacheable(value = Magics.CACHE_CLAIM, key = "'id-'+#ownerId")
+    @Cacheable(value = Magics.CACHE_CLAIM, key = "T(me.icymint.sage.user.spec.def.ClaimType).ROLE+'-'+#ownerId")
     public Set<RoleType> findRolesByOwnerId(Long ownerId) {
         return claimMapper.findRolesByOwnerId(ownerId);
     }
 
-    @Override
+    @Cacheable(value = Magics.CACHE_CLAIM, key = "T(me.icymint.sage.user.spec.def.ClaimType).PRIVILEGE+'-'+#ownerId")
+    public Set<Privilege> findPrivilegesByOwnerId(Long ownerId) {
+        return claimMapper.findPrivilegesByOwnerId(ownerId);
+    }
+
     public List<Claim> findByOwnerId(Long userId, PageBounds pageBounds) {
         return claimMapper.findByOwnerId(userId, pageBounds);
     }

@@ -14,6 +14,26 @@ public class Token extends BaseEntity<Token> {
     private String accessSecret;
     private Instant expireTime;
     private String sessionId;
+    private String ip;
+    private String timeZone;
+
+    public String getIp() {
+        return ip;
+    }
+
+    public Token setIp(String ip) {
+        this.ip = ip;
+        return this;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public Token setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+        return this;
+    }
 
     public TokenType getType() {
         return type;

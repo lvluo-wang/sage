@@ -183,7 +183,6 @@ public class EventServiceImpl implements BatchJob<Event> {
         result.setClientId(event.getClientId());
         result.setCorrelationId(event.getCorrelationId());
         result.setIpAddress(event.getIpAddress());
-        result.setSessionId(event.getSessionId());
         eventService.post(result);
     }
 
@@ -220,9 +219,6 @@ public class EventServiceImpl implements BatchJob<Event> {
                     }
                     if (event.getIpAddress() == null) {
                         event.setIpAddress(runtimeContext.getUserAddress());
-                    }
-                    if (event.getSessionId() == null) {
-                        event.setSessionId(runtimeContext.getSessionId());
                     }
                     eventService.post(event);
                 }

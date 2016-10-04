@@ -7,7 +7,10 @@ import me.icymint.sage.base.rest.resource.HelloResource;
 import me.icymint.sage.base.spec.annotation.PaginatorView;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.Bool;
+import me.icymint.sage.user.spec.annotation.CheckToken;
+import me.icymint.sage.user.spec.annotation.Permission;
 import me.icymint.sage.user.spec.def.ClaimType;
+import me.icymint.sage.user.spec.def.Privilege;
 import me.icymint.sage.user.spec.entity.Claim;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -47,9 +50,7 @@ public class ApiController {
                 .setId(0L)
                 .setCreateTime(clock.now())
                 .setType(ClaimType.USERNAME)
-                .setValue("daniel")
-                .setIsDeleted(Bool.N)
-                .setUpdateTime(clock.now()));
+                .setValue("daniel"));
     }
 
     @GetMapping("/")
@@ -72,9 +73,21 @@ public class ApiController {
         return claims();
     }
 
+    @CheckToken
+    @Permission(Privilege.DEV_API)
     @GetMapping(value = "/api/example", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ExampleResource example() {
+        return new ExampleResource()
+                .setClaimList(claims())
+                .setClaimSet(Sets.newHashSet(claims()))
+                .setClaims(claims().toArray(new Claim[]{}));
+    }
+
+    @Permission(Privilege.DEV_API)
+    @GetMapping(value = "/api/permission", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ExampleResource permission() {
         return new ExampleResource()
                 .setClaimList(claims())
                 .setClaimSet(Sets.newHashSet(claims()))

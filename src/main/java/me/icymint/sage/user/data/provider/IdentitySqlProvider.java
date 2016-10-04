@@ -17,9 +17,10 @@ public class IdentitySqlProvider extends BaseEntitySqlProvider<Identity> {
     protected SQL onCreate2(Identity identity, SQL sql) {
         return sql.VALUES_IF("SALT", "#{salt}", identity.getSalt() != null)
                 .VALUES_IF("PASSWORD", "#{password}", identity.getPassword() != null)
+                .VALUES_IF("DESCRIPTION", "#{description}", identity.getDescription() != null)
                 .VALUES_IF("CREATE_ID", "#{createId}", identity.getCreateId() != null, "#{ownerId}")
-                .VALUES_IF("TYPE", "#{type}", identity.getType() != null, "'" + IdentityType.USER + "'")
-                .VALUES_IF("VALID_SECONDS", "#{validSeconds}", identity.getValidSeconds() != null)
+                .VALUES_IF("TYPE", "#{type}", identity.getType() != null, "'" + IdentityType.MEMBER + "'")
+                .VALUES_IF("EXTENSION", "#{extension}", identity.getExtension() != null)
                 .VALUES_IF("IS_BLOCKED", "#{isBlocked}", identity.getIsBlocked() != null);
     }
 
@@ -31,7 +32,8 @@ public class IdentitySqlProvider extends BaseEntitySqlProvider<Identity> {
     @Override
     protected SQL onUpdate(Identity identity, SQL sql) {
         return sql.SET_IF("IS_BLOCKED=#{isBlocked}", identity.getIsBlocked() != null)
-                .SET_IF("VALID_SECONDS=#{validSeconds}", identity.getValidSeconds() != null)
+                .SET_IF("EXTENSION=#{extension}", identity.getExtension() != null)
+                .SET_IF("DESCRIPTION=#{description}", identity.getDescription() != null)
                 .SET_IF("SALT=#{salt}", identity.getSalt() != null)
                 .SET_IF("PASSWORD=#{password}", identity.getPassword() != null);
     }
@@ -40,5 +42,11 @@ public class IdentitySqlProvider extends BaseEntitySqlProvider<Identity> {
         return selectAllFrom()
                 .WHERE("USERNAME=#{username}")
                 .toString() + " FOR UPDATE";
+    }
+
+    public String findGroupIds() {
+        return selectFrom("ID")
+                .WHERE("TYPE='" + IdentityType.GROUP + "'")
+                .toString();
     }
 }

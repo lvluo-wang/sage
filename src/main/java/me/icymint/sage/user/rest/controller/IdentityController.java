@@ -5,6 +5,8 @@ import me.icymint.sage.user.rest.request.IdentityRequest;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.api.IdentityService;
 import me.icymint.sage.user.spec.def.ClaimType;
+import me.icymint.sage.user.spec.def.Privilege;
+import me.icymint.sage.user.spec.def.RoleType;
 import me.icymint.sage.user.spec.entity.Identity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 /**
  * Created by daniel on 16/9/5.
@@ -37,16 +40,27 @@ public class IdentityController {
                 request.getPassword());
     }
 
+    @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Identity findByUsername(@PathVariable("username") String username) {
+        return identityService.findByClaim(username, ClaimType.USERNAME);
+    }
+
     @CheckToken
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Identity findOne() {
         return identityService.findOne(runtimeContext.getUserId());
     }
 
-    @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Identity findByUsername(@PathVariable("username") String username) {
-        return identityService.findByClaim(username, ClaimType.USERNAME);
+    @CheckToken
+    @GetMapping(value = "/privileges", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Set<Privilege> findPrivilegesById() {
+        return identityService.findPrivilegesById(runtimeContext.getUserId());
     }
 
+    @CheckToken
+    @GetMapping(value = "/roles", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Set<RoleType> findRolesById() {
+        return identityService.findRolesById(runtimeContext.getUserId());
+    }
 
 }

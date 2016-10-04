@@ -1,9 +1,7 @@
 package me.icymint.sage.base.core.config;
 
 import com.google.common.collect.Lists;
-import me.icymint.sage.base.core.service.DefaultSessionService;
 import me.icymint.sage.base.spec.api.Clock;
-import me.icymint.sage.base.spec.api.SessionService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,11 +17,6 @@ import java.time.Instant;
  */
 @Configuration
 public class BaseCoreConfig {
-    @Bean
-    @ConditionalOnMissingBean
-    public SessionService sessionService() {
-        return new DefaultSessionService();
-    }
 
     @Bean
     @ConditionalOnMissingBean

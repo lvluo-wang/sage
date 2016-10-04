@@ -1,5 +1,6 @@
 package me.icymint.sage.user.data.mapper;
 
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.user.data.provider.IdentitySqlProvider;
 import me.icymint.sage.user.spec.entity.Identity;
 import org.apache.ibatis.annotations.InsertProvider;
@@ -29,4 +30,7 @@ public interface IdentityMapper {
 
     @SelectProvider(type = IdentitySqlProvider.class, method = "findByUsernameForUpdate")
     Identity findByUsernameForUpdate(@Param("username") String username);
+
+    @SelectProvider(type = IdentitySqlProvider.class, method = "findGroupIds")
+    List<Long> findGroupIds(RowBounds rowBounds);
 }

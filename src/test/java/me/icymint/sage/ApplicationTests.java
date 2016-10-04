@@ -2,6 +2,10 @@ package me.icymint.sage;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import me.icymint.sage.base.core.service.EventServiceImpl;
+import me.icymint.sage.base.rest.controller.HmacController;
+import me.icymint.sage.base.rest.request.LoginRequest;
+import me.icymint.sage.base.rest.request.PasswordRequest;
+import me.icymint.sage.base.rest.resource.HmacResponse;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.util.HMacs;
 import me.icymint.sage.user.data.mapper.EventMapper;
@@ -11,6 +15,7 @@ import me.icymint.sage.user.spec.api.TokenService;
 import me.icymint.sage.user.spec.def.EventStatus;
 import me.icymint.sage.user.spec.def.IdentityType;
 import me.icymint.sage.user.spec.entity.Identity;
+import me.icymint.sage.user.spec.entity.Token;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -26,10 +31,12 @@ import javax.sql.DataSource;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(properties = {
+        Magics.PROP_DEV_MODE + "=true",
         Magics.PROP_ALWAYS_SAVE_LOG + "=false",
         Magics.PROP_JOB_EVENT_CRON + "=0/1 * * * * *"
 })
@@ -49,16 +56,33 @@ public class ApplicationTests {
     TokenService tokenService;
     @Autowired
     TestService testService;
+    @Autowired
+    HmacController hmacController;
 
     @Test
     public void contextLoads() {
         logger.info("HelloResource");
         System.out.println("hello");
-        Identity id = new Identity()
-                .setOwnerId(0L)
-                .setType(IdentityType.USER);
-        assertEquals(1, identityMapper.create(id));
-        id = identityMapper.findOne(id.getId());
+        Identity client = identityService.findClient(1000L);
+        assertNotNull(client);
+        System.out.println(client);
+        assertEquals(IdentityType.CLIENT, client.getType());
+        HmacResponse resource = hmacController.hash(new PasswordRequest().setPassword("12345678"));
+
+        Identity id = identityService.register(client.getId(), "daniel", resource.getSalt(), resource.getPassword());
+
+        assertEquals(client.getId(), id.getCreateId());
+        assertEquals(client.getId(), id.getOwnerId());
+        assertEquals(IdentityType.MEMBER, id.getType());
+
+        Token token = hmacController.login(new LoginRequest()
+                .setClientId(client.getId())
+                .setIdentityId(id.getId())
+                .setPassword(resource.getPassword()));
+
+        assertEquals(client.getId(), token.getClientId());
+        assertEquals(id.getId(), token.getOwnerId());
+
         System.out.println(id);
         System.out.println(identityMapper.findAll(new PageBounds(1, 10)));
     }

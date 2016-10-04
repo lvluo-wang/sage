@@ -2,6 +2,7 @@ package me.icymint.sage.user.data.mapper;
 
 import me.icymint.sage.user.data.provider.ClaimSqlProvider;
 import me.icymint.sage.user.spec.def.ClaimType;
+import me.icymint.sage.user.spec.def.Privilege;
 import me.icymint.sage.user.spec.def.RoleType;
 import me.icymint.sage.user.spec.entity.Claim;
 import org.apache.ibatis.annotations.InsertProvider;
@@ -33,11 +34,11 @@ public interface ClaimMapper {
     @SelectProvider(type = ClaimSqlProvider.class, method = "findByTypeAndValue")
     Claim findOneByTypeAndValue(@Param("type") ClaimType type, @Param("value") String value);
 
-    @SelectProvider(type = ClaimSqlProvider.class, method = "findByTypeAndValue")
-    List<Claim> findAllByTypeAndValue(@Param("type") ClaimType type, @Param("value") String value);
-
     @SelectProvider(type = ClaimSqlProvider.class, method = "findRolesByOwnerId")
     Set<RoleType> findRolesByOwnerId(@Param("ownerId") Long ownerId);
+
+    @SelectProvider(type = ClaimSqlProvider.class, method = "findPrivilegesByOwnerId")
+    Set<Privilege> findPrivilegesByOwnerId(@Param("ownerId")Long ownerId);
 
     @SelectProvider(type = ClaimSqlProvider.class, method = "findByOwnerId")
     List<Claim> findByOwnerId(@Param("ownerId") Long userId, RowBounds rowBounds);

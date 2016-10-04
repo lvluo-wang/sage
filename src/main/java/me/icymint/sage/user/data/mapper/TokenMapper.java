@@ -27,6 +27,6 @@ public interface TokenMapper {
     @DeleteProvider(type = TokenSqlProvider.class, method = "delete")
     void delete(@Param("id") Long tokenId);
 
-    @SelectProvider(type = TokenSqlProvider.class, method = "findBySessionIdAndClientId")
-    List<Long> findBySessionIdAndClientId(@Param("sessionId") String sessionId, @Param("clientId") Long clientId);
+    @SelectProvider(type = TokenSqlProvider.class, method = "findByClientId")
+    List<Long> findByClientId(@Param("clientId") Long clientId);
 }
