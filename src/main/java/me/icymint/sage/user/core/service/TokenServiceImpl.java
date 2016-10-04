@@ -43,9 +43,11 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -155,6 +157,9 @@ public class TokenServiceImpl implements TokenService {
                 .setClientId(clientId)
                 .setCreateTime(now)
                 .setOwnerId(identityId)
+                .setIp(runtimeContext.getUserAddress())
+                .setTimeZone(Optional.ofNullable(runtimeContext.getTimeZone())
+                        .map(ZoneId::getId).orElse(null))
                 .setSessionId(runtimeContext.getSessionId());
         tokenMapper.create(token);
 
