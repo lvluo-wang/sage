@@ -5,6 +5,7 @@ import me.icymint.sage.base.rest.request.LoginHashRequest;
 import me.icymint.sage.base.rest.request.LoginRequest;
 import me.icymint.sage.base.rest.request.PasswordRequest;
 import me.icymint.sage.base.rest.resource.HmacResponse;
+import me.icymint.sage.base.spec.annotation.LogInvokeMethod;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.util.HMacs;
@@ -58,6 +59,7 @@ public class DevController {
                 .setPassword(HMacs.encodeToHex(salt, request.getPassword()));
     }
 
+    @LogInvokeMethod
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Token login(@Valid @RequestBody LoginRequest request) {
         String nonce = salt();
@@ -66,6 +68,7 @@ public class DevController {
         return tokenService.login(request.getIdentityId(), request.getClientId(), nonce, timestamp, hash);
     }
 
+    @LogInvokeMethod
     @PostMapping(value = "/hash", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public String loginHash(@Valid @RequestBody LoginHashRequest request) {
         String nonce = salt();

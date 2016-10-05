@@ -6,7 +6,6 @@ import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.api.TokenService;
 import me.icymint.sage.user.spec.entity.Token;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +24,6 @@ import javax.validation.Valid;
 public class TokenController {
     @Autowired
     TokenService tokenService;
-    @Autowired
-    ApplicationContext context;
     @Autowired
     RuntimeContext runtimeContext;
 

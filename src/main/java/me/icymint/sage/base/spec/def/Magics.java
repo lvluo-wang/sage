@@ -42,7 +42,7 @@ public class Magics {
 
 
     // Http Constants
-    public static final String HEADER_X_ENUM_MODE = "X-Enum-Mode"; //定义是否拒绝转换
+    public static final String HEADER_X_ENUM_MODE = "X-Enum-Mode"; //定义枚举转换方式
     public static final String HEADER_CORRELATION_ID = "X-Correlation-Id";
     public static final String HEADER_FORWARDED_FOR_HEADER = "X-Forwarded-For";
     public static final String HEADER_X_FORWARDED_PROTO = "X-Forwarded-Proto";
@@ -58,6 +58,7 @@ public class Magics {
 
     //Token
     public static final String TOKEN_AUTHORIZATION_HEAD = "SAGE-";
+    public static final String TOKEN_OBJECT = "token";
     public static final long TOKEN_SPAN = Duration.ofMinutes(10L).getSeconds();
 
     //Job config
