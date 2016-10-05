@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 /**
  * Created by daniel on 16/9/3.
  */
-public class PaginatorResponse<E> {
+public class PageableResponse<E> {
     private Integer totalCount;
     private Integer totalPages;
     private Integer page;
-    private Integer limit;
+    private Integer size;
     private E[] items;
     private Integer startRow;
     private Integer endRow;
@@ -30,12 +30,12 @@ public class PaginatorResponse<E> {
     @JsonProperty("isLastPage")
     private Boolean isLastPage;
 
-    public static <E> PaginatorResponse<E> of(List<E> list) {
+    public static <E> PageableResponse<E> of(List<E> list) {
         return of(list, Function.identity());
     }
 
     @SuppressWarnings("unchecked")
-    public static <T, R> PaginatorResponse<R> of(List<T> list, Function<T, R> apply) {
+    public static <T, R> PageableResponse<R> of(List<T> list, Function<T, R> apply) {
         if (list == null) {
             return null;
         }
@@ -46,11 +46,11 @@ public class PaginatorResponse<E> {
             int size = list.size();
             paginator = new Paginator(1, size, size);
         }
-        PaginatorResponse<R> entity = new PaginatorResponse<>();
+        PageableResponse<R> entity = new PageableResponse<>();
         entity.setTotalCount(paginator.getTotalCount());
         entity.setTotalPages(paginator.getTotalPages());
         entity.setPage(paginator.getPage());
-        entity.setLimit(paginator.getLimit());
+        entity.setSize(paginator.getLimit());
         entity.setItems((R[]) list
                 .stream()
                 .map(apply)
@@ -73,7 +73,7 @@ public class PaginatorResponse<E> {
         return totalCount;
     }
 
-    public PaginatorResponse setTotalCount(Integer totalCount) {
+    public PageableResponse setTotalCount(Integer totalCount) {
         this.totalCount = totalCount;
         return this;
     }
@@ -82,7 +82,7 @@ public class PaginatorResponse<E> {
         return totalPages;
     }
 
-    public PaginatorResponse setTotalPages(Integer totalPages) {
+    public PageableResponse setTotalPages(Integer totalPages) {
         this.totalPages = totalPages;
         return this;
     }
@@ -91,17 +91,17 @@ public class PaginatorResponse<E> {
         return page;
     }
 
-    public PaginatorResponse setPage(Integer page) {
+    public PageableResponse setPage(Integer page) {
         this.page = page;
         return this;
     }
 
-    public Integer getLimit() {
-        return limit;
+    public Integer getSize() {
+        return size;
     }
 
-    public PaginatorResponse setLimit(Integer limit) {
-        this.limit = limit;
+    public PageableResponse setSize(Integer size) {
+        this.size = size;
         return this;
     }
 
@@ -109,7 +109,7 @@ public class PaginatorResponse<E> {
         return items;
     }
 
-    public PaginatorResponse setItems(E[] items) {
+    public PageableResponse setItems(E[] items) {
         this.items = items;
         return this;
     }
@@ -118,7 +118,7 @@ public class PaginatorResponse<E> {
         return startRow;
     }
 
-    public PaginatorResponse setStartRow(Integer startRow) {
+    public PageableResponse setStartRow(Integer startRow) {
         this.startRow = startRow;
         return this;
     }
@@ -127,7 +127,7 @@ public class PaginatorResponse<E> {
         return endRow;
     }
 
-    public PaginatorResponse setEndRow(Integer endRow) {
+    public PageableResponse setEndRow(Integer endRow) {
         this.endRow = endRow;
         return this;
     }
@@ -136,7 +136,7 @@ public class PaginatorResponse<E> {
         return offset;
     }
 
-    public PaginatorResponse setOffset(Integer offset) {
+    public PageableResponse setOffset(Integer offset) {
         this.offset = offset;
         return this;
     }
@@ -145,7 +145,7 @@ public class PaginatorResponse<E> {
         return slider;
     }
 
-    public PaginatorResponse setSlider(Integer[] slider) {
+    public PageableResponse setSlider(Integer[] slider) {
         this.slider = slider;
         return this;
     }
@@ -154,7 +154,7 @@ public class PaginatorResponse<E> {
         return prePage;
     }
 
-    public PaginatorResponse setPrePage(Integer prePage) {
+    public PageableResponse setPrePage(Integer prePage) {
         this.prePage = prePage;
         return this;
     }
@@ -163,7 +163,7 @@ public class PaginatorResponse<E> {
         return nextPage;
     }
 
-    public PaginatorResponse setNextPage(Integer nextPage) {
+    public PageableResponse setNextPage(Integer nextPage) {
         this.nextPage = nextPage;
         return this;
     }
@@ -172,7 +172,7 @@ public class PaginatorResponse<E> {
         return hasNextPage;
     }
 
-    public PaginatorResponse setHasNextPage(Boolean hasNextPage) {
+    public PageableResponse setHasNextPage(Boolean hasNextPage) {
         this.hasNextPage = hasNextPage;
         return this;
     }
@@ -181,17 +181,17 @@ public class PaginatorResponse<E> {
         return hasPrePage;
     }
 
-    public PaginatorResponse setHasPrePage(Boolean hasPrePage) {
+    public PageableResponse setHasPrePage(Boolean hasPrePage) {
         this.hasPrePage = hasPrePage;
         return this;
     }
 
-    public PaginatorResponse setFirstPage(Boolean firstPage) {
+    public PageableResponse setFirstPage(Boolean firstPage) {
         isFirstPage = firstPage;
         return this;
     }
 
-    public PaginatorResponse setLastPage(Boolean lastPage) {
+    public PageableResponse setLastPage(Boolean lastPage) {
         isLastPage = lastPage;
         return this;
     }

@@ -1,5 +1,6 @@
 package me.icymint.sage.user.rest.controller;
 
+import io.swagger.annotations.ApiOperation;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.core.service.GrantService;
 import me.icymint.sage.user.spec.annotation.CheckToken;
@@ -28,6 +29,7 @@ public class GrantController {
     @Autowired
     RuntimeContext runtimeContext;
 
+    @ApiOperation(value = "Return group ids", notes = "Return all groups grant to the specified member.")
     @CheckToken
     @GetMapping(value = "/{ownerId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Long> groupsByOwnerId(@PathVariable("ownerId") Long ownerId) {

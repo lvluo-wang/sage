@@ -1,6 +1,7 @@
 package me.icymint.sage.base.job.aspect;
 
 import me.icymint.sage.base.job.service.JobService;
+import me.icymint.sage.base.spec.annotation.ConditionalOnJob;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.BatchJob;
 import me.icymint.sage.base.util.Exceptions;
@@ -10,7 +11,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @Order(Magics.AOP_ORDER_JOB)
-@ConditionalOnBean(JobService.class)
+@ConditionalOnJob
 public class JobAspect {
     private final Logger logger = LoggerFactory.getLogger(JobAspect.class);
     @Autowired

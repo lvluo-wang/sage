@@ -1,21 +1,27 @@
 package me.icymint.sage.base.rest.support;
 
 import com.github.miemiedev.mybatis.paginator.domain.Order;
-import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.google.common.base.Splitter;
-import me.icymint.sage.base.rest.util.QueryStrings;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import me.icymint.sage.base.spec.annotation.PageableView;
 import me.icymint.sage.base.spec.def.Magics;
+import me.icymint.sage.base.spec.entity.Pageable;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.core.MethodParameter;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.annotation.AbstractNamedValueMethodArgumentResolver;
+import org.springframework.web.util.UriUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by daniel on 16/9/4.
@@ -28,7 +34,8 @@ public class PageBoundsArgumentResolver extends AbstractNamedValueMethodArgument
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return PageBounds.class.isAssignableFrom(parameter.getParameterType());
+        return RowBounds.class.isAssignableFrom(parameter.getParameterType())
+                || parameter.getMethodAnnotation(PageableView.class) != null;
     }
 
     @Override
@@ -39,30 +46,48 @@ public class PageBoundsArgumentResolver extends AbstractNamedValueMethodArgument
     @Override
     protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) throws Exception {
         String text = request.getHeader(Magics.HEADER_X_PAGING);
-        if (!StringUtils.hasText(text)) {
-            text = request.getNativeRequest(HttpServletRequest.class).getQueryString();
+        Map<String, String> map;
+        if (StringUtils.hasText(text)) {
+            Splitter equalSplit = Splitter
+                    .on("=")
+                    .trimResults()
+                    .omitEmptyStrings()
+                    .limit(2);
+            map = Splitter
+                    .on("&")
+                    .omitEmptyStrings()
+                    .trimResults()
+                    .splitToList(Strings.nullToEmpty(text))
+                    .stream()
+                    .map(equalSplit::splitToList)
+                    .filter(l -> l.size() != 2)
+                    .map(l -> new NameValue(l.get(0), decodeValue(l.get(1))))
+                    .filter(nv -> nv.value != null)
+                    .collect(toMap(nv -> nv.name, nv -> nv.value));
+        } else {
+            map = Maps.newHashMap();
+            map.put(SIZE, request.getParameter(SIZE));
+            map.put(PAGE, request.getParameter(PAGE));
+            map.put(TOTAL, request.getParameter(TOTAL));
+            map.put(ORDERS, request.getParameter(ORDERS));
         }
-        if (!StringUtils.hasText(text)) {
-            return new PageBounds(1, Magics.PAGE_MAX_LIMIT);
-        }
+        int total = getInt(map.get(TOTAL), -1);
+        int page = getInt(map.get(PAGE), 1);
+        page = Math.max(1, page);
+        int size = getInt(map.get(SIZE), Magics.PAGE_DEFAULT_LIMIT);
+        size = Math.min(size, Magics.PAGE_MAX_LIMIT);
+        size = Math.max(1, size);
+        List<Order> orders = getOrders(map.get(ORDERS), Lists.newArrayList());
+        return new Pageable(page, size, orders, total);
+    }
 
-        MultiValueMap<String, String> map = QueryStrings.parse(text);
-
-        boolean containsTotal = false;
-
-        List<Order> orders = new ArrayList<>();
-        String regex = "([A-Z][_A-Z0-9]*)(:(DESC|ASC|desc|asc))?";
-        Pattern pattern = Pattern.compile(regex);
-        String totalStr = map.getFirst(TOTAL);
-        String pageStr = map.getFirst(PAGE);
-        String sizeStr = map.getFirst(SIZE);
-        String orderStr = map.getFirst(ORDERS);
-
-        if (!StringUtils.isEmpty(orderStr)) {
+    private List<Order> getOrders(String value, List<Order> orders) {
+        if (!StringUtils.isEmpty(value)) {
+            Pattern pattern = Pattern.compile("([A-Z][_A-Z0-9]*)(:(DESC|ASC|desc|asc))?");
             Splitter.on(',')
                     .omitEmptyStrings()
                     .trimResults()
-                    .splitToList(orderStr)
+                    .splitToList(value)
                     .forEach(orderArr -> {
                         Matcher matcher = pattern.matcher(orderArr);
                         if (matcher.matches()) {
@@ -76,23 +101,35 @@ public class PageBoundsArgumentResolver extends AbstractNamedValueMethodArgument
                         }
                     });
         }
+        return orders;
+    }
 
-        if (!StringUtils.isEmpty(totalStr)) {
-            containsTotal = Boolean.valueOf(totalStr);
+    private int getInt(String value, int defaultValue) {
+        if (!StringUtils.isEmpty(value)) {
+            try {
+                return Integer.valueOf(value);
+            } catch (Exception e) {
+                //Ignore
+            }
         }
+        return defaultValue;
+    }
 
-        int page = 1;
-        if (!StringUtils.isEmpty(pageStr)) {
-            page = Integer.parseInt(pageStr);
+    private String decodeValue(String value) {
+        try {
+            return UriUtils.decode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
         }
-        page = Math.max(1, page);
-        int size = Magics.PAGE_DEFAULT_LIMIT;
-        if (!StringUtils.isEmpty(sizeStr)) {
-            size = Integer.parseInt(sizeStr);
-        }
-        size = Math.min(size, Magics.PAGE_MAX_LIMIT);
-        size = Math.max(1, size);
+    }
 
-        return new PageBounds(page, size, orders, containsTotal);
+    private class NameValue {
+        private final String name;
+        private final String value;
+
+        NameValue(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
     }
 }

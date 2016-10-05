@@ -1,6 +1,6 @@
 package me.icymint.sage.user.rest.controller;
 
-import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import me.icymint.sage.base.spec.entity.Pageable;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.core.service.IdentityServiceImpl;
 import me.icymint.sage.user.rest.request.GroupRequest;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -50,8 +49,8 @@ public class GroupController {
 
     @CheckToken
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Long> groups(PageBounds pageBounds) {
-        return identityService.findGroupIds(pageBounds);
+    public List<Long> groups(Pageable pageable) {
+        return identityService.findGroupIds(pageable);
     }
 
     @CheckToken

@@ -9,7 +9,6 @@ buildscript {
         mybatisStarterVersion = '1.1.1'
         mybatisPaginatorVersion = '1.2.17'
         guavaVersion = '19.0'
-        reactorVersion = "2.0.7.RELEASE"
     }
     repositories {
         maven {
@@ -76,6 +75,7 @@ bootRun {
     systemProperty 'sage.enable.api.ROLE_DEV', 'true'
     systemProperty 'sage.enable.api.ROLE_ADMIN', 'true'
     systemProperty 'sage.dev.mode', 'true'
+    systemProperty 'sage.enable.job', 'false'
     addResources = true
 }
 

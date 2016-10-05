@@ -1,7 +1,7 @@
 package me.icymint.sage.base.rest.controller;
 
 import com.google.common.collect.Lists;
-import me.icymint.sage.base.spec.annotation.PaginatorView;
+import me.icymint.sage.base.spec.annotation.PageableView;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.user.spec.def.ClaimType;
@@ -45,7 +45,7 @@ public class ExampleController {
 
 
     @GetMapping(value = "/claims", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PaginatorView
+    @PageableView
     public List<Claim> claimList() {
         return claims();
     }

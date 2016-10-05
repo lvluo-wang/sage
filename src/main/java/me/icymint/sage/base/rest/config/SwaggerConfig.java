@@ -4,7 +4,7 @@ import com.fasterxml.classmate.TypeResolver;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Primitives;
-import me.icymint.sage.base.rest.entity.PaginatorResponse;
+import me.icymint.sage.base.rest.entity.PageableResponse;
 import me.icymint.sage.base.rest.support.EntityConverters;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.util.Permissions;
@@ -95,7 +95,7 @@ public class SwaggerConfig {
 
     private boolean adminApi(RequestHandler requestHandler) {
         Permission permission = requestHandler.getHandlerMethod().getBeanType().getAnnotation(Permission.class);
-        return permission != null && Permissions.matchesRole(permission.value(), permission.strategy(), role -> role == RoleType.ROLE_ADMIN);
+        return Permissions.matchesRole(permission, role -> role == RoleType.ROLE_ADMIN);
     }
 
     private Docket build(String groupName, String description, Predicate<RequestHandler> selector, Function<Docket, Docket> handelr) {
@@ -114,9 +114,7 @@ public class SwaggerConfig {
         TypeResolver typeResolver = new TypeResolver();
         restConverter.getConverterSets().forEach(cell -> {
             if (cell.getRowKey() != null
-                    && !isValueClass(cell.getRowKey())
-                    && !cell.getRowKey().isPrimitive()
-                    && cell.getRowKey() != String.class) {
+                    && !isValueClass(cell.getRowKey())) {
                 //See https://github.com/springfox/springfox/commit/c8d4f251d446a2722c4bc5985296edcd53807fd1
                 addContainerConverter(typeResolver, docket, cell.getRowKey(), cell.getColumnKey());
             }
@@ -149,7 +147,7 @@ public class SwaggerConfig {
         }
         docket.alternateTypeRules(AlternateTypeRules.newRule(
                 typeResolver.resolve(List.class, fromClass),
-                typeResolver.resolve(PaginatorResponse.class, toClass)
+                typeResolver.resolve(PageableResponse.class, toClass)
         ));
     }
 

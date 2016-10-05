@@ -1,6 +1,7 @@
 package me.icymint.sage.base.job.service;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import me.icymint.sage.base.spec.annotation.ConditionalOnJob;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.entity.BaseJobEntity;
@@ -12,7 +13,6 @@ import me.icymint.sage.base.util.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Created by daniel on 2016/9/24.
  */
 @Component
-@ConditionalOnBean(JobRepository.class)
+@ConditionalOnJob
 public class JobService {
     private final Logger logger = LoggerFactory.getLogger(JobService.class);
     private final String instanceId = UUID.randomUUID().toString();

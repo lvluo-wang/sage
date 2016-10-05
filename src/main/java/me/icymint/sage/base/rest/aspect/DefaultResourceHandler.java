@@ -1,9 +1,8 @@
 package me.icymint.sage.base.rest.aspect;
 
-import com.github.miemiedev.mybatis.paginator.domain.PageList;
-import com.google.common.collect.Lists;
-import me.icymint.sage.base.rest.entity.PaginatorResponse;
-import me.icymint.sage.base.spec.annotation.PaginatorView;
+import me.icymint.sage.base.rest.entity.PageableResponse;
+import me.icymint.sage.base.spec.annotation.PageableView;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import java.util.List;
+
+import static me.icymint.sage.base.util.Classes.hasArg;
 
 /**
  * Created by daniel on 2016/10/2.
@@ -29,11 +30,12 @@ public class DefaultResourceHandler implements ResponseBodyAdvice<Object> {
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
         if (body == null) {
-            body = Lists.newArrayList();
+            return null;
         }
-        if (returnType.hasMethodAnnotation(PaginatorView.class)
-                || body instanceof PageList) {
-            return PaginatorResponse.of((List) body);
+
+        if (returnType.hasMethodAnnotation(PageableView.class)
+                || hasArg(returnType.getMethod(), RowBounds.class)) {
+            return PageableResponse.of((List) body);
         }
         return body;
     }
