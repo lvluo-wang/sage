@@ -1,7 +1,9 @@
 package me.icymint.sage.user.data.mapper;
 
 import me.icymint.sage.user.data.provider.IdentitySqlProvider;
+import me.icymint.sage.user.spec.def.IdentityType;
 import me.icymint.sage.user.spec.entity.Identity;
+import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -22,14 +24,11 @@ public interface IdentityMapper {
     int create(Identity identity);
 
     @SelectProvider(type = IdentitySqlProvider.class, method = "findOne")
-    Identity findOne(@Param("id") Long id);
+    Identity findOne(@Param("id") Long id, @Param("type") IdentityType type);
 
     @SelectProvider(type = IdentitySqlProvider.class, method = "findAll")
-    List<Identity> findAll(RowBounds rowBounds);
+    List<Identity> findAll(@Param("type") IdentityType type, RowBounds rowBounds);
 
-    @SelectProvider(type = IdentitySqlProvider.class, method = "findByUsernameForUpdate")
-    Identity findByUsernameForUpdate(@Param("username") String username);
-
-    @SelectProvider(type = IdentitySqlProvider.class, method = "findGroupIds")
-    List<Long> findGroupIds(RowBounds rowBounds);
+    @DeleteProvider(type = IdentitySqlProvider.class, method = "delete")
+    void delete(@Param("id") Long id, @Param("type") IdentityType type);
 }

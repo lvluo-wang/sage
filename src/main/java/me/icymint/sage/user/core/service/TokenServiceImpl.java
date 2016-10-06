@@ -184,20 +184,15 @@ public class TokenServiceImpl implements TokenService {
         return HMacs.encodeToBase64(password, data);
     }
 
-    private Identity checkAndGetIdentity(Long identityId, IdentityType... types) {
-        Identity identity = identityService.findOne(identityId);
+    private Identity checkAndGetIdentity(Long identityId, IdentityType type) {
+        Identity identity = identityService.findOne(identityId, type);
         if (identity == null) {
             throw new InvalidArgumentException(context, UserCode.IDENTITY__NOT_FOUND, identityId);
         }
         if (identity.getIsBlocked() == Bool.Y) {
             throw new UnauthorizedException(context, UserCode.IDENTITY__IS_BLOCKED, identityId);
         }
-        for (IdentityType type : types) {
-            if (identity.getType() == type) {
-                return identity;
-            }
-        }
-        throw new UnauthorizedException(context, UserCode.IDENTITY__ILLEGAL, identityId);
+        return identity;
     }
 
 

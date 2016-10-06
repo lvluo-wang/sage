@@ -1,18 +1,23 @@
 package me.icymint.sage.base.util;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import me.icymint.sage.base.spec.annotation.I18nEnum;
 import me.icymint.sage.base.spec.annotation.I18nLabel;
 import me.icymint.sage.base.spec.def.Magics;
 import org.springframework.context.MessageSource;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
@@ -85,5 +90,53 @@ public class Enums {
             }
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <E extends Enum<E>> List<EnumInfo<E>> getEnumInfoList(MessageSource source, Locale locale, Class<E> enumClass) {
+        E[] es = (E[]) Array.newInstance(enumClass, 0);
+        return getEnumInfoList(source, locale, EnumSet.allOf(enumClass).toArray(es));
+    }
+
+    public static <E extends Enum<E>> List<EnumInfo<E>> getEnumInfoList(MessageSource source, Locale locale, E[] enums) {
+        if (enums == null || enums.length == 0) {
+            return Lists.newArrayList();
+        }
+        return Stream.of(enums)
+                .map(e -> new EnumInfo<E>()
+                        .setName(e)
+                        .setLabel(getI18nValue(source, locale, e)))
+                .collect(Collectors.toList());
+    }
+
+    public static class EnumInfo<E> {
+        private E name;
+        private String label;
+
+        public E getName() {
+            return name;
+        }
+
+        public EnumInfo<E> setName(E name) {
+            this.name = name;
+            return this;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public EnumInfo<E> setLabel(String label) {
+            this.label = label;
+            return this;
+        }
+
+        @Override
+        public String toString() {
+            return "EnumInfo{" +
+                    "name=" + name +
+                    ", label='" + label + '\'' +
+                    '}';
+        }
     }
 }

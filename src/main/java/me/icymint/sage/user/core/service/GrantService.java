@@ -40,13 +40,11 @@ public class GrantService {
     @LogInvokeMethod
     @CacheEvict(value = Magics.CACHE_GRANT, key = "#ownerId")
     public Long grant(Long ownerId, Long groupId) {
-        if (identityService.findGroup(groupId) == null) {
+        if (identityService.findOne(groupId, IdentityType.GROUP) == null) {
             throw new UserServiceException(context, UserCode.GROUP__NOT_FOUND, groupId);
         }
-        Identity identity = identityService.findOne(ownerId);
-        if (identity == null
-                || (identity.getType() != IdentityType.GROUP
-                && identity.getType() != IdentityType.MEMBER)) {
+        Identity identity = identityService.findOne(ownerId, IdentityType.MEMBER);
+        if (identity == null) {
             throw new UserServiceException(context, UserCode.ONLY_MEMBER_AND_GROUP_CAN_GRANT);
         }
         Grant grant = new Grant()

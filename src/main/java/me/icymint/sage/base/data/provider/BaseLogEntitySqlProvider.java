@@ -21,16 +21,18 @@ public abstract class BaseLogEntitySqlProvider<T extends BaseLogEntity> {
 
     protected abstract SQL onCreate(T t, SQL sql);
 
-    protected abstract SQL onFind(SQL sql);
+    protected abstract SQL onWhere(SQL sql);
 
     protected final SQL selectAllFrom() {
         return selectFrom("*");
     }
 
     protected final SQL selectFrom(String items) {
-        return onFind(new SQL()
+        SQL sql = new SQL()
                 .SELECT(items)
-                .FROM(getEntityTable()));
+                .FROM(getEntityTable());
+        onWhere(sql);
+        return sql;
     }
 
     public final String findOneForUpdate() {

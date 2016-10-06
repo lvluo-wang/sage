@@ -25,8 +25,9 @@ public class IdentitySqlProvider extends BaseEntitySqlProvider<Identity> {
     }
 
     @Override
-    protected SQL onFind2(SQL sql) {
-        return sql;
+    protected SQL onWhere2(SQL sql) {
+        return sql
+                .WHERE("TYPE=#{type}");
     }
 
     @Override
@@ -36,17 +37,5 @@ public class IdentitySqlProvider extends BaseEntitySqlProvider<Identity> {
                 .SET_IF("DESCRIPTION=#{description}", identity.getDescription() != null)
                 .SET_IF("SALT=#{salt}", identity.getSalt() != null)
                 .SET_IF("PASSWORD=#{password}", identity.getPassword() != null);
-    }
-
-    public String findByUsernameForUpdate() {
-        return selectAllFrom()
-                .WHERE("USERNAME=#{username}")
-                .toString() + " FOR UPDATE";
-    }
-
-    public String findGroupIds() {
-        return selectFrom("ID")
-                .WHERE("TYPE='" + IdentityType.GROUP + "'")
-                .toString();
     }
 }

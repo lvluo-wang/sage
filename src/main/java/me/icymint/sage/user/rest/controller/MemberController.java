@@ -2,9 +2,10 @@ package me.icymint.sage.user.rest.controller;
 
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.user.core.service.IdentityServiceImpl;
-import me.icymint.sage.user.rest.request.IdentityRequest;
+import me.icymint.sage.user.rest.request.MemberRequest;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.def.ClaimType;
+import me.icymint.sage.user.spec.def.IdentityType;
 import me.icymint.sage.user.spec.def.Privilege;
 import me.icymint.sage.user.spec.def.RoleType;
 import me.icymint.sage.user.spec.entity.Identity;
@@ -24,8 +25,8 @@ import java.util.Set;
  * Created by daniel on 16/9/5.
  */
 @RestController
-@RequestMapping("/identities")
-public class IdentityController {
+@RequestMapping("/members")
+public class MemberController {
     @Autowired
     IdentityServiceImpl identityService;
     @Autowired
@@ -33,7 +34,7 @@ public class IdentityController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public Identity register(@Valid @RequestBody IdentityRequest request) {
+    public Identity register(@Valid @RequestBody MemberRequest request) {
         return identityService.register(request.getCid(),
                 request.getUsername(),
                 request.getSalt(),
@@ -42,13 +43,13 @@ public class IdentityController {
 
     @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Identity findByUsername(@PathVariable("username") String username) {
-        return identityService.findByClaim(username, ClaimType.USERNAME);
+        return identityService.findByClaim(IdentityType.MEMBER, username, ClaimType.USERNAME);
     }
 
     @CheckToken
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Identity findOne() {
-        return identityService.findOne(runtimeContext.getUserId());
+        return identityService.findOne(runtimeContext.getUserId(), IdentityType.MEMBER);
     }
 
     @CheckToken

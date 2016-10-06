@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 /**
  * Created by daniel on 16/9/5.
  */
-public class IdentityRequest {
+public class MemberRequest {
     @NotNull
     @ApiModelProperty(example = "1000")
     private Long cid;
@@ -26,7 +26,7 @@ public class IdentityRequest {
         return cid;
     }
 
-    public IdentityRequest setCid(Long cid) {
+    public MemberRequest setCid(Long cid) {
         this.cid = cid;
         return this;
     }
@@ -35,7 +35,7 @@ public class IdentityRequest {
         return username;
     }
 
-    public IdentityRequest setUsername(String username) {
+    public MemberRequest setUsername(String username) {
         this.username = username;
         return this;
     }
@@ -44,7 +44,7 @@ public class IdentityRequest {
         return salt;
     }
 
-    public IdentityRequest setSalt(String salt) {
+    public MemberRequest setSalt(String salt) {
         this.salt = salt;
         return this;
     }
@@ -53,7 +53,7 @@ public class IdentityRequest {
         return password;
     }
 
-    public IdentityRequest setPassword(String password) {
+    public MemberRequest setPassword(String password) {
         this.password = password;
         return this;
     }

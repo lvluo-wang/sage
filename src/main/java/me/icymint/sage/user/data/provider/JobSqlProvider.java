@@ -36,7 +36,7 @@ public class JobSqlProvider extends BaseJobEntitySqlProvider<Job> {
     }
 
     @Override
-    protected SQL onFind2(SQL sql) {
+    protected SQL onWhere2(SQL sql) {
         return sql;
     }
 

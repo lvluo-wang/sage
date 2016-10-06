@@ -14,7 +14,7 @@ public class EventSqlProvider extends BaseJobEntitySqlProvider<Event> {
     }
 
     @Override
-    protected final SQL onFind2(SQL sql) {
+    protected final SQL onWhere2(SQL sql) {
         return sql;
     }
 

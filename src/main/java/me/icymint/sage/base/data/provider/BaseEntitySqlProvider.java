@@ -19,20 +19,21 @@ public abstract class BaseEntitySqlProvider<T extends BaseEntity> extends BaseLo
     protected abstract SQL onCreate2(T t, SQL sql);
 
     @Override
-    protected final SQL onFind(SQL sql) {
+    protected final SQL onWhere(SQL sql) {
         sql = sql.WHERE("IS_DELETED='" + Bool.N + "'");
-        onFind2(sql);
+        onWhere2(sql);
         return sql;
     }
 
-    protected abstract SQL onFind2(SQL sql);
+    protected abstract SQL onWhere2(SQL sql);
 
     protected final SQL deleteOne() {
-        return new SQL()
+        SQL sql = new SQL()
                 .UPDATE(getEntityTable())
                 .SET("IS_DELETED='" + Bool.Y + "'")
-                .SET("UPDATE_TIME=CURRENT_TIMESTAMP")
-                .WHERE("IS_DELETED='" + Bool.N + "'");
+                .SET("UPDATE_TIME=CURRENT_TIMESTAMP");
+        onWhere(sql);
+        return sql;
     }
 
     public final String update(T t) {
@@ -49,7 +50,7 @@ public abstract class BaseEntitySqlProvider<T extends BaseEntity> extends BaseLo
                         "UPDATE_TIME=CURRENT_TIMESTAMP")
                 .SET_IF("IS_DELETED=#{isDeleted}", t.getIsDeleted() == Bool.Y);
         onUpdate(t, sql);
-        sql.WHERE("IS_DELETED='" + Bool.N + "'");
+        onWhere(sql);
         return sql;
     }
 

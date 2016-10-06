@@ -24,7 +24,7 @@ public class TokenSqlProvider extends BaseEntitySqlProvider<Token> {
     }
 
     @Override
-    protected SQL onFind2(SQL sql) {
+    protected SQL onWhere2(SQL sql) {
         return sql;
     }
 

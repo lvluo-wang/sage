@@ -1,6 +1,5 @@
 package me.icymint.sage.user.core.service;
 
-import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import me.icymint.sage.base.spec.annotation.LogInvokeMethod;
@@ -8,6 +7,7 @@ import me.icymint.sage.base.spec.annotation.NotifyInTransactionEvent;
 import me.icymint.sage.base.spec.api.Clock;
 import me.icymint.sage.base.spec.def.Bool;
 import me.icymint.sage.base.spec.def.Magics;
+import me.icymint.sage.base.spec.entity.Pageable;
 import me.icymint.sage.base.spec.exception.InvalidArgumentException;
 import me.icymint.sage.base.spec.internal.api.EventProducer;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
@@ -77,24 +77,8 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Override
     @Cacheable(value = Magics.CACHE_IDENTITY, key = "#identityId")
-    public Identity findOne(Long identityId) {
-        return identityMapper.findOne(identityId);
-    }
-
-    public Identity findClient(Long clientId) {
-        Identity identity = identityService.findOne(clientId);
-        if (identity != null && identity.getType() == IdentityType.CLIENT) {
-            return identity;
-        }
-        return null;
-    }
-
-    public Identity findGroup(Long groupId) {
-        Identity identity = identityService.findOne(groupId);
-        if (identity != null && identity.getType() == IdentityType.GROUP) {
-            return identity;
-        }
-        return null;
+    public Identity findOne(Long identityId, IdentityType type) {
+        return identityMapper.findOne(identityId, type);
     }
 
     @Override
@@ -113,8 +97,8 @@ public class IdentityServiceImpl implements IdentityService {
         if (StringUtils.isEmpty(password)) {
             throw new UserServiceException(context, UserCode.PASSWORD_IS_NULL);
         }
-        Identity client = identityMapper.findOne(clientId);
-        if (client == null || client.getType() != IdentityType.CLIENT) {
+        Identity client = identityMapper.findOne(clientId, IdentityType.CLIENT);
+        if (client == null) {
             throw new UserServiceException(context, UserCode.CLIENT_ID__ILLEGAL, clientId);
         }
         runtimeContext.setClientId(clientId);
@@ -132,7 +116,7 @@ public class IdentityServiceImpl implements IdentityService {
         if (identityMapper.create(identity) != 1) {
             throw new UserServiceException(context, UserCode.IDENTITY_CREATE_FAILED);
         }
-        identity = identityService.findOne(identity.getId());
+        identity = identityService.findOne(identity.getId(), IdentityType.MEMBER);
         username = StringUtils.isEmpty(username) ?
                 (identity.getType() + "-" + identity.getId())
                 : username;
@@ -143,7 +127,7 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Transactional
     public Identity createGroup(Long clientId, Long createId, String description, List<RoleType> roleTypes, List<Privilege> privilegeList) {
-        Identity client = identityService.findClient(clientId);
+        Identity client = identityService.findOne(clientId, IdentityType.CLIENT);
         if (client == null) {
             throw new UserServiceException(context, UserCode.CLIENT_ID__ILLEGAL, clientId);
         }
@@ -165,16 +149,16 @@ public class IdentityServiceImpl implements IdentityService {
         if (!CollectionUtils.isEmpty(roleTypes)) {
             roleTypes.forEach(roleType -> claimService.createClaim(identity.getId(), ClaimType.ROLE, roleType.name(), true));
         }
-        return identity;
+        return identityService.findOne(identity.getId(), IdentityType.GROUP);
     }
 
     @Override
-    public Identity findByClaim(String claimValue, ClaimType type) {
-        Claim claim = claimService.findOneByTypeAndValue(type, claimValue);
+    public Identity findByClaim(IdentityType type, String value, ClaimType claimType) {
+        Claim claim = claimService.findOneByTypeAndValue(claimType, value);
         if (claim == null) {
             return null;
         }
-        return findOne(claim.getOwnerId());
+        return identityService.findOne(claim.getOwnerId(), type);
     }
 
     public Set<Privilege> findPrivilegesById(Long ownerId) {
@@ -194,8 +178,8 @@ public class IdentityServiceImpl implements IdentityService {
         return claimService.findRolesByOwnerId(ownerId);
     }
 
-    public List<Long> findGroupIds(PageBounds pageBounds) {
-        return identityMapper.findGroupIds(pageBounds);
+    public List<Identity> findAll(IdentityType type, Pageable pageable) {
+        return identityMapper.findAll(type, pageable);
     }
 
     private Stream<Privilege> doFindPrivilegesById(Long ownerId) {
@@ -205,6 +189,11 @@ public class IdentityServiceImpl implements IdentityService {
                         .stream()
                         .map(roleTypePrivilegeMultimap::get)
                         .flatMap(Collection::stream));
+    }
+
+    @Transactional
+    public void deleteGroup(Long groupId) {
+        identityMapper.delete(groupId, IdentityType.GROUP);
     }
 
     public static class RegisterEventProducer implements EventProducer<Identity, RegisterEvent> {

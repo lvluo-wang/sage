@@ -20,7 +20,7 @@ public class GrantSqlProvider extends BaseLogEntitySqlProvider<Grant> {
     }
 
     @Override
-    protected SQL onFind(SQL sql) {
+    protected SQL onWhere(SQL sql) {
         return sql;
     }
 
