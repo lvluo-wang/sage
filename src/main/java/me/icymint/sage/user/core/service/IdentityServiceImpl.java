@@ -23,6 +23,7 @@ import me.icymint.sage.user.spec.entity.Identity;
 import me.icymint.sage.user.spec.exception.UserServiceException;
 import me.icymint.sage.user.spec.internal.entity.RegisterEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -192,8 +193,9 @@ public class IdentityServiceImpl implements IdentityService {
     }
 
     @Transactional
-    public void deleteGroup(Long groupId) {
-        identityMapper.delete(groupId, IdentityType.GROUP);
+    @CacheEvict(value = Magics.CACHE_IDENTITY, key = "#identityId")
+    public void deleteGroup(Long identityId) {
+        identityMapper.delete(identityId, IdentityType.GROUP);
     }
 
     public static class RegisterEventProducer implements EventProducer<Identity, RegisterEvent> {

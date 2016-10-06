@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 /**
  * Created by daniel on 2016/10/4.
  */
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Conditional(PermissionCondition.class)
 public @interface Permission {

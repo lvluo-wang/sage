@@ -14,6 +14,7 @@ import me.icymint.sage.user.spec.def.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.method.HandlerMethod;
 import springfox.documentation.RequestHandler;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -36,8 +37,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import static me.icymint.sage.base.util.Classes.isValueClass;
-
 /**
  * Created by daniel on 16/9/3.
  */
@@ -45,57 +44,60 @@ import static me.icymint.sage.base.util.Classes.isValueClass;
 @EnableSwagger2
 public class SwaggerConfig {
     @Autowired
+    @Lazy(false)
     EntityConverters restConverter;
 
     @Bean
-    public Docket sageApi() {
-        return build("sage-open-api", "Backend APIs for Sage", this::sageApi, null);
+    public Docket openApiDocket() {
+        return build("sage-open-api", "Backend APIs for Sage", b -> !isAuthApi(b) && !systemApiDocket(b), null);
     }
 
     @Bean
-    public Docket sageAuthApi() {
-        return build("sage-user-api", "Backend Member APIs for Sage", b -> needToken(b) && !adminApi(b), a -> a.globalOperationParameters(Lists.newArrayList(new ParameterBuilder()
+    public Docket authApiDocket() {
+        return build("sage-user-api", "Backend Member APIs for Sage",
+                b -> isAuthApi(b) && !hasRoleApi(b, RoleType.ROLE_ADMIN),
+                this::addAuthParameter);
+    }
+
+    @Bean
+    public Docket adminApiDocket() {
+        return build("sage-admin-api", "Backend Administrator APIs for Sage",
+                b -> isAuthApi(b) && hasRoleApi(b, RoleType.ROLE_ADMIN),
+                this::addAuthParameter);
+    }
+
+    @Bean
+    public Docket systemApiDocket() {
+        return build("sage-system-api", "System APIs for Sage", this::systemApiDocket, null);
+    }
+
+    private Docket addAuthParameter(Docket b) {
+        return b.globalOperationParameters(Lists.newArrayList(new ParameterBuilder()
                 .name(Magics.HEADER_AUTHORIZATION)
                 .description("Token Auth")
                 .parameterType("header")
                 .modelRef(new ModelRef("string"))
                 .required(true)
-                .build())));
+                .build()));
     }
 
-    @Bean
-    public Docket sageAdminApi() {
-        return build("sage-admin-api", "Backend Administrator APIs for Sage", this::adminApi, a -> a.globalOperationParameters(Lists.newArrayList(new ParameterBuilder()
-                .name(Magics.HEADER_AUTHORIZATION)
-                .description("Token Auth")
-                .parameterType("header")
-                .modelRef(new ModelRef("string"))
-                .required(true)
-                .build())));
-    }
 
-    @Bean
-    public Docket systemApi() {
-        return build("sage-system-api", "System APIs for Sage", this::systemApi, null);
-    }
-
-    private boolean sageApi(RequestHandler requestHandler) {
-        return !needToken(requestHandler) && !adminApi(requestHandler) && !systemApi(requestHandler);
-    }
-
-    private boolean systemApi(RequestHandler requestHandler) {
-        HandlerMethod method = requestHandler.getHandlerMethod();
-        return method != null && !method.getBeanType().getPackage().getName().startsWith("me.icymint.sage");
-    }
-
-    private boolean needToken(RequestHandler requestHandler) {
-        HandlerMethod method = requestHandler.getHandlerMethod();
+    private boolean isAuthApi(RequestHandler handler) {
+        HandlerMethod method = handler.getHandlerMethod();
         return method != null && method.hasMethodAnnotation(CheckToken.class);
     }
 
-    private boolean adminApi(RequestHandler requestHandler) {
-        Permission permission = requestHandler.getHandlerMethod().getBeanType().getAnnotation(Permission.class);
-        return Permissions.matchesRole(permission, role -> role == RoleType.ROLE_ADMIN);
+    private boolean hasRoleApi(RequestHandler handler, RoleType targetRole) {
+        Permission permission = handler.getHandlerMethod().getBeanType().getAnnotation(Permission.class);
+        Permission methodPermission = handler.getHandlerMethod().getMethod().getAnnotation(Permission.class);
+        java.util.function.Predicate<RoleType> match = role -> role == targetRole;
+        return Permissions.matchesRole(permission, match)
+                || Permissions.matchesRole(methodPermission, match);
+    }
+
+    private boolean systemApiDocket(RequestHandler requestHandler) {
+        HandlerMethod method = requestHandler.getHandlerMethod();
+        return method != null && !method.getBeanType().getPackage().getName().startsWith("me.icymint.sage");
     }
 
     private Docket build(String groupName, String description, Predicate<RequestHandler> selector, Function<Docket, Docket> handelr) {
@@ -113,11 +115,8 @@ public class SwaggerConfig {
     private Docket addConverters(Docket docket) {
         TypeResolver typeResolver = new TypeResolver();
         restConverter.getConverterSets().forEach(cell -> {
-            if (cell.getRowKey() != null
-                    && !isValueClass(cell.getRowKey())) {
-                //See https://github.com/springfox/springfox/commit/c8d4f251d446a2722c4bc5985296edcd53807fd1
-                addContainerConverter(typeResolver, docket, cell.getRowKey(), cell.getColumnKey());
-            }
+            //See https://github.com/springfox/springfox/commit/c8d4f251d446a2722c4bc5985296edcd53807fd1
+            addContainerConverter(typeResolver, docket, cell.getRowKey(), cell.getColumnKey());
         });
         docket.directModelSubstitute(Instant.class, Date.class);
         docket.directModelSubstitute(LocalDate.class, Date.class);

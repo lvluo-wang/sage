@@ -1,7 +1,9 @@
 package me.icymint.sage.user.data.mapper;
 
+import me.icymint.sage.base.spec.entity.Pageable;
 import me.icymint.sage.user.data.provider.GrantSqlProvider;
 import me.icymint.sage.user.spec.entity.Grant;
+import me.icymint.sage.user.spec.entity.Identity;
 import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
@@ -27,4 +29,6 @@ public interface GrantMapper {
     @DeleteProvider(type = GrantSqlProvider.class, method = "deleteByOwnerIdAndGroupId")
     void deleteByOwnerIdAndGroupId(@Param("ownerId") Long ownerId, @Param("groupId") Long groupId);
 
+    @SelectProvider(type = GrantSqlProvider.class, method = "findGroupsByOwnerIdPageable")
+    List<Identity> findGroupsByOwnerIdPageable(@Param("ownerId") Long ownerId, Pageable pageable);
 }

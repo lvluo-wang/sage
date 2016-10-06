@@ -1,7 +1,7 @@
 package me.icymint.sage;
 
-import me.icymint.sage.base.spec.internal.api.EventHandler;
 import me.icymint.sage.base.spec.entity.BaseEvent;
+import me.icymint.sage.base.spec.internal.api.EventHandler;
 import org.springframework.stereotype.Service;
 
 /**

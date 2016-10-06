@@ -1,8 +1,16 @@
 package me.icymint.sage.base.spec.annotation;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * Any entity extends this interface will auto register to {@link me.icymint.sage.base.rest.support.EntityConverters}
- * Created by daniel on 2016/10/2.
+ * Created by daniel on 2016/10/6.
  */
-public interface EntityConverter {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface EntityConverter {
 }

@@ -18,12 +18,11 @@ import java.util.Set;
  */
 @Component
 public class TokenThymeleafDialect extends AbstractDialect implements IProcessorDialect, IExpressionObjectDialect {
-    @Autowired
-    TokenExpressionObjectFactory tokenExpressObjectFactory;
-
     public static final String NAME = "SageTokenStandard";
     public static final String DEFAULT_PREFIX = "token";
     public static final int PROCESSOR_PRECEDENCE = 800;
+    @Autowired
+    TokenExpressionObjectFactory tokenExpressObjectFactory;
 
     public TokenThymeleafDialect() {
         super(NAME);

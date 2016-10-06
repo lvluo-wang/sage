@@ -11,8 +11,10 @@ import static org.mapstruct.factory.Mappers.getMapper;
  */
 @Configuration
 public class UserRestConfig {
+
     @Bean
     public UserEntityConverter userRestConverter() {
         return getMapper(UserEntityConverter.class);
     }
+
 }

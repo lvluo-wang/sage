@@ -5,8 +5,12 @@ package me.icymint.sage.user.spec.def;
  */
 public enum Privilege {
     ADMIN(RoleType.ROLE_ADMIN),
+    GRANT_QUERY(RoleType.ROLE_ADMIN),
+    GRANT_MODIFY(RoleType.ROLE_ADMIN),
+    GROUP_QUERY(RoleType.ROLE_ADMIN),
+    GROUP_MODIFY(RoleType.ROLE_ADMIN),
     USER,
-    DEV_API(RoleType.ROLE_DEV),;
+    DEV_API(RoleType.ROLE_DEV);
 
     private final RoleType[] roleTypes;
 

@@ -9,6 +9,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -36,7 +37,7 @@ public class DefaultTokenAuthorization {
     @Before("specialApi()")
     public void authorizeInExpired() {
         try {
-            tokenService.authorize(null, null);
+            tokenService.authorize(null, null, null);
         } catch (Exception e) {
             Exceptions.catching(e, false);
         }
@@ -45,7 +46,8 @@ public class DefaultTokenAuthorization {
     @Before("@annotation(checkToken) && !specialApi()")
     public void authorize(JoinPoint joinPoint, CheckToken checkToken) {
         Permission classPermission = AopUtils.getTargetClass(joinPoint.getThis()).getAnnotation(Permission.class);
-        tokenService.authorize(checkToken, classPermission);
+        Permission methodPermission = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(Permission.class);
+        tokenService.authorize(checkToken, classPermission, methodPermission);
     }
 
 }
