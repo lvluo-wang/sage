@@ -23,3 +23,5 @@ classes/
 
 *.gradletasknamecache
 *.log
+
+node_modules/
