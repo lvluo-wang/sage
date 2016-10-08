@@ -1,45 +1,28 @@
-const webpack = require('webpack');
+var webpack = require('webpack');
 
-module.exports = {
-  entry: './src/js/app.js',
-  output: {
-    path: './build/resources/main/static',
-    filename: 'app.bundle.js'
-  },
-  module: {
-    loaders: [{
-      test: /\.jsx?$/,
-      exclude: /node_modules/,
-      loader: 'babel-loader'
-    },{
-      test: /\.css$/,
-      loader: 'style!css'
-    }]
-  },
-  devServer: {
-    port: 9090,
-    proxy: {
-      '/*': {
-        target: 'http://localhost:8080',
-        secure: false,
-        prependPath: false
-      }
+var path = require('path');
+var DIST_DIR = path.resolve(__dirname, "build/resources/main/static");
+var SRC_DIR = path.resolve(__dirname, "src");
+
+var config = {
+    entry: SRC_DIR + "/app/index.js",
+    output: {
+        path: DIST_DIR + "/app",
+        filename: "bundle.js",
+        publicPath: "/app/"
     },
-    publicPath: 'http://localhost:9090/'
-  },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false,
-      },
-      output: {
-        comments: false,
-      },
-    }),
-    new webpack.DefinePlugin({
-      "process.env": { 
-        NODE_ENV: JSON.stringify("production") 
-      }
-    }),
-  ]
+    module: {
+        loaders: [
+            {
+                test: /\.jsx?/,
+                include: SRC_DIR,
+                loader: "babel-loader",
+                query: {
+                    presets: ["react", "es2015", "stage-2"]
+                }
+            }
+        ]
+    }
 };
+
+module.exports = config;
