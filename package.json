@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build",
-    "build": "mkdir -p build/resources/main/static/app && webpack -d && cp src/index.html build/resources/main/static/index.html && webpack-dev-server --content-base src/ --inline --hot",
+    "build": "mkdir -p build/resources/main/static/app && webpack -d && cp src/index.html build/resources/main/static/index.html && webpack-dev-server --content-base src/ --inline --hot --history-api-fallback",
     "build:prod": "mkdir -p build/resources/main/static/app && webpack -p && cp src/index.html build/resources/main/static/index.html"
   },
   "repository": {
@@ -17,7 +17,13 @@
   "homepage": "https://bitbucket.org/icymint/sage#readme",
   "dependencies": {
     "react": "^15.3.2",
-    "react-dom": "^15.3.2"
+    "react-dom": "^15.3.2",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.8.1",
+    "redux": "^3.6.0",
+    "redux-actions": "^0.12.0",
+    "redux-form": "^6.1.0",
+    "redux-logger": "^2.7.0"
   },
   "devDependencies": {
     "babel-core": "^6.17.0",
@@ -25,6 +31,7 @@
     "babel-preset-es2015": "^6.16.0",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-2": "^6.17.0",
+    "react-hot-loader": "^3.0.0-beta.5",
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.16.2"
   }
