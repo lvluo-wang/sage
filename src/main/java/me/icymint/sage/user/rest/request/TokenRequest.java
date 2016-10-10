@@ -16,8 +16,8 @@ public class TokenRequest {
     @ApiModelProperty(example = "1000")
     private Long cid;
     @NotNull
-    @Size(min = 16, max = 32)
-    @Pattern(regexp = "[0-9a-zA-Z]{16,32}")
+    @Size(min = 10, max = 32)
+    @Pattern(regexp = "[0-9a-zA-Z]{10,32}")
     private String nonce;
     @NotNull
     private Long ts;

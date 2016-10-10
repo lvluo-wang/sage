@@ -1,15 +1,38 @@
 import React from "react";
-import {Router, Route, IndexRoute, browserHistory, Link, IndexLink} from "react-router";
-import Admin from "../components/Admin";
 import LoginForm from "../components/LoginForm";
-import auth from "../auth";
+import AppBar from "material-ui/AppBar";
+import IconButton from "material-ui/IconButton";
+import IconMenu from "material-ui/IconMenu";
+import MenuItem from "material-ui/MenuItem";
+import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
+import ActionHome from "material-ui/svg-icons/action/home";
+import LOGIN from "../sagas/login";
+import {toLink} from "../routes";
 
-class Main extends React.Component {
+const Logged = (props) => (
+    <IconMenu
+        {...props}
+        iconButtonElement={
+            <IconButton><MoreVertIcon /></IconButton>
+        }
+        targetOrigin={{horizontal: 'right', vertical: 'top'}}
+        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+    >
+        <MenuItem primaryText="Refresh" onTouchTap={()=>window.location.href = "/"}/>
+        <MenuItem primaryText="User" onTouchTap={() => toLink("/user")}/>
+        <MenuItem primaryText="Sign out" onTouchTap={()=> LOGIN.logout()}/>
+    </IconMenu>
+);
+
+Logged.muiName = 'IconMenu';
+
+
+class App extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            loggedIn: auth.loggedIn()
+            loggedIn: LOGIN.isLoggedIn()
         };
     }
 
@@ -20,80 +43,19 @@ class Main extends React.Component {
     }
 
     componentWillMount() {
-        auth.onChange = (e) => this.updateAuth(e);
-        auth.login()
+        LOGIN.onChange = (e) => this.updateAuth(e);
     }
 
     render() {
-        let link;
-        if (!this.state.loggedIn) {
-            link = (
-                <div className="ui inverted menu">
-                    <IndexLink className="item" activeClassName={"active"} to="/">Home</IndexLink>
-                    <Link className="right item" activeClassName={"active"} to="/login">Sign in</Link>
-                </div>
-            )
-        } else {
-            link = (
-                <div className="ui inverted menu">
-                    <IndexLink className="item" activeClassName={"active"} to="/">Home</IndexLink>
-                    <Link className="item" activeClassName={"active"} to="/admin">Users</Link>
-                    <Link className="right item" activeClassName={"active"} to="/logout">Log out</Link>
-                </div>
-            )
-        }
-
-        return (
-            <div className="ui container">
-                {link}
-                <div className="ui container">
-                    {this.props.children}
-                </div>
-            </div>
-        )
-    }
-}
-
-const Home = (props) => {
-    return (
-        <div>
-            <h3>Welcome to Project Sage</h3>
-        </div>
-    );
-};
-
-class Logout extends React.Component {
-    componentDidMount() {
-        auth.logout();
-        browserHistory.push("/login");
-    }
-
-    render() {
-        return <p>You are now logged out</p>
+        return (<div>
+            <AppBar title="Project SAGE"
+                    iconElementLeft={<IconButton><ActionHome /></IconButton>}
+                    onLeftIconButtonTouchTap={()=>toLink("/")}
+                    iconElementRight={this.state.loggedIn ? <Logged /> : <LoginForm />}/>
+            {this.props.children}
+        </div>)
     }
 }
 
 
-function requireAuth(nextState, replace) {
-    if (!auth.loggedIn()) {
-        replace({
-            pathname: '/login',
-            state: {nextPathname: nextState.location.pathname}
-        })
-    }
-}
-
-export default class App extends React.Component {
-    render() {
-        return (
-            <Router history={browserHistory}>
-                <Route path={"/"} component={Main}>
-                    <IndexRoute component={Home}/>
-                    <Route path={"/admin"} component={Admin} onEnter={requireAuth}/>
-                    <Route path={"/login"} component={LoginForm}/>
-                    <Route path={"/logout"} component={Logout}/>
-                </Route>
-            </Router>
-        );
-    }
-}
+export default App;

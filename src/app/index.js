@@ -1,11 +1,17 @@
+import "babel-polyfill";
 import React from "react";
-import {Provider} from "react-redux";
 import {render} from "react-dom";
-import store from "./store";
-import App from "./containers/App";
+import configStore from "./store";
+import rootSaga from "./sagas";
+import Root from "./containers/Root";
+import routes,{history} from "./routes";
 
-render(
-    <Provider store={store}>
-        <App />
-    </Provider>
-    , document.getElementById('app'));
+
+const store = configStore({});
+store.runSaga(rootSaga);
+
+render(<Root store={store}
+             history={history}
+             routes={routes}
+    />,
+    document.getElementById('app'));

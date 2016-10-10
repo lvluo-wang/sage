@@ -1,8 +1,10 @@
-import React from "react";
-import userReducer from "./user";
-import counterReducer from "./counter";
+import {combineReducers} from "redux";
 
-export default {
-    user: userReducer,
-    counter: counterReducer,
+const log = (state = {}, action)=> {
+    console.log(state, action);
+    return state;
 }
+
+const rootReducer = combineReducers({log});
+
+export default rootReducer;

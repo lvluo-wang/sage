@@ -1,16 +1,27 @@
 import React from "react";
-import {createStore, combineReducers, applyMiddleware} from "redux";
+import {createStore, applyMiddleware} from "redux";
 import createLogger from "redux-logger";
-import reducers from "./reducers";
-
-const logger = createLogger();
-
-
-const store = createStore(
-    combineReducers(reducers),
-    {},
-    applyMiddleware(logger)
-);
+import rootReducer from "./reducers";
+import createSagaMiddleware, {END} from "redux-saga";
 
 
-export default store;
+export default function configureStore(isDev, initProps) {
+
+    let middleWire;
+
+    const sagaMiddleWire = createSagaMiddleware();
+    if (isDev) {
+        middleWire = [createLogger(), sagaMiddleWire];
+    } else {
+        middleWire = [sagaMiddleWire];
+    }
+    const store = createStore(
+        rootReducer,
+        initProps,
+        applyMiddleware(...middleWire)
+    );
+    store.runSaga = sagaMiddleWire.run;
+    store.close = () => store.dispatch(END);
+
+    return store;
+};

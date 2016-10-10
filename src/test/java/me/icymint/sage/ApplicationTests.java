@@ -61,7 +61,7 @@ public class ApplicationTests {
     public void contextLoads() {
         logger.info("HelloResource");
         System.out.println("hello");
-        Identity client = identityService.findClient(1000L);
+        Identity client = identityService.findOne(1000L, IdentityType.CLIENT);
         assertNotNull(client);
         System.out.println(client);
         assertEquals(IdentityType.CLIENT, client.getType());

@@ -1,67 +1,110 @@
 import React from "react";
-import auth from "../auth";
-import {withRouter} from "react-router";
-
+import Divider from "material-ui/Divider";
+import Paper from "material-ui/Paper";
+import TextField from "material-ui/TextField";
+import FlatButton from "material-ui/FlatButton";
+import Dialog from "material-ui/Dialog";
+import LOGIN from "../sagas/login";
 
 class LoginForm extends React.Component {
+    state = {
+        error: false,
+        usernameError: "",
+        passwordError: "",
+        message: "",
+    };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            error: false
-        }
+    clearError() {
+        this.setState({
+            error: false,
+            usernameError: "",
+            passwordError: "",
+            message: "",
+        })
     }
 
     handleSubmit(event) {
         event.preventDefault();
 
-        const username = this.refs.username.value;
-        const password = this.refs.password.value;
-        console.log(this.refs);
-
-        auth.login(username, password, (loggedIn) => {
+        const username = this.refs.username.input.value;
+        const password = this.refs.password.input.value;
+        if (!username) {
+            this.setState({error: true, usernameError: "Username is required."});
+            return;
+        }
+        if (!password) {
+            this.setState({error: true, passwordError: "Password is required."});
+            return;
+        }
+        LOGIN.login(username, password, loggedIn=> {
             if (!loggedIn)
-                return this.setState({error: true});
-
-            const {location} = this.props;
-
-            if (location.state && location.state.nextPathname) {
-                this.props.router.replace(location.state.nextPathname)
-            } else {
-                this.props.router.replace('/')
-            }
-        })
+                return this.setState({error: true, message: "Login failed!"});
+            this.props.handleClose();
+        });
     }
 
     render() {
+        const actions = [
+            <FlatButton
+                label="Login"
+                primary={true}
+                onTouchTap={e=>this.handleSubmit(e)}
+            />,
+        ];
+        return (<Dialog
+            title="Login to SAGE"
+            actions={actions}
+            modal={false}
+            open={this.props.open}
+            onRequestClose={()=>this.props.handleClose()}
+        >
+            <Paper zDepth={0}>
+                <TextField floatingLabelText="Username"
+                           underlineShow={false}
+                           fullWidth={false}
+                           errorText={this.state.usernameError}
+                           onChange={e=>this.clearError()}
+                           ref="username"/>
+                <Divider />
+                <TextField floatingLabelText="Password"
+                           type="password"
+                           underlineShow={false}
+                           fullWidth={false}
+                           errorText={this.state.passwordError}
+                           onChange={e=>this.clearError()}
+                           ref="password"/>
+                <Divider />
+                {this.state.message}
+            </Paper>
+        </Dialog>);
+    }
+}
+
+
+class LoginDialog extends React.Component {
+    state = {
+        open: false,
+    };
+
+    handleOpen = () => {
+        this.setState({open: true});
+    };
+
+    handleClose = () => {
+        this.setState({open: false});
+    };
+
+    render() {
         return (
-            <div className="ui middle aligned center aligned grid">
-                <div className="column six wide">
-                    <h2 className="ui teal image header">
-                        <div className="content">Login to your account</div>
-                    </h2>
-                    <form className="ui small form" onSubmit={(e)=>this.handleSubmit(e)}>
-                        <div className="ui stacked segment">
-                            <div className="field">
-                                <div className="ui left icon input">
-                                    <i className="user icon"/>
-                                    <input ref="username" type="text" placeholder="Username"/>
-                                </div>
-                            </div>
-                            <div className="field">
-                                <div className="ui left icon input">
-                                    <i className="lock icon"/>
-                                    <input ref="password" type="password" placeholder="Password"/>
-                                </div>
-                            </div>
-                            <button type="submit" className="ui fluid large teal submit button">Login
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <form>
+                <FlatButton {...this.props} label="Login" onTouchTap={this.handleOpen}/>
+                <LoginForm open={this.state.open}
+                           handleClose={e=>this.handleClose()}/>
+            </form>
         );
     }
 }
 
-export default withRouter(LoginForm);
+LoginDialog.muiName = 'FlatButton';
+
+export default LoginDialog;
