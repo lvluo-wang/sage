@@ -5,8 +5,6 @@ import TextField from "material-ui/TextField";
 import FlatButton from "material-ui/FlatButton";
 import Dialog from "material-ui/Dialog";
 import LOGIN from "../services";
-import {connect} from "react-redux";
-import * as Action from "../actions";
 
 class LoginForm extends React.Component {
     state = {
@@ -42,9 +40,6 @@ class LoginForm extends React.Component {
             if (!loggedIn)
                 return this.setState({error: true, message: "Login failed!"});
             this.props.handleClose();
-            this.props.getUser();
-            this.props.getUserRoles();
-            this.props.getUserPrivileges();
         });
     }
 
@@ -84,15 +79,6 @@ class LoginForm extends React.Component {
         </Dialog>);
     }
 }
-
-const mapDispatchToProps = dispatch => {
-    return {
-        getUser: () => dispatch(Action.action(Action.USER[Action.REQUEST])),
-        getUserRoles: () => dispatch(Action.action(Action.USER_ROLE[Action.REQUEST])),
-        getUserPrivileges: () => dispatch(Action.action(Action.USER_PRIVILEGE[Action.REQUEST])),
-    }
-};
-LoginForm = connect(state=>state, mapDispatchToProps)(LoginForm);
 
 
 class LoginDialog extends React.Component {

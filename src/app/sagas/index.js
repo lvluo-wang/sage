@@ -3,7 +3,7 @@ import {call, put} from "redux-saga/effects";
 import * as Action from "../actions";
 import * as API from "../services";
 
-function* callSage(actionType, apiCaller) {
+function getSaga(actionType, apiCaller) {
     function* fetchApi(action) {
         try {
             const payload = yield call(()=>apiCaller(action.payload));
@@ -17,22 +17,15 @@ function* callSage(actionType, apiCaller) {
         }
     }
 
-    yield* takeLatest(actionType[Action.REQUEST], fetchApi);
-}
+    function* fetchApi2() {
+        yield* takeLatest(actionType[Action.REQUEST], fetchApi);
+    }
 
-
-function* getUserProfile() {
-    yield* callSage(Action.USER, API.getUserProfile);
-}
-function* getUserRoles() {
-    yield* callSage(Action.USER_ROLE, API.getUserRoles);
-}
-function* getUserPrivileges() {
-    yield* callSage(Action.USER_PRIVILEGE, API.getUserPrivileges);
+    return fetchApi2;
 }
 
 export default [
-    getUserProfile,
-    getUserRoles,
-    getUserPrivileges
+    getSaga(Action.USER, API.getUserProfile),
+    getSaga(Action.USER_ROLE, API.getUserRoles),
+    getSaga(Action.USER_PRIVILEGE, API.getUserPrivileges),
 ]
