@@ -178,4 +178,10 @@ LOGIN.checkLoggedIn = ()=> {
     }
 };
 
+LOGIN.checkAdmin = ()=> {
+    if (!LOGIN.isLoggedIn()) {
+        refresh();
+    }
+};
+
 export default LOGIN;

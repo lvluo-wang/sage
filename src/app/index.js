@@ -4,11 +4,11 @@ import {render} from "react-dom";
 import configStore from "./store";
 import rootSaga from "./sagas";
 import Root from "./containers/Root";
-import routes,{history} from "./routes";
+import routes, {history} from "./routes";
 
 
 const store = configStore({});
-store.runSaga(rootSaga);
+rootSaga.map(store.runSaga);
 
 render(<Root store={store}
              history={history}

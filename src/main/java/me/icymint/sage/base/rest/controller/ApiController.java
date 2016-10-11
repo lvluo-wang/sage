@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Created by daniel on 16/9/2.
@@ -32,9 +31,8 @@ public class ApiController {
                 .setNow(clock.now());
     }
 
-    @GetMapping("/")
-    public String home(ModelAndView modelAndView) {
-        modelAndView.addObject("env", environment);
+    @GetMapping("/{user:^(?!app).*}")
+    public String home() {
         return "index";
     }
 
