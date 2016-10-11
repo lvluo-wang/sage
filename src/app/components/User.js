@@ -2,53 +2,14 @@ import React from "react";
 import Chip from "material-ui/Chip";
 import {Card, CardActions, CardHeader} from "material-ui/Card";
 import Divider from "material-ui/Divider";
-import * as API from "../services";
+import {connect} from "react-redux";
 
 
 class User extends React.Component {
-    state = {
-        profile: {
-            id: -1,
-            claims: {}
-        },
-        roles: [],
-        privileges: []
-    };
 
     constructor(props) {
         super(props);
-        API.getUserProfile().then(({ok, response})=> {
-            if (ok) {
-                let claims = {};
-                response.claimList.map(a=>claims[API.UTIL.getName(a.type)] = {
-                    title: API.UTIL.getLabel(a.type),
-                    value: a.value
-                });
-                this.setState({
-                    ...this.state,
-                    profile: {
-                        id: response.identity.id,
-                        claims
-                    }
-                })
-            }
-        });
-        API.getUserRoles().then(({ok, response})=> {
-            if (ok) {
-                this.setState({
-                    ...this.state,
-                    roles: response
-                })
-            }
-        });
-        API.getUserPrivileges().then(({ok, response})=> {
-            if (ok) {
-                this.setState({
-                    ...this.state,
-                    privileges: response
-                })
-            }
-        })
+        this.state = props;
     }
 
     style = {
@@ -65,7 +26,11 @@ class User extends React.Component {
         if (v) {
             return v.value;
         }
-        return this.state.profile.id;
+        if (this.state.profile.id < 0) {
+            return null;
+        } else {
+            return this.state.profile.id;
+        }
     }
 
     render() {
@@ -101,6 +66,7 @@ class User extends React.Component {
         );
     }
 }
+User = connect(state => state.user)(User);
 
 
 export default User;
