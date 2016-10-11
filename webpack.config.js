@@ -21,7 +21,6 @@ var config = {
             'jssha',
             'isomorphic-fetch',
             'moment',
-            'nonce',
             'normalizr',
             'store2',
             'material-ui']

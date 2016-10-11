@@ -1,8 +1,10 @@
 package me.icymint.sage.user.rest.controller;
 
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
+import me.icymint.sage.user.core.service.ClaimService;
 import me.icymint.sage.user.core.service.IdentityServiceImpl;
 import me.icymint.sage.user.rest.request.MemberRequest;
+import me.icymint.sage.user.rest.resource.ProfileResource;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.def.ClaimType;
 import me.icymint.sage.user.spec.def.IdentityType;
@@ -30,6 +32,8 @@ public class MemberController {
     @Autowired
     IdentityServiceImpl identityService;
     @Autowired
+    ClaimService claimService;
+    @Autowired
     RuntimeContext runtimeContext;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -50,6 +54,16 @@ public class MemberController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Identity findOne() {
         return identityService.findOne(runtimeContext.getUserId(), IdentityType.MEMBER);
+    }
+
+
+    @CheckToken
+    @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ProfileResource profile() {
+        ProfileResource profile = new ProfileResource();
+        profile.setIdentity(identityService.findOne(runtimeContext.getUserId(), IdentityType.MEMBER));
+        profile.setClaimList(claimService.findAllUniqueByOwnerId(runtimeContext.getUserId()));
+        return profile;
     }
 
     @CheckToken

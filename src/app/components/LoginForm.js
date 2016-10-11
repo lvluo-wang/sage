@@ -4,7 +4,7 @@ import Paper from "material-ui/Paper";
 import TextField from "material-ui/TextField";
 import FlatButton from "material-ui/FlatButton";
 import Dialog from "material-ui/Dialog";
-import LOGIN from "../sagas/login";
+import LOGIN from "../services";
 
 class LoginForm extends React.Component {
     state = {

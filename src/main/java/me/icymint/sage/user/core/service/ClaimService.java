@@ -86,4 +86,9 @@ public class ClaimService {
     public List<Claim> findByOwnerId(Long userId, PageBounds pageBounds) {
         return claimMapper.findByOwnerId(userId, pageBounds);
     }
+
+
+    public List<Claim> findAllUniqueByOwnerId(Long userId) {
+        return claimMapper.findUniqueByOwnerId(userId);
+    }
 }

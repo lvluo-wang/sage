@@ -22,6 +22,7 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -55,6 +56,8 @@ public class EventServiceImpl implements BatchJob<Event> {
     Clock clock;
     @Autowired
     RuntimeContext runtimeContext;
+    @Autowired
+    ApplicationContext context;
     @Value("${" + Magics.PROP_ALWAYS_SAVE_LOG + ":false}")
     boolean alwaysSaveLog;
 
@@ -201,7 +204,13 @@ public class EventServiceImpl implements BatchJob<Event> {
 
     public void sendEventByAop(Class<? extends EventProducer<?, ? extends BaseEvent<?>>> clazz, JoinPoint joinPoint, Object result, boolean isIntransaction) {
         try {
-            EventProducer<?, ? extends BaseEvent<?>> producer = clazz.newInstance();
+            String[] names = context.getBeanNamesForType(clazz);
+            EventProducer<?, ? extends BaseEvent<?>> producer;
+            if (names != null && names.length == 1) {
+                producer = context.getBean(clazz);
+            } else {
+                producer = clazz.newInstance();
+            }
             if (!doSendEventByAop(producer, result, isIntransaction)) {
                 logger.error("Notify event {} at {} missing", clazz, joinPoint.getKind());
             }

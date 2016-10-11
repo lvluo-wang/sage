@@ -1,6 +1,6 @@
 import React from "react";
 import injectTapEventPlugin from "react-tap-event-plugin";
-import darkBaseTheme from "material-ui/styles/baseThemes/darkBaseTheme";
+import baseTheme from "material-ui/styles/baseThemes/lightBaseTheme";
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import getMuiTheme from "material-ui/styles/getMuiTheme";
 import {Provider} from "react-redux";
@@ -15,7 +15,7 @@ export default class Root extends React.Component {
         const {store, history, routes, type, renderProps} = this.props;
         return (
             <Provider store={store}>
-                <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
+                <MuiThemeProvider muiTheme={getMuiTheme(baseTheme)}>
                     { type === 'server'
                         ? <RouterContext {...renderProps} />
                         : <Router history={history} routes={routes}/>
