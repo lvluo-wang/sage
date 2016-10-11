@@ -6,7 +6,7 @@ import IconMenu from "material-ui/IconMenu";
 import MenuItem from "material-ui/MenuItem";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import ActionHome from "material-ui/svg-icons/action/home";
-import LOGIN from "../sagas/login";
+import LOGIN from "../services";
 import {toLink, refresh} from "../routes";
 
 const Logged = (props) => (
@@ -29,11 +29,12 @@ Logged.muiName = 'IconMenu';
 
 class App extends React.Component {
 
+    state = {
+        loggedIn: LOGIN.isLoggedIn()
+    };
+
     constructor(props) {
         super(props);
-        this.state = {
-            loggedIn: LOGIN.isLoggedIn()
-        };
     }
 
     updateAuth(loggedIn) {

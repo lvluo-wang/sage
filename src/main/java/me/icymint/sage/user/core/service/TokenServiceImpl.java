@@ -361,9 +361,9 @@ public class TokenServiceImpl implements TokenService {
 
     public String calculateTokenHash(Long clientId, String nonce, Long timestamp, Long tokenId, String secret) {
         String data = Stream.of(clientId,
-                nonce,
+                tokenId,
                 timestamp,
-                tokenId)
+                nonce)
                 .map(String::valueOf)
                 .collect(Collectors.joining("|"));
         return HMacs.encodeToBase64(secret, data);

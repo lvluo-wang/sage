@@ -1,5 +1,7 @@
 import storage from "./storage";
 import moment from "moment";
+import * as auth from "./auth";
+import {refresh} from "./routes";
 require("isomorphic-fetch");
 
 
@@ -34,20 +36,44 @@ function callApi(endpoint, options) {
         });
 }
 
+function getTokenHeader() {
+    let token = LOGIN.getToken();
+    if (!token) {
+        throw new Error("Need Login")
+    }
+    let data = [auth.getClientId(), token.id, getTimestamp(), auth.getNonce()].join('|');
+    let hash = auth.getHmac(token.accessSecret, data, "B64");
+    return 'SAGE-HMAC ' + hash + data;
+}
 
-function postApi(url, body) {
+function postApi(url, body, needAuth = false) {
+    let headers = {
+        "Content-Type": "application/json"
+    };
+    if (needAuth) {
+        headers = {
+            ...headers,
+            "Authorization": getTokenHeader()
+        }
+    }
     return callApi(url, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers,
         body: JSON.stringify(body)
     })
 }
 
-function getApi(url) {
+function getApi(url, needAuth = false) {
+    let headers = {};
+    if (needAuth) {
+        headers = {
+            ...headers,
+            "Authorization": getTokenHeader()
+        }
+    }
     return callApi(url, {
-        method: "GET"
+        method: "GET",
+        headers
     })
 }
 
@@ -61,4 +87,95 @@ export function getTimestamp() {
 
 // api services
 export const getUserByName = username => getApi(`members/username/${username}`);
-export const login = (uid, cid, nonce, ts, sign) => postApi(`tokens`, {uid, cid, nonce, ts, sign});
+export const loginApi = (uid, cid, nonce, ts, sign) => postApi(`tokens`, {uid, cid, nonce, ts, sign});
+export const getUserRoles = () => getApi(`members/roles`, true);
+export const getUserPrivileges = () => getApi(`members/privileges`, true);
+export const getUserProfile = () => getApi(`members/profile`, true);
+
+
+export const UTIL = {};
+
+UTIL.getName = (e)=> {
+    if (e && e.name) {
+        return e.name;
+    }
+    return e;
+};
+
+UTIL.getLabel = (e)=> {
+    if (e && e.label) {
+        return e.label;
+    }
+    return e;
+};
+
+const LOGIN = {};
+
+LOGIN.onChange = (e) => {
+};
+
+LOGIN.doCallback = (callback, isLogin) => {
+    if (callback) {
+        callback(isLogin);
+    }
+    LOGIN.onChange(isLogin);
+};
+LOGIN.getToken = ()=> {
+    try {
+        const {id, expireTime, accessSecret} = storage.get("global", "token", {});
+        if (getTimestamp() >= expireTime || !id || !accessSecret) {
+            return {};
+        }
+        return {
+            id,
+            accessSecret
+        }
+    } catch (e) {
+        return {};
+    }
+};
+
+LOGIN.isLoggedIn = ()=> {
+    const {id, accessSecret} = LOGIN.getToken();
+    return id != undefined && accessSecret != undefined;
+};
+LOGIN.login = (username, pass, callback)=> {
+    const v = LOGIN.isLoggedIn();
+    if (v) {
+        LOGIN.doCallback(callback, true);
+        return;
+    }
+    getUserByName(username).then(({ok, response})=> {
+        if (!ok) {
+            LOGIN.doCallback(callback, false);
+        } else {
+            let id = response.id;
+            let salt = response.salt;
+            let password = auth.getHmac(salt, pass);
+            let cid = auth.getClientId();
+            let nonce = auth.getNonce();
+            let ts = getTimestamp();
+            let hash = [id, cid, nonce, ts].join('|');
+            hash = auth.getHmac(password, hash, "B64");
+            loginApi(id, cid, nonce, ts, hash).then(({ok, response})=> {
+                if (!ok) {
+                    LOGIN.doCallback(callback, false);
+                }
+                storage.save("global", "token", response);
+                LOGIN.doCallback(callback, true);
+            }, ()=>LOGIN.doCallback(callback, false));
+        }
+    }, ()=>LOGIN.doCallback(callback, false));
+}
+LOGIN.logout = (callback)=> {
+    storage.remove("global", "token");
+    LOGIN.doCallback(callback, false);
+    refresh();
+};
+LOGIN.checkLoggedIn = ()=> {
+    if (!LOGIN.isLoggedIn()) {
+        refresh();
+    }
+};
+
+export default LOGIN;

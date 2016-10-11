@@ -42,4 +42,7 @@ public interface ClaimMapper {
 
     @SelectProvider(type = ClaimSqlProvider.class, method = "findByOwnerId")
     List<Claim> findByOwnerId(@Param("ownerId") Long userId, RowBounds rowBounds);
+
+    @SelectProvider(type = ClaimSqlProvider.class, method = "findUniqueByOwnerId")
+    List<Claim> findUniqueByOwnerId(@Param("ownerId")Long userId);
 }

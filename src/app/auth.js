@@ -1,5 +1,4 @@
 import React from "react";
-let nonce = require("nonce")();
 let jsSHA = require("jssha");
 
 
@@ -10,16 +9,16 @@ export function getHmac(key, text, type = "HEX") {
     return jsobj.getHMAC(type);
 }
 
-export function getTokenHash(clientId, nonce, timestamp, identityId, secret) {
-    let data = [clientId, nonce, timestamp, identityId].join('|');
-    let hash = getHmac(secret, data, "B64");
-    return 'SAGE-HMAC ' + hash + data;
-}
-
 export function getClientId() {
     return 1000;
 }
 
 export function getNonce() {
-    return nonce();
+    let text = "";
+    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (let i = 0; i < 16; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
 }
