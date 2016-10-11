@@ -7,7 +7,7 @@ import MenuItem from "material-ui/MenuItem";
 import MoreVertIcon from "material-ui/svg-icons/navigation/more-vert";
 import ActionHome from "material-ui/svg-icons/action/home";
 import LOGIN from "../sagas/login";
-import {toLink} from "../routes";
+import {toLink, refresh} from "../routes";
 
 const Logged = (props) => (
     <IconMenu
@@ -18,7 +18,7 @@ const Logged = (props) => (
         targetOrigin={{horizontal: 'right', vertical: 'top'}}
         anchorOrigin={{horizontal: 'right', vertical: 'top'}}
     >
-        <MenuItem primaryText="Refresh" onTouchTap={()=>window.location.href = "/"}/>
+        <MenuItem primaryText="Refresh" onTouchTap={()=> refresh()}/>
         <MenuItem primaryText="User" onTouchTap={() => toLink("/user")}/>
         <MenuItem primaryText="Sign out" onTouchTap={()=> LOGIN.logout()}/>
     </IconMenu>

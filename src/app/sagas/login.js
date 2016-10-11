@@ -3,6 +3,7 @@ import storage from "../storage";
 import * as API from "../services";
 import {getTimestamp} from "../services";
 import * as auth from "../auth";
+import {refresh} from "../routes";
 
 function getLoginHash(identityId, clientId, nonce, timestamp, password) {
     let hash = [identityId, clientId, nonce, timestamp].join('|');
@@ -41,13 +42,14 @@ export default {
     logout(callback) {
         storage.remove("global", "token");
         this.doCallback(callback, false);
+        refresh();
     },
     isLoggedIn() {
         return storage.get("global", "token") ? true : false;
     },
     checkLoggedIn(){
         if (!this.isLoggedIn()) {
-            window.location.href = "/"
+            refresh();
         }
     },
     doCallback(callback, isLogin) {

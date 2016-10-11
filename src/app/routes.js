@@ -7,6 +7,9 @@ import LOGIN from "./sagas/login";
 
 export const history = browserHistory;
 
+export function refresh() {
+    window.location.href = "/";
+}
 export function toLink(url) {
     browserHistory.push(url);
 }
