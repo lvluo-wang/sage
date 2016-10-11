@@ -12,11 +12,7 @@ buildscript {
     }
     repositories {
         maven {
-            credentials {
-                username "albus"
-                password "YouCantHitMe"
-            }
-            url "http://139.196.34.70:8081/content/groups/public/"
+            url "http://maven.aliyun.com/nexus/content/groups/public/"
         }
         mavenCentral()
     }
@@ -51,11 +47,7 @@ targetCompatibility = 1.8
 
 repositories {
     maven {
-        credentials {
-            username "albus"
-            password "YouCantHitMe"
-        }
-        url "http://139.196.34.70:8081/content/groups/public/"
+        url "http://maven.aliyun.com/nexus/content/groups/public/"
     }
     mavenCentral()
 }
