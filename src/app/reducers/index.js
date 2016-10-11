@@ -17,7 +17,7 @@ const user = (state = {
     privileges: []
 }, action) => {
     if (Action.USER[Action.SUCCESS] == action.type) {
-        let claims = {}
+        let claims = {};
         action.payload.claimList.map(c=>claims[API.UTIL.getName(c.type)] = {
             title: API.UTIL.getLabel(c.type),
             value: c.value

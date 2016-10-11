@@ -68,7 +68,6 @@ class App extends React.Component {
             this.props.getUser();
             this.props.getUserRoles();
             this.props.getUserPrivileges();
-
         }
         return (<div>
             <AppBar title="Project SAGE"

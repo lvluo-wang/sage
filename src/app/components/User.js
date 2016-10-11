@@ -7,11 +7,6 @@ import {connect} from "react-redux";
 
 class User extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = props;
-    }
-
     style = {
         chip: {
             margin: 4,
@@ -22,14 +17,14 @@ class User extends React.Component {
     };
 
     getUserName() {
-        let v = this.state.profile.claims['USERNAME'];
+        let v = this.props.profile.claims['USERNAME'];
         if (v) {
             return v.value;
         }
-        if (this.state.profile.id < 0) {
+        if (this.props.profile.id < 0) {
             return null;
         } else {
-            return this.state.profile.id;
+            return this.props.profile.id;
         }
     }
 
@@ -38,9 +33,9 @@ class User extends React.Component {
             <div>
                 <h3>Hello, { this.getUserName() || "用户" }</h3>
                 <Divider/>
-                {this.renderCard("Role List", this.state.roles)}
+                {this.renderCard("Role List", this.props.roles)}
                 <Divider/>
-                {this.renderCard("Privilege List", this.state.privileges)}
+                {this.renderCard("Privilege List", this.props.privileges)}
             </div>
         );
     }
@@ -66,6 +61,7 @@ class User extends React.Component {
         );
     }
 }
+
 User = connect(state => state.user)(User);
 
 
