@@ -8,22 +8,21 @@ var SRC_DIR = path.resolve(__dirname, "src");
 var config = {
     entry: {
         app: ['babel-polyfill', SRC_DIR + "/app/index.js"],
-        vendors: ['react',
+        vendors: [
+            'react',
             'react-dom',
             'react-redux',
             'react-router',
             'react-tap-event-plugin',
             'redux',
-            'redux-actions',
-            'redux-form',
             'redux-logger',
             'redux-saga',
             'jssha',
             'isomorphic-fetch',
             'moment',
-            'normalizr',
             'store2',
-            'material-ui']
+            'material-ui'
+        ]
     },
     output: {
         path: DIST_DIR + "/app",
@@ -50,7 +49,6 @@ var config = {
         }),
         new CopyWebpackPlugin([
             {from: SRC_DIR + "/app/libs", to: DIST_DIR + "/app/libs"},
-            {from: SRC_DIR + "/app/css", to: DIST_DIR + "/app/css"},
         ])
     ]
 };

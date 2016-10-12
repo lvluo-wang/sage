@@ -2,17 +2,24 @@ import storage from "./storage";
 import moment from "moment";
 import * as auth from "./auth";
 import {refresh} from "./routes";
+require('es6-promise').polyfill();
 require("isomorphic-fetch");
 
 
-// const API_URL = 'http://localhost:8081';
-const API_URL = '';
+const API_URL = 'http://localhost:8081';
+// const API_URL = '';
 const API_ROOT = API_URL + '/';
 
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
 function callApi(endpoint, options) {
     const fullUrl = (endpoint.indexOf(API_ROOT) === -1) ? API_ROOT + endpoint : endpoint;
+    if (API_URL != '') {
+        options = {
+            ...options,
+            mode: 'cors'
+        }
+    }
     return fetch(fullUrl, options)
         .then(response => {
             if (response.ok) {
@@ -27,12 +34,21 @@ function callApi(endpoint, options) {
                         response: json
                     }
                 });
-            } else {
-                return Promise.reject({
-                    ok: false,
-                    error: "Server access failed"
-                })
             }
+            try {
+                return response.json().then(json=> {
+                    return {
+                        ok: false,
+                        error: json.message
+                    }
+                });
+            } catch (e) {
+                //
+            }
+            return Promise.reject({
+                ok: false,
+                error: "Server access failed"
+            });
         });
 }
 
