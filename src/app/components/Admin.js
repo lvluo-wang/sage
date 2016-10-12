@@ -1,8 +1,26 @@
 import React from "react";
+import {connect} from "react-redux";
 
 
-export default class Admin extends React.Component {
+class Admin extends React.Component {
+
+    constructor(props = {
+        groupList: []
+    }) {
+        super(props);
+    }
+
     render() {
-        return (<h1>Hello,Admin</h1>);
+        return (<div>
+            <h1>Hello,Admin</h1>
+        </div>);
     }
 }
+
+Admin = connect(state => {
+    return {
+        groupList: state.group
+    }
+})(Admin);
+
+export default Admin;

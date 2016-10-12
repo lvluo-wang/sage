@@ -13,6 +13,9 @@ export const USER = createRequestTypes('USER');
 export const USER_ROLE = createRequestTypes('USER_ROLE');
 export const USER_PRIVILEGE = createRequestTypes('USER_PRIVILEGE');
 
+export const GROUP = createRequestTypes('GROUP');
+
+
 
 export function action(type, payload = {}) {
     return {type, ...payload}

@@ -31,7 +31,7 @@ public class ApiController {
                 .setNow(clock.now());
     }
 
-    @GetMapping("/{user:^(?!app).*}")
+    @GetMapping("/{user:^(?!(app|swagger-ui)).*}")
     public String home() {
         return "index";
     }

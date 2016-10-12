@@ -46,6 +46,22 @@ const user = (state = {
     return state;
 };
 
-const rootReducer = combineReducers({user, log});
+
+const group = (state = {
+    groupList: []
+}, action) => {
+    if (Action.GROUP[Action.SUCCESS] == action.type) {
+        return {
+            ...state,
+            groupList: action.payload
+        }
+    } else if (action.type.endsWith(Action.FAILURE) == action.type) {
+        console.log(action);
+    }
+    return state;
+};
+
+
+const rootReducer = combineReducers({user, log, group});
 
 export default rootReducer;

@@ -28,4 +28,5 @@ export default [
     getSaga(Action.USER, API.getUserProfile),
     getSaga(Action.USER_ROLE, API.getUserRoles),
     getSaga(Action.USER_PRIVILEGE, API.getUserPrivileges),
+    getSaga(Action.GROUP, API.getGroups),
 ]

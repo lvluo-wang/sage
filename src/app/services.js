@@ -104,12 +104,17 @@ export function getTimestamp() {
 // api services
 export const getUserByName = username => getApi(`members/username/${username}`);
 export const loginApi = (uid, cid, nonce, ts, sign) => postApi(`tokens`, {uid, cid, nonce, ts, sign});
+export const registerApi = (cid, password, salt, username) => postApi(`members`, {cid, password, salt, username});
+// token base
 export const getUserRoles = () => getApi(`members/roles`, true);
 export const getUserPrivileges = () => getApi(`members/privileges`, true);
 export const getUserProfile = () => getApi(`members/profile`, true);
+// admin base
+export const getGroups = () => getApi(`groups`, true);
 
 
 export const UTIL = {};
+
 
 UTIL.getName = (e)=> {
     if (e && e.name) {
@@ -138,12 +143,13 @@ LOGIN.doCallback = (callback, isLogin) => {
 };
 LOGIN.getToken = ()=> {
     try {
-        const {id, expireTime, accessSecret} = storage.get("global", "token", {});
+        const {id, isAdmin, expireTime, accessSecret} = storage.get("global", "token", {});
         if (getTimestamp() >= expireTime || !id || !accessSecret) {
             return {};
         }
         return {
             id,
+            isAdmin,
             accessSecret
         }
     } catch (e) {
@@ -155,6 +161,35 @@ LOGIN.isLoggedIn = ()=> {
     const {id, accessSecret} = LOGIN.getToken();
     return id != undefined && accessSecret != undefined;
 };
+
+LOGIN.isAdmin = ()=> {
+    const {id, isAdmin, accessSecret} = LOGIN.getToken();
+    return id != undefined && accessSecret != undefined && isAdmin;
+};
+
+function doLogin(id, password, callback) {
+    let cid = auth.getClientId();
+    let nonce = auth.getNonce();
+    let ts = getTimestamp();
+    let hash = [id, cid, nonce, ts].join('|');
+    hash = auth.getHmac(password, hash, "B64");
+    loginApi(id, cid, nonce, ts, hash).then(({ok, response})=> {
+        if (!ok) {
+            LOGIN.doCallback(callback, false);
+            return;
+        }
+        const token = response;
+        storage.save("global", "token", token);
+        getUserRoles().then(({ok, response})=> {
+            try {
+                token.isAdmin = ok && response.includes('ROLE_ADMIN');
+            } catch (e) {
+            }
+            storage.save("global", "token", token);
+            LOGIN.doCallback(callback, true);
+        });
+    }, ()=>LOGIN.doCallback(callback, false));
+}
 LOGIN.login = (username, pass, callback)=> {
     const v = LOGIN.isLoggedIn();
     if (v) {
@@ -168,26 +203,33 @@ LOGIN.login = (username, pass, callback)=> {
             let id = response.id;
             let salt = response.salt;
             let password = auth.getHmac(salt, pass);
-            let cid = auth.getClientId();
-            let nonce = auth.getNonce();
-            let ts = getTimestamp();
-            let hash = [id, cid, nonce, ts].join('|');
-            hash = auth.getHmac(password, hash, "B64");
-            loginApi(id, cid, nonce, ts, hash).then(({ok, response})=> {
-                if (!ok) {
-                    LOGIN.doCallback(callback, false);
-                }
-                storage.save("global", "token", response);
-                LOGIN.doCallback(callback, true);
-            }, ()=>LOGIN.doCallback(callback, false));
+            doLogin(id, password, callback);
         }
     }, ()=>LOGIN.doCallback(callback, false));
-}
+};
+
+
+LOGIN.register = (username, pass, callback) => {
+    let cid = auth.getClientId();
+    let salt = auth.getNonce();
+    const password = auth.getHmac(salt, pass);
+    registerApi(cid, password, salt, username)
+        .then(({ok, response})=> {
+            if (!ok) {
+                LOGIN.doCallback(callback, false);
+                return;
+            }
+            const {id} = response;
+            doLogin(id, password, callback);
+        });
+};
+
 LOGIN.logout = (callback)=> {
     storage.remove("global", "token");
     LOGIN.doCallback(callback, false);
     refresh();
 };
+
 LOGIN.checkLoggedIn = ()=> {
     if (!LOGIN.isLoggedIn()) {
         refresh();
@@ -195,8 +237,8 @@ LOGIN.checkLoggedIn = ()=> {
 };
 
 LOGIN.checkAdmin = ()=> {
-    if (!LOGIN.isLoggedIn()) {
-        refresh();
+    if (!LOGIN.isAdmin()) {
+        refresh("/404");
     }
 };
 

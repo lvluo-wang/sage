@@ -9,8 +9,11 @@ import LOGIN from "./services";
 
 export const history = browserHistory;
 
-export function refresh() {
-    window.location.href = "/";
+export function refresh(url) {
+    if (!url) {
+        url = "/";
+    }
+    window.location.href = url;
 }
 export function toLink(url) {
     browserHistory.push(url);
@@ -21,6 +24,6 @@ export default (
         <IndexRoute component={HomePage}/>
         <Route path="user" component={UserPage} onEnter={()=>LOGIN.checkLoggedIn()}/>
         <Route path="admin" component={AdminPage} onEnter={()=>LOGIN.checkAdmin()}/>
-        <Route path="*" style={{textAlign: 'center'}} component={NotFoundPage}/>
+        <Route path="*" component={NotFoundPage}/>
     </Route>
-)
+);

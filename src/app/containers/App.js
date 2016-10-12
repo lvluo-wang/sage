@@ -12,7 +12,6 @@ import {connect} from "react-redux";
 import * as Action from "../actions";
 
 class Logged extends React.Component {
-
     render() {
         return (
             <IconMenu
@@ -74,7 +73,9 @@ class App extends React.Component {
                     iconElementLeft={<IconButton><ActionHome /></IconButton>}
                     onLeftIconButtonTouchTap={()=>toLink("/")}
                     iconElementRight={this.state.loggedIn ? <Logged /> : <LoginForm />}/>
-            {this.props.children}
+            <div style={{margin: 10}}>
+                {this.props.children}
+            </div>
         </div>)
     }
 }
