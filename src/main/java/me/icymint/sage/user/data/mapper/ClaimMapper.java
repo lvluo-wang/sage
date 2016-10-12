@@ -5,6 +5,7 @@ import me.icymint.sage.user.spec.def.ClaimType;
 import me.icymint.sage.user.spec.def.Privilege;
 import me.icymint.sage.user.spec.def.RoleType;
 import me.icymint.sage.user.spec.entity.Claim;
+import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -34,6 +35,10 @@ public interface ClaimMapper {
     @SelectProvider(type = ClaimSqlProvider.class, method = "findByTypeAndValue")
     Claim findOneByTypeAndValue(@Param("type") ClaimType type, @Param("value") String value);
 
+
+    @SelectProvider(type = ClaimSqlProvider.class, method = "findOneByOwnerIdAndTypeAndValue")
+    Claim findOneByOwnerIdAndTypeAndValue(@Param("ownerId") Long ownerId, @Param("type") ClaimType type, @Param("value") String value);
+
     @SelectProvider(type = ClaimSqlProvider.class, method = "findRolesByOwnerId")
     Set<RoleType> findRolesByOwnerId(@Param("ownerId") Long ownerId);
 
@@ -44,5 +49,8 @@ public interface ClaimMapper {
     List<Claim> findByOwnerId(@Param("ownerId") Long userId, RowBounds rowBounds);
 
     @SelectProvider(type = ClaimSqlProvider.class, method = "findUniqueByOwnerId")
-    List<Claim> findUniqueByOwnerId(@Param("ownerId")Long userId);
+    List<Claim> findUniqueByOwnerId(@Param("ownerId") Long userId);
+
+    @DeleteProvider(type = ClaimSqlProvider.class, method = "delete")
+    void delete(@Param("id") Long id);
 }

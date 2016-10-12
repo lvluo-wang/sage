@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -67,19 +66,6 @@ public class GrantController {
             roleTypes = privilege.getRoleTypes();
         }
         return Enums.getEnumInfoList(context, LocaleContextHolder.getLocale(), roleTypes);
-    }
-
-
-    @CheckToken
-    @GetMapping(value = "/{ownerId}/privileges", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<Privilege> findPrivilegesById(@PathVariable("ownerId") Long ownerId) {
-        return identityService.findPrivilegesById(ownerId);
-    }
-
-    @CheckToken
-    @GetMapping(value = "/{ownerId}/roles", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<RoleType> findRolesById(@PathVariable("ownerId") Long ownerId) {
-        return identityService.findRolesById(ownerId);
     }
 
 

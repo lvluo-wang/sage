@@ -36,6 +36,14 @@ public class ClaimSqlProvider extends BaseLogEntitySqlProvider<Claim> {
                 .toString();
     }
 
+    public String findOneByOwnerIdAndTypeAndValue() {
+        return selectAllFrom()
+                .WHERE("TYPE=#{type}")
+                .WHERE("VALUE=#{value}")
+                .WHERE("OWNER_ID=#{ownerId}")
+                .toString();
+    }
+
     public String findUniqueByOwnerId() {
         return selectAllFrom()
                 .WHERE("OWNER_ID=#{ownerId}")

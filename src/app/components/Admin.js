@@ -1,26 +1,55 @@
 import React from "react";
+import {Table, TableBody, TableHeader, TableRow, TableRowColumn} from "material-ui/Table";
 import {connect} from "react-redux";
+import * as Action from "../actions";
+import Group from "./Group";
 
 
 class Admin extends React.Component {
 
-    constructor(props = {
-        groupList: []
-    }) {
-        super(props);
-    }
-
     render() {
+        if (!this.props.isLoaded) {
+            this.props.loadGroups();
+            this.props.loadRoles();
+            this.props.loadPrivileges();
+        }
         return (<div>
             <h1>Hello,Admin</h1>
+            <Table
+                fixedHeader={true}
+                selectable={false}
+            ><TableHeader adjustForCheckbox={false}
+                          displaySelectAll={false}>
+                <TableRow>
+                    <TableRowColumn>ID</TableRowColumn>
+                    <TableRowColumn>Name</TableRowColumn>
+                    <TableRowColumn>CreateTime</TableRowColumn>
+                </TableRow>
+            </TableHeader>
+                <TableBody displayRowCheckbox={false}
+                           stripedRows={true}
+                           showRowHover={true}>
+                    {this.props.groupList.length == 0 ? <h1>Empty Table</h1> : this.props.groupList.map(group => (
+                        <TableRow key={group.id}>
+                            <TableRowColumn>{<Group group={group}/>}</TableRowColumn>
+                            <TableRowColumn>{group.name}</TableRowColumn>
+                            <TableRowColumn>{group.createTime}</TableRowColumn>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
         </div>);
     }
 }
 
-Admin = connect(state => {
+const mapDispatchToProps = dispatch=> {
     return {
-        groupList: state.group
+        loadGroups: () => dispatch(Action.action(Action.GROUP[Action.REQUEST])),
+        loadRoles: () => dispatch(Action.action(Action.PERMISSION_ROLE[Action.REQUEST])),
+        loadPrivileges: () => dispatch(Action.action(Action.PERMISSION_PRIVILEGE[Action.REQUEST])),
     }
-})(Admin);
+};
+
+Admin = connect(state => state.group, mapDispatchToProps)(Admin);
 
 export default Admin;

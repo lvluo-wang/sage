@@ -33,6 +33,11 @@ function callApi(endpoint, options) {
                         ok: true,
                         response: json
                     }
+                }).catch(e=> {
+                    return {
+                        ok: true,
+                        response: {}
+                    }
                 });
             }
             try {
@@ -79,6 +84,23 @@ function postApi(url, body, needAuth = false) {
     })
 }
 
+function putApi(url, body, needAuth = false) {
+    let headers = {
+        "Content-Type": "application/json"
+    };
+    if (needAuth) {
+        headers = {
+            ...headers,
+            "Authorization": getTokenHeader()
+        }
+    }
+    return callApi(url, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(body)
+    })
+}
+
 function getApi(url, needAuth = false) {
     let headers = {};
     if (needAuth) {
@@ -92,6 +114,21 @@ function getApi(url, needAuth = false) {
         headers
     })
 }
+
+function delApi(url, needAuth = false) {
+    let headers = {};
+    if (needAuth) {
+        headers = {
+            ...headers,
+            "Authorization": getTokenHeader()
+        }
+    }
+    return callApi(url, {
+        method: "DELETE",
+        headers
+    })
+}
+
 
 export function getTimestamp() {
     let tdiff = storage.get('global', 'sts') - storage.get('global', 'cts');
@@ -111,6 +148,14 @@ export const getUserPrivileges = () => getApi(`members/privileges`, true);
 export const getUserProfile = () => getApi(`members/profile`, true);
 // admin base
 export const getGroups = () => getApi(`groups`, true);
+export const getGroupDetail = (id) => getApi(`groups/${id}/detail`, true);
+export const groupAddRole = ({id, role}) => postApi(`groups/${id}/role/${role}`, {}, true);
+export const groupDelRole = ({id, role}) => delApi(`groups/${id}/role/${role}`, {}, true);
+export const groupAddPrivilege = ({id, privilege}) => postApi(`groups/${id}/privilege/${privilege}`, {}, true);
+export const groupDelPrivilege = ({id, privilege}) => delApi(`groups/${id}/privilege/${privilege}`, {}, true);
+
+export const getRoles = () => getApi(`grants/roles`, true);
+export const getPrivileges = () => getApi(`grants/privileges`, true);
 
 
 export const UTIL = {};

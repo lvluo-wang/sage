@@ -48,20 +48,75 @@ const user = (state = {
 
 
 const group = (state = {
+    isLoaded: false,
     groupList: []
 }, action) => {
     if (Action.GROUP[Action.SUCCESS] == action.type) {
         return {
             ...state,
-            groupList: action.payload
+            isLoaded: true,
+            groupList: action.payload.items
         }
-    } else if (action.type.endsWith(Action.FAILURE) == action.type) {
+    } else if (Action.GROUP[Action.FAILURE] == action.type) {
         console.log(action);
+        return {
+            ...state,
+            isLoaded: true
+        }
     }
     return state;
 };
 
+const groupDetail = (state = {
+    isLoaded: false,
+    detail: {}
+}, action) => {
+    if (Action.GROUP_DETAIL[Action.SUCCESS] == action.type) {
+        return {
+            ...state,
+            isLoaded: true,
+            detail: action.payload
+        }
+    } else if (Action.GROUP_DETAIL[Action.FAILURE] == action.type) {
+        console.log(action);
+        return {
+            ...state,
+            isLoaded: true
+        }
+    }
+    return state;
+};
 
-const rootReducer = combineReducers({user, log, group});
+const groupModified = (state = 0, action) => {
+    if (Action.GROUP_DEL_PRIVILEGE[Action.SUCCESS] == action.type
+        || Action.GROUP_ADD_PRIVILEGE[Action.SUCCESS] == action.type
+        || Action.GROUP_ADD_ROLE[Action.SUCCESS] == action.type
+        || Action.GROUP_DEL_ROLE[Action.SUCCESS] == action.type) {
+        return state + 1;
+    }
+    return state;
+};
+
+const permissionRole = (state = [], action) => {
+    if (Action.PERMISSION_ROLE[Action.SUCCESS] == action.type) {
+        return action.payload;
+    }
+    return state;
+};
+
+const permissionPrivilege = (state = [], action) => {
+    if (Action.PERMISSION_PRIVILEGE[Action.SUCCESS] == action.type) {
+        return action.payload;
+    }
+    return state;
+};
+
+const permission = combineReducers({
+    roles: permissionRole,
+    privileges: permissionPrivilege
+});
+
+
+const rootReducer = combineReducers({user, log, group, groupDetail, groupModified, permission});
 
 export default rootReducer;

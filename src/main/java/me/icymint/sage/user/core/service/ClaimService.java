@@ -91,4 +91,23 @@ public class ClaimService {
     public List<Claim> findAllUniqueByOwnerId(Long userId) {
         return claimMapper.findUniqueByOwnerId(userId);
     }
+
+    @Transactional
+    @CacheEvict(value = Magics.CACHE_CLAIM, key = "T(me.icymint.sage.user.spec.def.ClaimType).ROLE+'-'+#ownerId")
+    public void deleteRole(Long ownerId, RoleType value) {
+        Claim claim = claimMapper.findOneByOwnerIdAndTypeAndValue(ownerId, ClaimType.ROLE, value.name());
+        if (claim != null) {
+            claimMapper.delete(claim.getId());
+        }
+    }
+
+    @Transactional
+    @CacheEvict(value = Magics.CACHE_CLAIM, key = "T(me.icymint.sage.user.spec.def.ClaimType).PRIVILEGE+'-'+#ownerId")
+    public void deletePrivilege(Long ownerId, Privilege value) {
+        Claim claim = claimMapper.findOneByOwnerIdAndTypeAndValue(ownerId, ClaimType.PRIVILEGE, value.name());
+        if (claim != null) {
+            claimMapper.delete(claim.getId());
+        }
+    }
+
 }

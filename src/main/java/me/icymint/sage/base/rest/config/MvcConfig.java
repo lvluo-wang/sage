@@ -6,6 +6,7 @@ import me.icymint.sage.base.spec.def.Magics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -43,7 +44,14 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         if (isDev) {
-            registry.addMapping("/**").allowedOrigins("http://localhost:8080").allowCredentials(true);
+            registry.addMapping("/**")
+                    .allowedOrigins("http://localhost:8080")
+                    .allowedMethods(
+                            HttpMethod.GET.name(),
+                            HttpMethod.POST.name(),
+                            HttpMethod.PUT.name(),
+                            HttpMethod.DELETE.name())
+                    .allowCredentials(true);
         }
     }
 }
