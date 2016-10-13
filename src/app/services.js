@@ -31,11 +31,13 @@ function callApi(endpoint, options) {
                 return response.json().then(json=> {
                     return {
                         ok: true,
+                        code: 200,
                         response: json
                     }
                 }).catch(e=> {
                     return {
                         ok: true,
+                        code: 200,
                         response: {}
                     }
                 });
@@ -44,6 +46,7 @@ function callApi(endpoint, options) {
                 return response.json().then(json=> {
                     return {
                         ok: false,
+                        code: response.status,
                         error: json.message
                     }
                 });
@@ -52,8 +55,18 @@ function callApi(endpoint, options) {
             }
             return Promise.reject({
                 ok: false,
+                code: response.status,
                 error: "Server access failed"
             });
+        }).then(response=> {
+            if (response.code == 401) {
+                try {
+                    storage.remove("global", "token");
+                    LOGIN.onChange(false);
+                } catch (e) {
+                }
+            }
+            return response;
         });
 }
 
@@ -189,8 +202,13 @@ LOGIN.doCallback = (callback, isLogin) => {
 LOGIN.getToken = ()=> {
     try {
         const {id, isAdmin, expireTime, accessSecret} = storage.get("global", "token", {});
-        if (getTimestamp() >= expireTime || !id || !accessSecret) {
+        if (getTimestamp() >= expireTime) {
+            storage.remove("global", "token");
+            LOGIN.onChange(false);
             return {};
+        }
+        if (!id || !accessSecret) {
+            return {}
         }
         return {
             id,

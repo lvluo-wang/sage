@@ -10,7 +10,7 @@ function getSaga(actionType, apiCaller) {
             if (payload.ok) {
                 yield put(Action.action(actionType[Action.SUCCESS], {payload: payload.response}));
             } else {
-                yield put(Action.action(actionType[Action.FAILURE], {message: "Access Failed"}));
+                yield put(Action.action(actionType[Action.FAILURE], {message: payload.error}));
             }
         } catch (e) {
             yield put(Action.action(actionType[Action.FAILURE], {message: e.message}));

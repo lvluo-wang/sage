@@ -1,8 +1,11 @@
 package me.icymint.sage.user.spec.def;
 
+import me.icymint.sage.base.spec.annotation.I18nEnum;
+
 /**
  * Created by daniel on 2016/10/4.
  */
+@I18nEnum("privilege")
 public enum Privilege {
     ADMIN(RoleType.ROLE_ADMIN),
     GRANT_QUERY(RoleType.ROLE_ADMIN),

@@ -60,6 +60,10 @@ class App extends React.Component {
 
     componentWillMount() {
         LOGIN.onChange = (e) => this.updateAuth(e);
+        const ili = LOGIN.isLoggedIn();
+        if (this.state.loggedIn != ili) {
+            this.updateAuth(ili);
+        }
     }
 
     render() {

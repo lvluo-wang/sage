@@ -2,13 +2,14 @@ import React from "react";
 import FlatButton from "material-ui/FlatButton";
 import Dialog from "material-ui/Dialog";
 import Chip from "material-ui/Chip";
-import Avatar from "material-ui/Avatar";
 import {Card, CardActions, CardHeader} from "material-ui/Card";
 import {Popover, PopoverAnimationVertical} from "material-ui/Popover";
 import Menu from "material-ui/Menu";
 import MenuItem from "material-ui/MenuItem";
 import {connect} from "react-redux";
 import * as Action from "../actions";
+import Avatar from "material-ui/Avatar";
+import AddCircle from "material-ui/svg-icons/content/add-circle";
 
 
 class PermissionPaper extends React.Component {
@@ -105,7 +106,9 @@ class PermissionPaper extends React.Component {
 
     renderMenuItem(k) {
         return (
-            <MenuItem primaryText={this.getValue(k)} key={k} onTouchTap={()=>this.handleAddGroup(k)}/>
+            <MenuItem leftIcon={<AddCircle />}
+                      primaryText={this.getValue(k)}
+                      onTouchTap={()=>this.handleAddGroup(k)}/>
         );
     }
 
