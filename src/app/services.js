@@ -72,9 +72,10 @@ function callApi(endpoint, options) {
 }
 
 function getTokenHeader() {
-    let token = LOGIN.getToken();
-    if (!token) {
-        throw new Error("Need Login")
+    const token = LOGIN.getToken();
+    if (!LOGIN.isLoggedIn()) {
+        refresh();
+        throw new Error(Action.UNAUTH);
     }
     let data = [auth.getClientId(), token.id, getTimestamp(), auth.getNonce()].join('|');
     let hash = auth.getHmac(token.accessSecret, data, "B64");

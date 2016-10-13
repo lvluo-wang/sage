@@ -1,4 +1,5 @@
 import React from "react";
+export const UNAUTH = "Unauthorized";
 export const REQUEST = 'REQUEST';
 export const SUCCESS = 'SUCCESS';
 export const FAILURE = 'FAILURE';

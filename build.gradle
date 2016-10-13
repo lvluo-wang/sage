@@ -69,7 +69,7 @@ bootRun {
     systemProperty 'sage.enable.api.ROLE_DEV', 'true'
     systemProperty 'sage.enable.api.ROLE_ADMIN', 'true'
     systemProperty 'sage.dev.mode', 'true'
-    systemProperty 'sage.enable.job', 'false'
+    systemProperty 'sage.enable.job', 'true'
     addResources = true
 }
 
