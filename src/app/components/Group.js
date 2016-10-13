@@ -189,31 +189,11 @@ class Group extends React.Component {
 
 const mapDispatchToProps = dispatch=> {
     return {
-        getGroupDetail: (id) => dispatch(Action.action(Action.GROUP_DETAIL[Action.REQUEST], {payload: id})),
-        addRoleToGroup: (id, role) => dispatch(Action.action(Action.GROUP_ADD_ROLE[Action.REQUEST], {
-            payload: {
-                id,
-                role
-            }
-        })),
-        delRoleToGroup: (id, role) => dispatch(Action.action(Action.GROUP_DEL_ROLE[Action.REQUEST], {
-            payload: {
-                id,
-                role
-            }
-        })),
-        addPrivilegeToGroup: (id, privilege) => dispatch(Action.action(Action.GROUP_ADD_PRIVILEGE[Action.REQUEST], {
-            payload: {
-                id,
-                privilege
-            }
-        })),
-        delPrivilegeToGroup: (id, privilege) => dispatch(Action.action(Action.GROUP_DEL_PRIVILEGE[Action.REQUEST], {
-            payload: {
-                id,
-                privilege
-            }
-        })),
+        getGroupDetail: (id) => dispatch(Action.GROUP_DETAIL.requestAction(id)),
+        addRoleToGroup: (id, role) => dispatch(Action.GROUP_ADD_ROLE.requestAction({id, role})),
+        delRoleToGroup: (id, role) => dispatch(Action.GROUP_DEL_ROLE.requestAction({id, role})),
+        addPrivilegeToGroup: (id, privilege) => dispatch(Action.GROUP_ADD_PRIVILEGE.requestAction({id, privilege})),
+        delPrivilegeToGroup: (id, privilege) => dispatch(Action.GROUP_DEL_PRIVILEGE.requestAction({id, privilege})),
     }
 };
 

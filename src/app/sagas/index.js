@@ -8,12 +8,12 @@ function getSaga(actionType, apiCaller) {
         try {
             const payload = yield call(()=>apiCaller(action.payload));
             if (payload.ok) {
-                yield put(Action.action(actionType[Action.SUCCESS], {payload: payload.response}));
+                yield put(actionType.successAction(payload.response));
             } else {
-                yield put(Action.action(actionType[Action.FAILURE], {message: payload.error}));
+                yield put(actionType.failAction(payload.error));
             }
         } catch (e) {
-            yield put(Action.action(actionType[Action.FAILURE], {message: e.message}));
+            yield put(actionType.failAction(e.message));
         }
     }
 
@@ -25,15 +25,13 @@ function getSaga(actionType, apiCaller) {
 }
 
 export default [
-    getSaga(Action.USER, API.getUserProfile),
-    getSaga(Action.USER_ROLE, API.getUserRoles),
-    getSaga(Action.USER_PRIVILEGE, API.getUserPrivileges),
-    getSaga(Action.GROUP, API.getGroups),
-    getSaga(Action.GROUP_DETAIL, API.getGroupDetail),
-    getSaga(Action.GROUP_ADD_ROLE, API.groupAddRole),
-    getSaga(Action.GROUP_DEL_ROLE, API.groupDelRole),
-    getSaga(Action.GROUP_ADD_PRIVILEGE, API.groupAddPrivilege),
-    getSaga(Action.GROUP_DEL_PRIVILEGE, API.groupDelPrivilege),
-    getSaga(Action.PERMISSION_ROLE, API.getRoles),
-    getSaga(Action.PERMISSION_PRIVILEGE, API.getPrivileges),
+    getSaga(Action.USER, () => API.getApi(`members/profile`, true)),
+    getSaga(Action.GROUP, () => API.getApi(`groups`, true)),
+    getSaga(Action.GROUP_DETAIL, (id) => API.getApi(`groups/${id}/detail`, true)),
+    getSaga(Action.GROUP_ADD_ROLE, ({id, role}) => API.postApi(`groups/${id}/role/${role}`, {}, true)),
+    getSaga(Action.GROUP_DEL_ROLE, ({id, role}) => API.delApi(`groups/${id}/role/${role}`, {}, true)),
+    getSaga(Action.GROUP_ADD_PRIVILEGE, ({id, privilege}) => API.postApi(`groups/${id}/privilege/${privilege}`, {}, true)),
+    getSaga(Action.GROUP_DEL_PRIVILEGE, ({id, privilege}) => API.delApi(`groups/${id}/privilege/${privilege}`, {}, true)),
+    getSaga(Action.PERMISSION_ROLE, () => API.getApi(`grants/roles`, true)),
+    getSaga(Action.PERMISSION_PRIVILEGE, () => API.getApi(`grants/privileges`, true)),
 ]

@@ -8,8 +8,6 @@ import me.icymint.sage.user.rest.resource.ProfileResource;
 import me.icymint.sage.user.spec.annotation.CheckToken;
 import me.icymint.sage.user.spec.def.ClaimType;
 import me.icymint.sage.user.spec.def.IdentityType;
-import me.icymint.sage.user.spec.def.Privilege;
-import me.icymint.sage.user.spec.def.RoleType;
 import me.icymint.sage.user.spec.entity.Identity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Set;
 
 /**
  * Created by daniel on 16/9/5.
@@ -61,21 +58,10 @@ public class MemberController {
     @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
     public ProfileResource profile() {
         ProfileResource profile = new ProfileResource();
+        profile.setRoles(claimService.findRolesByOwnerId(runtimeContext.getUserId()));
+        profile.setPrivileges(claimService.findPrivilegesByOwnerId(runtimeContext.getUserId()));
         profile.setIdentity(identityService.findOne(runtimeContext.getUserId(), IdentityType.MEMBER));
         profile.setClaimList(claimService.findAllUniqueByOwnerId(runtimeContext.getUserId()));
         return profile;
     }
-
-    @CheckToken
-    @GetMapping(value = "/privileges", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<Privilege> findPrivilegesById() {
-        return identityService.findPrivilegesById(runtimeContext.getUserId());
-    }
-
-    @CheckToken
-    @GetMapping(value = "/roles", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<RoleType> findRolesById() {
-        return identityService.findRolesById(runtimeContext.getUserId());
-    }
-
 }

@@ -21,7 +21,8 @@ var config = {
             'isomorphic-fetch',
             'moment',
             'store2',
-            'material-ui'
+            'material-ui',
+            'es6-promise'
         ]
     },
     output: {

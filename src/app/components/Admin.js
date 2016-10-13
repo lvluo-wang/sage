@@ -44,9 +44,9 @@ class Admin extends React.Component {
 
 const mapDispatchToProps = dispatch=> {
     return {
-        loadGroups: () => dispatch(Action.action(Action.GROUP[Action.REQUEST])),
-        loadRoles: () => dispatch(Action.action(Action.PERMISSION_ROLE[Action.REQUEST])),
-        loadPrivileges: () => dispatch(Action.action(Action.PERMISSION_PRIVILEGE[Action.REQUEST])),
+        loadGroups: () => dispatch(Action.GROUP.requestAction()),
+        loadRoles: () => dispatch(Action.PERMISSION_ROLE.requestAction()),
+        loadPrivileges: () => dispatch(Action.PERMISSION_PRIVILEGE.requestAction()),
     }
 };
 

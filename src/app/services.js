@@ -2,6 +2,7 @@ import storage from "./storage";
 import moment from "moment";
 import * as auth from "./auth";
 import {refresh} from "./routes";
+import * as Action from "./actions";
 require('es6-promise').polyfill();
 require("isomorphic-fetch");
 
@@ -80,7 +81,7 @@ function getTokenHeader() {
     return 'SAGE-HMAC ' + hash + data;
 }
 
-function postApi(url, body, needAuth = false) {
+export function postApi(url, body, needAuth = false) {
     let headers = {
         "Content-Type": "application/json"
     };
@@ -97,7 +98,7 @@ function postApi(url, body, needAuth = false) {
     })
 }
 
-function putApi(url, body, needAuth = false) {
+export function putApi(url, body, needAuth = false) {
     let headers = {
         "Content-Type": "application/json"
     };
@@ -114,7 +115,7 @@ function putApi(url, body, needAuth = false) {
     })
 }
 
-function getApi(url, needAuth = false) {
+export function getApi(url, needAuth = false) {
     let headers = {};
     if (needAuth) {
         headers = {
@@ -128,7 +129,7 @@ function getApi(url, needAuth = false) {
     })
 }
 
-function delApi(url, needAuth = false) {
+export function delApi(url, needAuth = false) {
     let headers = {};
     if (needAuth) {
         headers = {
@@ -155,20 +156,6 @@ export function getTimestamp() {
 export const getUserByName = username => getApi(`members/username/${username}`);
 export const loginApi = (uid, cid, nonce, ts, sign) => postApi(`tokens`, {uid, cid, nonce, ts, sign});
 export const registerApi = (cid, password, salt, username) => postApi(`members`, {cid, password, salt, username});
-// token base
-export const getUserRoles = () => getApi(`members/roles`, true);
-export const getUserPrivileges = () => getApi(`members/privileges`, true);
-export const getUserProfile = () => getApi(`members/profile`, true);
-// admin base
-export const getGroups = () => getApi(`groups`, true);
-export const getGroupDetail = (id) => getApi(`groups/${id}/detail`, true);
-export const groupAddRole = ({id, role}) => postApi(`groups/${id}/role/${role}`, {}, true);
-export const groupDelRole = ({id, role}) => delApi(`groups/${id}/role/${role}`, {}, true);
-export const groupAddPrivilege = ({id, privilege}) => postApi(`groups/${id}/privilege/${privilege}`, {}, true);
-export const groupDelPrivilege = ({id, privilege}) => delApi(`groups/${id}/privilege/${privilege}`, {}, true);
-
-export const getRoles = () => getApi(`grants/roles`, true);
-export const getPrivileges = () => getApi(`grants/privileges`, true);
 
 
 export const UTIL = {};
@@ -225,11 +212,6 @@ LOGIN.isLoggedIn = ()=> {
     return id != undefined && accessSecret != undefined;
 };
 
-LOGIN.isAdmin = ()=> {
-    const {id, isAdmin, accessSecret} = LOGIN.getToken();
-    return id != undefined && accessSecret != undefined && isAdmin;
-};
-
 function doLogin(id, password, callback) {
     let cid = auth.getClientId();
     let nonce = auth.getNonce();
@@ -241,16 +223,11 @@ function doLogin(id, password, callback) {
             LOGIN.doCallback(callback, false);
             return;
         }
-        const token = response;
-        storage.save("global", "token", token);
-        getUserRoles().then(({ok, response})=> {
-            try {
-                token.isAdmin = ok && response.includes('ROLE_ADMIN');
-            } catch (e) {
-            }
-            storage.save("global", "token", token);
-            LOGIN.doCallback(callback, true);
-        });
+        storage.save("global", "token", response);
+        if (LOGIN.store) {
+            LOGIN.store.dispatch(Action.USER.requestAction());
+        }
+        LOGIN.doCallback(callback, true);
     }, ()=>LOGIN.doCallback(callback, false));
 }
 LOGIN.login = (username, pass, callback)=> {

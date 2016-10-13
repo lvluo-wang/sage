@@ -4,13 +4,17 @@ import {render} from "react-dom";
 import configStore from "./store";
 import rootSaga from "./sagas";
 import Root from "./containers/Root";
-import routes, {history} from "./routes";
+import createRoutes, {history} from "./routes";
 import LOGIN from "./services";
 
 
 const store = configStore({});
 rootSaga.map(store.runSaga);
 LOGIN.store = store;
+
+const routes = createRoutes(()=> {
+    return store.getState().user.isAdmin;
+});
 
 
 render(<Root store={store}

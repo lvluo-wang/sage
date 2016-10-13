@@ -19,11 +19,11 @@ export function toLink(url) {
     browserHistory.push(url);
 }
 
-export default (
+export default (checkAdmin)=>(
     <Route path={"/"} component={App}>
         <IndexRoute component={HomePage}/>
         <Route path="user" component={UserPage} onEnter={()=>LOGIN.checkLoggedIn()}/>
-        <Route path="admin" component={AdminPage} onEnter={()=>LOGIN.checkAdmin()}/>
+        <Route path="admin" component={AdminPage} onEnter={()=>checkAdmin()}/>
         <Route path="*" component={NotFoundPage}/>
     </Route>
 );

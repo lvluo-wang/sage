@@ -12,7 +12,12 @@ import {connect} from "react-redux";
 import * as Action from "../actions";
 
 class Logged extends React.Component {
+
     render() {
+        let admin = '';
+        if (this.props.user.isAdmin) {
+            admin = (<MenuItem primaryText="Admin" onTouchTap={() => toLink("/admin")}/>);
+        }
         return (
             <IconMenu
                 {...this.props}
@@ -24,7 +29,7 @@ class Logged extends React.Component {
             >
                 <MenuItem primaryText="Refresh" onTouchTap={()=> refresh()}/>
                 <MenuItem primaryText="User" onTouchTap={() => toLink("/user")}/>
-                {this.props.isAdmin && <MenuItem primaryText="Admin" onTouchTap={() => toLink("/admin")}/>}
+                {admin}
                 <MenuItem primaryText="Sign out" onTouchTap={()=> LOGIN.logout()}/>
             </IconMenu>
         )
@@ -35,7 +40,7 @@ Logged.muiName = 'IconMenu';
 
 const mapStateToProps = state => {
     return {
-        isAdmin: state.user.isAdmin
+        user: state.user
     }
 };
 
@@ -69,8 +74,6 @@ class App extends React.Component {
     render() {
         if (this.state.loggedIn) {
             this.props.getUser();
-            this.props.getUserRoles();
-            this.props.getUserPrivileges();
         }
         return (<div>
             <AppBar title="Project SAGE"
@@ -87,13 +90,10 @@ class App extends React.Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        getUser: () => dispatch(Action.action(Action.USER[Action.REQUEST])),
-        getUserRoles: () => dispatch(Action.action(Action.USER_ROLE[Action.REQUEST])),
-        getUserPrivileges: () => dispatch(Action.action(Action.USER_PRIVILEGE[Action.REQUEST])),
+        getUser: () => dispatch(Action.USER.requestAction()),
     }
 };
 
 App = connect(null, mapDispatchToProps)(App);
-
 
 export default App;
