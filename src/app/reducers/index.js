@@ -2,7 +2,6 @@ import {combineReducers} from "redux";
 import * as Action from "../actions";
 import * as API from "../services";
 
-
 const user = Action.USER.createReducer({
     isAdmin: false,
     profile: {
@@ -29,37 +28,48 @@ const user = Action.USER.createReducer({
     };
 });
 
-const group = Action.GROUP.createReducer({
+const group = (state = {
+    groupList: {},
     isLoaded: false,
-    groupList: []
-}, (state, payload)=> {
-    return {
-        ...state,
-        isLoaded: true,
-        groupList: payload.items
+}, action)=> {
+    if (action.type == Action.GROUP[Action.SUCCESS]) {
+        return {
+            ...state,
+            groupList: action.payload.items,
+            isLoaded: true
+        }
+    } else if (action.type == Action.GROUP_CREATE[Action.SUCCESS]
+        || action.type == Action.GROUP_DELETE[Action.SUCCESS]
+        || action.type == Action.GROUP_RENAME[Action.SUCCESS]) {
+        return {
+            ...state,
+            isLoaded: false
+        };
     }
-}, (state, payload)=> {
-    return {
-        ...state,
-        isLoaded: true
-    }
-});
+    return state;
+};
 
-const groupDetail = Action.GROUP_DETAIL.createReducer({
+const groupDetail = (state = {
+    detail: {},
     isLoaded: false,
-    detail: {}
-}, (state, payload)=> {
-    return {
-        ...state,
-        isLoaded: true,
-        detail: payload
+}, action)=> {
+    if (action.type == Action.GROUP_DETAIL[Action.SUCCESS]) {
+        return {
+            ...state,
+            detail: action.payload,
+            isLoaded: true
+        }
+    } else if (action.type == Action.GROUP_ADD_PRIVILEGE[Action.SUCCESS]
+        || action.type == Action.GROUP_DEL_PRIVILEGE[Action.SUCCESS]
+        || action.type == Action.GROUP_ADD_ROLE[Action.SUCCESS]
+        || action.type == Action.GROUP_DEL_ROLE[Action.SUCCESS]) {
+        return {
+            ...state,
+            isLoaded: false
+        };
     }
-}, (state, payload)=> {
-    return {
-        ...state,
-        isLoaded: true
-    }
-});
+    return state;
+};
 
 const permission = combineReducers({
     roles: Action.PERMISSION_ROLE.createReducer([],

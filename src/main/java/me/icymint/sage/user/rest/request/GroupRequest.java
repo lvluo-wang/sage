@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class GroupRequest {
     @NotNull
-    @Size(min = 5, max = 30)
+    @Size(min = 2, max = 30)
     private String name;
     private List<Privilege> privilegeList;
     private List<RoleType> roleTypeList;

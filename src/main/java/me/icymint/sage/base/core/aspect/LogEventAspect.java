@@ -7,6 +7,8 @@ import me.icymint.sage.base.spec.def.Magics;
 import me.icymint.sage.base.spec.internal.api.RuntimeContext;
 import me.icymint.sage.base.spec.internal.entity.LogEvent;
 import me.icymint.sage.base.util.Exceptions;
+import me.icymint.sage.user.spec.annotation.Permission;
+import me.icymint.sage.user.spec.def.RoleType;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,6 +20,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Created by daniel on 2016/9/30.
@@ -31,6 +34,18 @@ public class LogEventAspect {
     EventServiceImpl eventService;
     @Autowired
     RuntimeContext runtimeContext;
+
+
+    @Around("@annotation(permission)")
+    public Object permissionLog(ProceedingJoinPoint joinPoint, Permission permission) throws Throwable {
+        if (!Stream
+                .of(permission.value())
+                .flatMap(p -> Stream.of(p.getRoleTypes()))
+                .anyMatch(r -> r == RoleType.ROLE_ADMIN)) {
+            return joinPoint.proceed();
+        }
+        return async(joinPoint, null);
+    }
 
     @Around("@annotation(logInvokeMethod)")
     public Object async(ProceedingJoinPoint joinPoint, LogInvokeMethod logInvokeMethod) throws Throwable {

@@ -71,6 +71,11 @@ function createRequestTypes(base) {
 export const USER = createRequestTypes('USER');
 
 export const GROUP = createRequestTypes('GROUP');
+export const GROUP_CREATE = createRequestTypes('GROUP_CREATE');
+export const GROUP_DELETE = createRequestTypes('GROUP_DELETE');
+export const GROUP_RENAME = createRequestTypes('GROUP_RENAME');
+
+
 export const GROUP_DETAIL = createRequestTypes('GROUP_DETAIL');
 export const GROUP_ADD_ROLE = createRequestTypes('GROUP_ADD_ROLE');
 export const GROUP_DEL_ROLE = createRequestTypes('GROUP_DEL_ROLE');

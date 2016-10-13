@@ -27,6 +27,9 @@ function getSaga(actionType, apiCaller) {
 export default [
     getSaga(Action.USER, () => API.getApi(`members/profile`, true)),
     getSaga(Action.GROUP, () => API.getApi(`groups`, true)),
+    getSaga(Action.GROUP_CREATE, (name) => API.postApi(`groups`, {name, privilegeList: [], roleTypeList: []}, true)),
+    getSaga(Action.GROUP_DELETE, (id) => API.delApi(`groups/${id}`, true)),
+    getSaga(Action.GROUP_RENAME, ({id, name}) => API.putApi(`groups/${id}`, {name}, true)),
     getSaga(Action.GROUP_DETAIL, (id) => API.getApi(`groups/${id}/detail`, true)),
     getSaga(Action.GROUP_ADD_ROLE, ({id, role}) => API.postApi(`groups/${id}/role/${role}`, {}, true)),
     getSaga(Action.GROUP_DEL_ROLE, ({id, role}) => API.delApi(`groups/${id}/role/${role}`, {}, true)),

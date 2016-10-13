@@ -135,7 +135,7 @@ class Group extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            open: false
+            open: false,
         };
     }
 
@@ -145,6 +145,7 @@ class Group extends React.Component {
     };
 
     handleClose = () => {
+        this.props.getGroupDetail(this.props.group.id);
         this.setState({...this.state, open: false});
     };
 

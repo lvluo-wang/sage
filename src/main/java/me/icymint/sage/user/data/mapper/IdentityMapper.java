@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectKey;
 import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.UpdateProvider;
 import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
@@ -31,4 +32,7 @@ public interface IdentityMapper {
 
     @DeleteProvider(type = IdentitySqlProvider.class, method = "delete")
     void delete(@Param("id") Long id, @Param("type") IdentityType type);
+
+    @UpdateProvider(type = IdentitySqlProvider.class, method = "update")
+    int update(Identity identity);
 }

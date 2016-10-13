@@ -6,6 +6,7 @@ import me.icymint.sage.user.core.service.ClaimService;
 import me.icymint.sage.user.core.service.IdentityServiceImpl;
 import me.icymint.sage.user.data.mapper.GrantMapper;
 import me.icymint.sage.user.rest.converter.UserEntityConverter;
+import me.icymint.sage.user.rest.request.GroupRenameRequest;
 import me.icymint.sage.user.rest.request.GroupRequest;
 import me.icymint.sage.user.rest.resource.GroupDetailResource;
 import me.icymint.sage.user.rest.resource.GroupResource;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -82,6 +84,13 @@ public class GroupController {
                 groupRequest.getName(),
                 groupRequest.getRoleTypeList(),
                 groupRequest.getPrivilegeList()));
+    }
+
+    @CheckToken
+    @Permission(Privilege.GROUP_MODIFY)
+    @PutMapping(value = "/{groupId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void rename(@PathVariable("groupId") Long groupId, @Valid @RequestBody GroupRenameRequest groupRenameRequest) {
+        identityService.updateDescription(groupId, groupRenameRequest.getName());
     }
 
     @CheckToken

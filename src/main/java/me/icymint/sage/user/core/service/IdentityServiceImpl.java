@@ -198,6 +198,15 @@ public class IdentityServiceImpl implements IdentityService {
         identityMapper.delete(identityId, IdentityType.GROUP);
     }
 
+    @Transactional
+    @CacheEvict(value = Magics.CACHE_IDENTITY, key = "#identityId")
+    public void updateDescription(Long identityId, String name) {
+        identityMapper.update(new Identity()
+                .setId(identityId)
+                .setType(IdentityType.GROUP)
+                .setDescription(name));
+    }
+
     public static class RegisterEventProducer implements EventProducer<Identity, RegisterEvent> {
         @Override
         public Class<Identity> resultClass() {

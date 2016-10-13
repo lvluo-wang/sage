@@ -238,7 +238,7 @@ public class TokenServiceImpl implements TokenService {
 
     public void authorize(CheckToken checkToken, Permission classPermission, Permission methodPermission) {
         try {
-            boolean expireTimeCheck = checkToken == null;
+            boolean expireTimeCheck = checkToken != null;
             String header = runtimeContext.getHeader(Magics.HEADER_AUTHORIZATION);
             if (checkToken != null
                     && checkToken.allowNone()
